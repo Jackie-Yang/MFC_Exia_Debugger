@@ -56,6 +56,7 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_COMBO_COM, m_Combox_COM);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -66,6 +67,22 @@ END_MESSAGE_MAP()
 
 
 // CMFC_Exia_DebuggerDlg 消息处理程序
+int CharToUnicode(char *pchIn, CString *pstrOut)
+{
+	int nLen;
+	WCHAR *ptch;
+	if (pchIn == NULL)
+	{
+		return 0;
+	}
+	nLen = MultiByteToWideChar(CP_ACP, 0, pchIn, -1, NULL, 0);
+	ptch = new WCHAR[nLen];
+	MultiByteToWideChar(CP_ACP, 0, pchIn, -1, ptch, nLen);
+	pstrOut->Format(_T("%s"), ptch);
+
+	delete[] ptch;
+	return nLen;
+}
 
 BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 {
@@ -97,6 +114,14 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO:  在此添加额外的初始化代码
+
+	m_Serial.UpdateSerialList();
+
+	for (int i = 0; i < m_Serial.m_SerialList.GetSize(); i++)
+	{
+		m_Combox_COM.InsertString(i, m_Serial.m_SerialList.ElementAt((INT_PTR)i).str_Port.c_str());
+	}
+	m_Combox_COM.SetCurSel(0);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

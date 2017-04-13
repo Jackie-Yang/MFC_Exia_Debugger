@@ -3,7 +3,8 @@
 //
 
 #pragma once
-
+#include "Serial.h"
+#include "afxwin.h"
 
 // CMFC_Exia_DebuggerDlg 对话框
 class CMFC_Exia_DebuggerDlg : public CDialogEx
@@ -14,6 +15,9 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_MFC_EXIA_DEBUGGER_DIALOG };
+
+private:
+	CSerial m_Serial;
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
@@ -29,4 +33,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	// Combox:选择串口
+	CComboBox m_Combox_COM;
 };
