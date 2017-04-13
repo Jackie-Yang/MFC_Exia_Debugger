@@ -19,9 +19,17 @@ public:
 	CSerial();
 	~CSerial();
 
+	bool Init();
 	LONG UpdateSerialList();
 
 private:
+
+	HANDLE m_hUpdateEvent;
+	HKEY   m_hUpdateKey;
+	CWinThread *m_pUpdateThread;
+
+	bool UpdateSerial();
+	static UINT Update_thread(void *args);
 	static bool Sort_Name(SerialInfo &Info1, SerialInfo &Info2);
 	static bool Sort_Port(SerialInfo &Info1, SerialInfo &Info2);
 };

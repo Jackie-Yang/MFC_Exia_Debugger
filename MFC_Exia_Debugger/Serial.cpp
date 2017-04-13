@@ -4,23 +4,124 @@
 
 CSerial::CSerial()
 {
+	m_hUpdateEvent = NULL;
+	m_hUpdateEvent = NULL;
+	m_pUpdateThread = NULL;
 }
 
 
 CSerial::~CSerial()
 {
+	if (m_pUpdateThread)
+	{
+		//SuspendThread(m_pUpdateThread);
+	}
+	if (m_hUpdateEvent)
+	{
+		if (CloseHandle(m_hUpdateEvent))
+		{
+			m_hUpdateEvent = NULL;
+		}
+	}
+	if (m_hUpdateKey)
+	{
+		if (RegCloseKey(m_hUpdateKey) == ERROR_SUCCESS)
+		{
+			m_hUpdateKey = NULL;
+		}
+	}	
 }
 
-//sort回掉函数，如果不需要排序则返回true
-bool CSerial::Sort_Port(SerialInfo &Info1, SerialInfo &Info2)
+bool CSerial::Init()
 {
-	return strcmp(Info1.str_Port.c_str(), Info2.str_Port.c_str()) < 0;
+	LONG   Ret;
+
+	//Get List
+	UpdateSerialList();
+
+	// Open a key.
+	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &m_hUpdateKey);
+	if (Ret != ERROR_SUCCESS)
+	{
+		goto FAIL_PROCESS;
+	}
+
+	// Create an event.
+	m_hUpdateEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if (m_hUpdateEvent == NULL)
+	{
+		goto FAIL_PROCESS;
+	}
+	
+
+	//创建子线程（创建的时候立即运行）  
+	m_pUpdateThread = AfxBeginThread(Update_thread, this);
+	if (NULL == m_pUpdateThread)
+	{
+		goto FAIL_PROCESS;
+	}
+
+	return TRUE;
+
+FAIL_PROCESS:
+	if (m_hUpdateEvent)
+	{
+		if (CloseHandle(m_hUpdateEvent))
+		{
+			m_hUpdateEvent = NULL;
+		}
+	}
+	if (m_hUpdateKey)
+	{
+		if (RegCloseKey(m_hUpdateKey) == ERROR_SUCCESS)
+		{
+			m_hUpdateKey = NULL;
+		}
+	}
+	return false;
 }
 
-bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
+UINT CSerial::Update_thread(void *args)
 {
-	return strcmp(Info1.str_Name.c_str(), Info2.str_Name.c_str()) < 0;
+	CSerial *pCSerial = (CSerial *)args;
+	BOOL ret = pCSerial->UpdateSerial();
+	return ret;
 }
+
+
+bool CSerial::UpdateSerial()
+{
+	DWORD  dwFilter = REG_NOTIFY_CHANGE_NAME |
+		REG_NOTIFY_CHANGE_ATTRIBUTES |
+		REG_NOTIFY_CHANGE_LAST_SET |
+		REG_NOTIFY_CHANGE_SECURITY;
+	LONG   Ret;
+	// Watch the registry key for a change of value.
+	while (m_hUpdateKey && m_hUpdateEvent)
+	{
+		Ret = RegNotifyChangeKeyValue(m_hUpdateKey,
+			TRUE,
+			dwFilter,
+			m_hUpdateEvent,
+			TRUE);
+		if (Ret != ERROR_SUCCESS)
+		{
+			continue;
+		}
+		if (WaitForSingleObject(m_hUpdateEvent, INFINITE) == WAIT_FAILED)
+		{
+			//return FALSE;		//线程异常结束需要事件？
+		}
+		else
+		{
+			UpdateSerialList();	//发送事件
+		}
+		ResetEvent(m_hUpdateEvent);
+	}
+	
+	return 0;
+}
+
 
 LONG CSerial::UpdateSerialList()
 {
@@ -121,4 +222,16 @@ LONG CSerial::UpdateSerialList()
 	
 	RegCloseKey(hKey);
 	return ERROR_SUCCESS;
+}
+
+
+//sort回掉函数，如果不需要排序则返回true
+bool CSerial::Sort_Port(SerialInfo &Info1, SerialInfo &Info2)
+{
+	return strcmp(Info1.str_Port.c_str(), Info2.str_Port.c_str()) < 0;
+}
+
+bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
+{
+	return strcmp(Info1.str_Name.c_str(), Info2.str_Name.c_str()) < 0;
 }

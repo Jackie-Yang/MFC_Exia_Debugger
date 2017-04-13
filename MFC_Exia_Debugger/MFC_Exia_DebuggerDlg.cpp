@@ -66,24 +66,6 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMFC_Exia_DebuggerDlg 消息处理程序
-int CharToUnicode(char *pchIn, CString *pstrOut)
-{
-	int nLen;
-	WCHAR *ptch;
-	if (pchIn == NULL)
-	{
-		return 0;
-	}
-	nLen = MultiByteToWideChar(CP_ACP, 0, pchIn, -1, NULL, 0);
-	ptch = new WCHAR[nLen];
-	MultiByteToWideChar(CP_ACP, 0, pchIn, -1, ptch, nLen);
-	pstrOut->Format(_T("%s"), ptch);
-
-	delete[] ptch;
-	return nLen;
-}
-
 BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -115,7 +97,7 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 
-	m_Serial.UpdateSerialList();
+	m_Serial.Init();
 
 	for (int i = 0; i < m_Serial.m_SerialList.GetSize(); i++)
 	{
