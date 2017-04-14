@@ -7,15 +7,15 @@ CSerial::CSerial()
 	m_hUpdateEvent = NULL;
 	m_hUpdateEvent = NULL;
 	m_pUpdateThread = NULL;
+	m_pOwner = NULL;
+	m_bNoSerial = true;
 }
 
 
 CSerial::~CSerial()
 {
-	if (m_pUpdateThread)
-	{
-		//SuspendThread(m_pUpdateThread);
-	}
+	m_pOwner = NULL;
+	WaitForSingleObject(m_hUpdateMutex, INFINITE);
 	if (m_hUpdateEvent)
 	{
 		if (CloseHandle(m_hUpdateEvent))
@@ -30,20 +30,39 @@ CSerial::~CSerial()
 			m_hUpdateKey = NULL;
 		}
 	}	
+	ReleaseMutex(m_hUpdateMutex);
+	//等待监听线程结束
+	WaitForSingleObject(m_pUpdateThread->m_hThread, INFINITE);
+	CloseHandle(m_hUpdateMutex);
 }
 
-bool CSerial::Init()
+bool CSerial::Init(CWnd* pOwner)
 {
 	LONG   Ret;
-
-	//Get List
-	UpdateSerialList();
-
+	m_pOwner = pOwner;
 	// Open a key.
 	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &m_hUpdateKey);
 	if (Ret != ERROR_SUCCESS)
 	{
-		goto FAIL_PROCESS;
+		if (Ret == ERROR_FILE_NOT_FOUND)
+		{
+			//无串口，监视Device
+			Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP", 0, KEY_NOTIFY, &m_hUpdateKey);
+			if (Ret != ERROR_SUCCESS)
+			{
+				goto FAIL_PROCESS;
+			}
+		}
+		else
+		{
+			goto FAIL_PROCESS;
+		}
+	}
+	else
+	{
+		m_bNoSerial = false;
+		//Get List
+		UpdateSerialList();
 	}
 
 	// Create an event.
@@ -52,6 +71,9 @@ bool CSerial::Init()
 	{
 		goto FAIL_PROCESS;
 	}
+
+	//创建线程互斥锁
+	m_hUpdateMutex = CreateMutex(nullptr, FALSE, nullptr);
 	
 
 	//创建子线程（创建的时候立即运行）  
@@ -88,7 +110,7 @@ UINT CSerial::Update_thread(void *args)
 	return ret;
 }
 
-
+//监听串口
 bool CSerial::UpdateSerial()
 {
 	DWORD  dwFilter = REG_NOTIFY_CHANGE_NAME |
@@ -97,8 +119,13 @@ bool CSerial::UpdateSerial()
 		REG_NOTIFY_CHANGE_SECURITY;
 	LONG   Ret;
 	// Watch the registry key for a change of value.
-	while (m_hUpdateKey && m_hUpdateEvent)
+	while (true)
 	{
+		WaitForSingleObject(m_hUpdateMutex, INFINITE);
+		if (!(m_hUpdateKey && m_hUpdateEvent))
+		{
+			break;
+		}
 		Ret = RegNotifyChangeKeyValue(m_hUpdateKey,
 			TRUE,
 			dwFilter,
@@ -108,15 +135,34 @@ bool CSerial::UpdateSerial()
 		{
 			continue;
 		}
-		if (WaitForSingleObject(m_hUpdateEvent, INFINITE) == WAIT_FAILED)
+		if (WaitForSingleObject(m_hUpdateEvent, 100) == WAIT_OBJECT_0)	//使用了互斥锁，因此这里等待需要设置超时，否则会造成死锁
 		{
-			//return FALSE;		//线程异常结束需要事件？
+			if (m_bNoSerial)	//无串口，尝试监听串口
+			{
+				HKEY   TempKey;
+				Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &TempKey);
+				if (Ret == ERROR_SUCCESS)
+				{
+					if (RegCloseKey(m_hUpdateKey) == ERROR_SUCCESS)		//有串口，开始监听串口
+					{
+						m_hUpdateKey = TempKey;
+						m_bNoSerial = false;
+						UpdateSerialList();	//发送事件
+					}
+					else
+					{
+						RegCloseKey(TempKey);
+						TempKey = NULL;
+					}
+				}
+			}
+			else
+			{
+				UpdateSerialList();	//发送事件
+			}
 		}
-		else
-		{
-			UpdateSerialList();	//发送事件
-		}
-		ResetEvent(m_hUpdateEvent);
+		ResetEvent(m_hUpdateEvent);	//复位事件
+		ReleaseMutex(m_hUpdateMutex);
 	}
 	
 	return 0;
@@ -221,6 +267,12 @@ LONG CSerial::UpdateSerialList()
 	delete [] ValueName;
 	
 	RegCloseKey(hKey);
+
+	//串口更新成功，发送消息
+	if (m_pOwner)
+	{
+		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_UPDATE, (WPARAM)0, (LPARAM)0);
+	}	
 	return ERROR_SUCCESS;
 }
 

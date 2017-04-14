@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_MESSAGE(WM_SERIAL_UPDATE, &CMFC_Exia_DebuggerDlg::OnSerialUpdate)
 END_MESSAGE_MAP()
 
 
@@ -97,13 +98,11 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 
-	m_Serial.Init();
-
-	for (int i = 0; i < m_Serial.m_SerialList.GetSize(); i++)
+	if (m_Serial.Init(this) == false)
 	{
-		m_Combox_COM.InsertString(i, m_Serial.m_SerialList.ElementAt((INT_PTR)i).str_Port.c_str());
+		AfxMessageBox("串口监听失败");
 	}
-	m_Combox_COM.SetCurSel(0);
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -157,3 +156,15 @@ HCURSOR CMFC_Exia_DebuggerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdate(WPARAM wParam, LPARAM lParam)
+{
+	m_Combox_COM.ResetContent();
+	for (int i = 0; i < m_Serial.m_SerialList.GetSize(); i++)
+	{
+		m_Combox_COM.InsertString(i, m_Serial.m_SerialList.ElementAt((INT_PTR)i).str_Port.c_str());
+	}
+	m_Combox_COM.SetCurSel(0);
+	return 0;
+}

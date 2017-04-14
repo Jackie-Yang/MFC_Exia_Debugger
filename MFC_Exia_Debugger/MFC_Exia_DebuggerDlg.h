@@ -36,4 +36,6 @@ protected:
 public:
 	// Combox:Ñ¡Ôñ´®¿Ú
 	CComboBox m_Combox_COM;
+protected:
+	afx_msg LRESULT OnSerialUpdate(WPARAM wParam, LPARAM lParam);
 };

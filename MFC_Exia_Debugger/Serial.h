@@ -2,6 +2,8 @@
 #include <string>
 #include <afxtempl.h>
 
+#define WM_SERIAL_UPDATE		WM_USER+1
+
 typedef struct __ST_SERIAL_INFO__
 {
 	std::string str_Name;
@@ -14,19 +16,23 @@ class CSerial
 public:
 
 	CArray<SerialInfo> m_SerialList;
-
+	bool m_bNoSerial;
 
 	CSerial();
 	~CSerial();
 
-	bool Init();
+	bool Init(CWnd* pOwner);
 	LONG UpdateSerialList();
 
 private:
 
-	HANDLE m_hUpdateEvent;
-	HKEY   m_hUpdateKey;
-	CWinThread *m_pUpdateThread;
+	// owner window(receives message)
+	CWnd*	m_pOwner;
+
+	HANDLE	m_hUpdateEvent;
+	HKEY	m_hUpdateKey;
+	HANDLE	m_hUpdateMutex;
+	CWinThread	*m_pUpdateThread;
 
 	bool UpdateSerial();
 	static UINT Update_thread(void *args);
