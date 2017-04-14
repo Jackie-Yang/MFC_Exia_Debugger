@@ -147,7 +147,8 @@ bool CSerial::UpdateSerial()
 					{
 						m_hUpdateKey = TempKey;
 						m_bNoSerial = false;
-						UpdateSerialList();	//发送事件
+						Sleep(500);
+						UpdateSerialList();
 					}
 					else
 					{
@@ -158,7 +159,7 @@ bool CSerial::UpdateSerial()
 			}
 			else
 			{
-				UpdateSerialList();	//发送事件
+				UpdateSerialList();
 			}
 		}
 		ResetEvent(m_hUpdateEvent);	//复位事件
