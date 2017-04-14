@@ -63,7 +63,8 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_MESSAGE(WM_SERIAL_UPDATE, &CMFC_Exia_DebuggerDlg::OnSerialUpdate)
+	ON_MESSAGE(WM_SERIAL_UPDATE_LIST, &CMFC_Exia_DebuggerDlg::OnSerialUpdateList)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFC_Exia_DebuggerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -158,7 +159,7 @@ HCURSOR CMFC_Exia_DebuggerDlg::OnQueryDragIcon()
 
 
 
-afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdate(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
 {
 	m_Combox_COM.ResetContent();
 	for (int i = 0; i < m_Serial.m_SerialList.GetSize(); i++)
@@ -167,4 +168,19 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdate(WPARAM wParam, LPARAM lPar
 	}
 	m_Combox_COM.SetCurSel(0);
 	return 0;
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButton1()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (m_Serial.IsOpen())
+	{
+		m_Serial.CloseSerial();
+	}
+	else
+	{
+		m_Serial.OpenSerial(m_Serial.m_SerialList.ElementAt((INT_PTR)m_Combox_COM.GetCurSel()).str_Port);
+		
+	}
 }

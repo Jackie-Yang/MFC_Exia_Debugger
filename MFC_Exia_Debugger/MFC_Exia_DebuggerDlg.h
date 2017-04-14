@@ -37,5 +37,7 @@ public:
 	// Combox:Ñ¡Ôñ´®¿Ú
 	CComboBox m_Combox_COM;
 protected:
-	afx_msg LRESULT OnSerialUpdate(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSerialUpdateList(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnBnClickedButton1();
 };

@@ -9,11 +9,19 @@ CSerial::CSerial()
 	m_pUpdateThread = NULL;
 	m_pOwner = NULL;
 	m_bNoSerial = true;
+	m_hUpdateMutex = NULL;
+	m_hSerialPort = NULL;
 }
 
 
 CSerial::~CSerial()
 {
+	if (m_hSerialPort)
+	{
+		CloseHandle(m_hSerialPort);
+		m_hSerialPort = NULL;
+	}
+
 	m_pOwner = NULL;
 	WaitForSingleObject(m_hUpdateMutex, INFINITE);
 	if (m_hUpdateEvent)
@@ -74,10 +82,13 @@ bool CSerial::Init(CWnd* pOwner)
 
 	//创建线程互斥锁
 	m_hUpdateMutex = CreateMutex(nullptr, FALSE, nullptr);
-	
+	if (m_hUpdateMutex == NULL)
+	{
+		goto FAIL_PROCESS;
+	}
 
-	//创建子线程（创建的时候立即运行）  
-	m_pUpdateThread = AfxBeginThread(Update_thread, this);
+	//创建子线程监视串口列表（创建的时候立即运行）  
+	m_pUpdateThread = AfxBeginThread(Update_Thread, this);
 	if (NULL == m_pUpdateThread)
 	{
 		goto FAIL_PROCESS;
@@ -103,7 +114,7 @@ FAIL_PROCESS:
 	return false;
 }
 
-UINT CSerial::Update_thread(void *args)
+UINT CSerial::Update_Thread(void *args)
 {
 	CSerial *pCSerial = (CSerial *)args;
 	BOOL ret = pCSerial->UpdateSerial();
@@ -272,7 +283,7 @@ LONG CSerial::UpdateSerialList()
 	//串口更新成功，发送消息
 	if (m_pOwner)
 	{
-		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_UPDATE, (WPARAM)0, (LPARAM)0);
+		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_UPDATE_LIST, (WPARAM)0, (LPARAM)0);
 	}	
 	return ERROR_SUCCESS;
 }
@@ -287,4 +298,96 @@ bool CSerial::Sort_Port(SerialInfo &Info1, SerialInfo &Info2)
 bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
 {
 	return strcmp(Info1.str_Name.c_str(), Info2.str_Name.c_str()) < 0;
+}
+
+bool CSerial::OpenSerial(std::string PortName)
+{
+	PortName = "\\\\.\\" + PortName;	//加上这个可以防止端口号大于10无法打开
+	m_hSerialPort = CreateFile(PortName.c_str(),//COM口  
+		GENERIC_READ | GENERIC_WRITE, //允许读和写  
+		0, //独占方式  
+		NULL,
+		OPEN_EXISTING, //打开而不是创建  
+		FILE_FLAG_OVERLAPPED, //异步方式  
+		NULL);
+	;
+	if (m_hSerialPort == INVALID_HANDLE_VALUE)
+	{
+		m_hSerialPort = NULL;
+		return false;
+	}
+
+	SetupComm(m_hSerialPort, INPUT_BUF_SIZE, OUTPUT_BUF_SIZE);
+
+	COMMTIMEOUTS TimeOuts;
+	//设定读超时  
+	TimeOuts.ReadIntervalTimeout = MAXDWORD;
+	TimeOuts.ReadTotalTimeoutMultiplier = 0;
+	TimeOuts.ReadTotalTimeoutConstant = 0;
+	//在读一次输入缓冲区的内容后读操作就立即返回，  
+	//而不管是否读入了要求的字符。  
+	//设定写超时  
+	TimeOuts.WriteTotalTimeoutMultiplier = 100;
+	TimeOuts.WriteTotalTimeoutConstant = 500;
+	if (!SetCommTimeouts(m_hSerialPort, &TimeOuts))
+	{
+		return false;
+	}//设置超时  
+
+	DCB dcb;
+	GetCommState(m_hSerialPort, &dcb);
+	dcb.BaudRate = CBR_115200; //波特率为115200  
+	dcb.ByteSize = 8; //每个字节有8位  
+	dcb.Parity = NOPARITY; //无奇偶校验位  
+	dcb.StopBits = ONESTOPBIT; //一个停止位  
+	if (!SetCommState(m_hSerialPort, &dcb))
+	{
+		DWORD dw = GetLastError();
+		return false;
+	}
+	PurgeComm(m_hSerialPort, PURGE_TXCLEAR | PURGE_RXCLEAR);	//清空缓冲区
+
+	//开启串口接收线程
+	//AfxBeginThread(Receive_Thread, (LPVOID)this);
+
+	return TRUE;
+}
+
+bool CSerial::IsOpen()
+{
+	if (m_hSerialPort)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CSerial::CloseSerial()
+{
+	//PurgeComm(m_hSerialPort, PURGE_TXCLEAR | PURGE_RXCLEAR);	//清空缓冲区
+	if (CloseHandle(m_hSerialPort))
+	{
+		m_hSerialPort = NULL;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+UINT CSerial::Receive_Thread(void *args)
+{
+	CSerial *pCSerial = (CSerial *)args;
+	BOOL ret = pCSerial->ReceiveDate();
+	return ret;
+}
+
+bool CSerial::ReceiveDate()
+{
+
 }
