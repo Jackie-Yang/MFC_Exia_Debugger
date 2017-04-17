@@ -417,7 +417,14 @@ bool CSerial::IsOpen()
 {
 	if (m_pSerialPort)
 	{
-		return true;
+		if (m_pSerialPort->h_Handle)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	else
 	{
@@ -431,7 +438,6 @@ bool CSerial::CloseSerial()
 	if (CloseHandle(m_pSerialPort->h_Handle))
 	{
 		m_pSerialPort->h_Handle = NULL;
-		m_pSerialPort = NULL;
 		if (m_pReceiveThread)
 		{
 			WaitForSingleObject(m_pReceiveThread->m_hThread, INFINITE);
@@ -444,6 +450,7 @@ bool CSerial::CloseSerial()
 			m_pSendThread = NULL;
 		}
 #endif
+		m_pSerialPort = NULL;
 		return true;
 	}
 	else
@@ -506,7 +513,9 @@ UINT CSerial::ReceiveData()
 				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//无限等待这个I/O操作的完成
 				if (dwBytesRead != DMA_BUFF_SIZE)
 				{
-					printf("Fail\n");
+					#ifdef RECEIVE_TEST
+					printf("Receive Fail\n");
+					#endif	
 				}
 			}
 		}
