@@ -6,6 +6,7 @@
 #include "MFC_Exia_Debugger.h"
 #include "MFC_Exia_DebuggerDlg.h"
 #include "afxdialogex.h"
+#include "Dbt.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_MESSAGE(WM_SERIAL_UPDATE_LIST, &CMFC_Exia_DebuggerDlg::OnSerialUpdateList)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFC_Exia_DebuggerDlg::OnBnClickedButton1)
+	ON_WM_DEVICECHANGE()
 END_MESSAGE_MAP()
 
 
@@ -180,7 +182,24 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButton1()
 	}
 	else
 	{
-		m_Serial.OpenSerial(m_Serial.m_SerialList.ElementAt((INT_PTR)m_Combox_COM.GetCurSel()).str_Port);
+		m_Serial.OpenSerial(&m_Serial.m_SerialList.ElementAt((INT_PTR)m_Combox_COM.GetCurSel()), CBR_115200);
 		
 	}
+}
+
+
+BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
+{
+	switch (nEventType)
+	{
+		case DBT_DEVNODES_CHANGED:
+		{
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+	return TRUE;
 }

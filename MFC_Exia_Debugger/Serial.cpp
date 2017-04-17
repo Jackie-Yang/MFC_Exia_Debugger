@@ -2,24 +2,29 @@
 #include "Serial.h"
 #include <algorithm>
 
+
+
 CSerial::CSerial()
 {
 	m_hUpdateEvent = NULL;
 	m_hUpdateEvent = NULL;
 	m_pUpdateThread = NULL;
+	m_pReceiveThread = NULL;
+#ifdef SEND_TEST
+	m_pSendThread = NULL;
+#endif
 	m_pOwner = NULL;
 	m_bNoSerial = true;
 	m_hUpdateMutex = NULL;
-	m_hSerialPort = NULL;
+	m_pSerialPort = NULL;
 }
 
 
 CSerial::~CSerial()
 {
-	if (m_hSerialPort)
+	if (IsOpen())
 	{
-		CloseHandle(m_hSerialPort);
-		m_hSerialPort = NULL;
+		CloseSerial();
 	}
 
 	m_pOwner = NULL;
@@ -40,14 +45,23 @@ CSerial::~CSerial()
 	}	
 	ReleaseMutex(m_hUpdateMutex);
 	//等待监听线程结束
-	WaitForSingleObject(m_pUpdateThread->m_hThread, INFINITE);
-	CloseHandle(m_hUpdateMutex);
+	if (m_pUpdateThread)
+	{
+		WaitForSingleObject(m_pUpdateThread->m_hThread, INFINITE);
+		m_pUpdateThread = NULL;
+	}
+	if (m_hUpdateMutex)
+	{
+		CloseHandle(m_hUpdateMutex);
+		m_hUpdateMutex = NULL;
+	}
 }
 
 bool CSerial::Init(CWnd* pOwner)
 {
 	LONG   Ret;
 	m_pOwner = pOwner;
+
 	// Open a key.
 	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &m_hUpdateKey);
 	if (Ret != ERROR_SUCCESS)
@@ -93,6 +107,15 @@ bool CSerial::Init(CWnd* pOwner)
 	{
 		goto FAIL_PROCESS;
 	}
+
+	//测试数据接收，打开终端
+#ifdef RECEIVE_TEST
+	AllocConsole();
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	int hCrt = _open_osfhandle((long)handle, _O_TEXT);
+	FILE * hf = _fdopen(hCrt, "w");
+	*stdout = *hf;
+#endif
 
 	return TRUE;
 
@@ -300,10 +323,11 @@ bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
 	return strcmp(Info1.str_Name.c_str(), Info2.str_Name.c_str()) < 0;
 }
 
-bool CSerial::OpenSerial(std::string PortName)
+bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 {
-	PortName = "\\\\.\\" + PortName;	//加上这个可以防止端口号大于10无法打开
-	m_hSerialPort = CreateFile(PortName.c_str(),//COM口  
+	m_pSerialPort = pSerialInfo;
+	std::string PortName = "\\\\.\\" + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
+	m_pSerialPort->h_Handle = CreateFile(PortName.c_str(),//COM口  
 		GENERIC_READ | GENERIC_WRITE, //允许读和写  
 		0, //独占方式  
 		NULL,
@@ -311,51 +335,87 @@ bool CSerial::OpenSerial(std::string PortName)
 		FILE_FLAG_OVERLAPPED, //异步方式  
 		NULL);
 	;
-	if (m_hSerialPort == INVALID_HANDLE_VALUE)
+	if (m_pSerialPort->h_Handle == INVALID_HANDLE_VALUE)
 	{
-		m_hSerialPort = NULL;
+		m_pSerialPort->h_Handle = NULL;
+		m_pSerialPort = NULL;
 		return false;
 	}
 
-	SetupComm(m_hSerialPort, INPUT_BUF_SIZE, OUTPUT_BUF_SIZE);
+	//设置缓冲区大小
+	if (!SetupComm(m_pSerialPort->h_Handle, INPUT_BUF_SIZE, OUTPUT_BUF_SIZE))
+	{
+		CloseSerial();
+		return false;
+	}
+
+	DCB dcb;
+	GetCommState(m_pSerialPort->h_Handle, &dcb);
+	dcb.BaudRate = dwBaudRate;
+	dcb.ByteSize = 8; //每个字节有8位  
+	dcb.Parity = NOPARITY; //无奇偶校验位  
+	dcb.StopBits = ONESTOPBIT; //一个停止位  
+	if (!SetCommState(m_pSerialPort->h_Handle, &dcb))
+	{
+		//DWORD dw = GetLastError();
+		CloseSerial();
+		return false;
+	}
 
 	COMMTIMEOUTS TimeOuts;
 	//设定读超时  
-	TimeOuts.ReadIntervalTimeout = MAXDWORD;
-	TimeOuts.ReadTotalTimeoutMultiplier = 0;
+	//ReadIntervalTimeout：以ms为单位指定通信线路上两个字符到达之间的最大时间间隔。
+	//ReadTotalTimeout=( ReadTotalTimeoutMultiplier*bytes_to_read )+ReadTotalTimeoutConstant;
+	//即两个字节传输间隔超过ReadIntervalTimeout或者操作总时间大于ReadTotalTimeout则操作结束（如果没接收到第一个字符则按总时间计算）
+	TimeOuts.ReadIntervalTimeout = 100;
+	TimeOuts.ReadTotalTimeoutMultiplier = 100;
 	TimeOuts.ReadTotalTimeoutConstant = 0;
 	//在读一次输入缓冲区的内容后读操作就立即返回，  
 	//而不管是否读入了要求的字符。  
 	//设定写超时  
 	TimeOuts.WriteTotalTimeoutMultiplier = 100;
-	TimeOuts.WriteTotalTimeoutConstant = 500;
-	if (!SetCommTimeouts(m_hSerialPort, &TimeOuts))
+	TimeOuts.WriteTotalTimeoutConstant = 0;
+	if (!SetCommTimeouts(m_pSerialPort->h_Handle, &TimeOuts))
 	{
+		CloseSerial();
 		return false;
 	}//设置超时  
 
-	DCB dcb;
-	GetCommState(m_hSerialPort, &dcb);
-	dcb.BaudRate = CBR_115200; //波特率为115200  
-	dcb.ByteSize = 8; //每个字节有8位  
-	dcb.Parity = NOPARITY; //无奇偶校验位  
-	dcb.StopBits = ONESTOPBIT; //一个停止位  
-	if (!SetCommState(m_hSerialPort, &dcb))
+
+	PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);	//清空缓冲区
+
+	//设置接收通知
+	if (!SetCommMask(m_pSerialPort->h_Handle, EV_RXCHAR))
 	{
-		DWORD dw = GetLastError();
+		CloseSerial();
 		return false;
 	}
-	PurgeComm(m_hSerialPort, PURGE_TXCLEAR | PURGE_RXCLEAR);	//清空缓冲区
+
 
 	//开启串口接收线程
-	//AfxBeginThread(Receive_Thread, (LPVOID)this);
+	m_pReceiveThread = AfxBeginThread(Receive_Thread, (LPVOID)this);
+	if (NULL == m_pReceiveThread)
+	{
+		CloseSerial();
+		return false;
+	}
+
+
+#ifdef SEND_TEST
+	m_pSendThread = AfxBeginThread(Send_Thread, (LPVOID)this);
+	if (NULL == m_pSendThread)
+	{
+		CloseSerial();
+		return false;
+	}
+#endif
 
 	return TRUE;
 }
 
 bool CSerial::IsOpen()
 {
-	if (m_hSerialPort)
+	if (m_pSerialPort)
 	{
 		return true;
 	}
@@ -368,9 +428,22 @@ bool CSerial::IsOpen()
 bool CSerial::CloseSerial()
 {
 	//PurgeComm(m_hSerialPort, PURGE_TXCLEAR | PURGE_RXCLEAR);	//清空缓冲区
-	if (CloseHandle(m_hSerialPort))
+	if (CloseHandle(m_pSerialPort->h_Handle))
 	{
-		m_hSerialPort = NULL;
+		m_pSerialPort->h_Handle = NULL;
+		m_pSerialPort = NULL;
+		if (m_pReceiveThread)
+		{
+			WaitForSingleObject(m_pReceiveThread->m_hThread, INFINITE);
+			m_pReceiveThread = NULL;
+		}
+#ifdef SEND_TEST
+		if (m_pSendThread)
+		{
+			WaitForSingleObject(m_pSendThread->m_hThread, INFINITE);
+			m_pSendThread = NULL;
+		}
+#endif
 		return true;
 	}
 	else
@@ -379,15 +452,111 @@ bool CSerial::CloseSerial()
 	}
 }
 
+#ifdef SEND_TEST
+UINT CSerial::Send_Thread(void *args)
+{
+	char SendData[5] = {0};
+	unsigned long Count = 0;
+	CSerial *pCSerial = (CSerial *)args;
+	while (pCSerial->IsOpen())
+	{
+		sprintf(SendData, "%d\n", Count);
+		pCSerial->SendData(SendData, strlen(SendData));
+		Sleep(200);
+		if (++Count == 1000)
+		{
+			Count = 0;
+		}
+	}
+	return 0;
+}
+#endif
+
 
 UINT CSerial::Receive_Thread(void *args)
 {
 	CSerial *pCSerial = (CSerial *)args;
-	BOOL ret = pCSerial->ReceiveDate();
+	UINT ret = pCSerial->ReceiveData();
 	return ret;
 }
 
-bool CSerial::ReceiveDate()
+UINT CSerial::ReceiveData()
 {
+	OVERLAPPED overlapped = { 0 };	//OVERLAPPED结构体用来设置I/O异步，具体可以参见MSDN
+	COMSTAT ComStat;				//这个结构体主要是用来获取端口信息的
+	DWORD dwErrorFlags;
 
+	char tempBuf[DMA_BUFF_SIZE];
+	//DWORD dwBytesLength = 1;
+	DWORD dwBytesRead = 0;
+
+	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//创建CEvent对象
+	while (IsOpen())
+	{
+		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);
+
+		if (!ReadFile(m_pSerialPort->h_Handle, tempBuf, DMA_BUFF_SIZE, &dwBytesRead, &overlapped))
+		{
+			if (GetLastError() == ERROR_IO_PENDING) //GetLastError()函数返回ERROR_IO_PENDING,表明串口正在进行读操作 
+			{
+				//WaitForSingleObject(overlapped.hEvent, 2000);
+				//使用WaitForSingleObject函数等待，直到读操作完成或延时已达到2秒钟 
+				//当串口读操作进行完毕后，overlapped的hEvent事件会变为有信号 
+
+				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//无限等待这个I/O操作的完成
+				if (dwBytesRead != DMA_BUFF_SIZE)
+				{
+					printf("Fail\n");
+				}
+			}
+		}
+		PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+	}
+
+	return 0;
 }
+
+DWORD CSerial::SendData(const char *pData, DWORD nDataLength)
+{
+	OVERLAPPED overlapped = { 0 };	//OVERLAPPED结构体用来设置I/O异步，具体可以参见MSDN
+	COMSTAT ComStat;				//这个结构体主要是用来获取端口信息的
+	DWORD dwErrorFlags;
+	DWORD dwBytesSend = 0;
+	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//创建CEvent对象
+
+	if (IsOpen())
+	{
+		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);
+
+		if (!WriteFile(m_pSerialPort->h_Handle, pData, nDataLength, &dwBytesSend, &overlapped))
+		{
+			if (GetLastError() == ERROR_IO_PENDING) //GetLastError()函数返回ERROR_IO_PENDING,表明串口正在进行读操作 
+			{
+				//WaitForSingleObject(overlapped.hEvent, 2000);
+				//使用WaitForSingleObject函数等待，直到I/O操作完成或延时已达到2秒钟 
+				//当串口操作进行完毕后，overlapped的hEvent事件会变为有信号 
+
+				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesSend, TRUE);	//无限等待这个I/O操作的完成
+
+				//return dwBytesRead;
+			}
+		}
+
+		PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_TXCLEAR);
+	}
+	return dwBytesSend;
+}
+
+
+
+//HANDLE hPort = ::CreateFile(sPort, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+//if (hPort == INVALID_HANDLE_VALUE)
+//{
+//	DWORD dwError = GetLastError();
+//
+//	if (dwError == ERROR_ACCESS_DENIED)
+//	{
+//		bSuccess = TRUE;
+//		portsu.Add(i);       //已占用的串口  
+//	}
+//}

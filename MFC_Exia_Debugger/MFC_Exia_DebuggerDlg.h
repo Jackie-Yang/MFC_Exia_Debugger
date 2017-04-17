@@ -40,4 +40,5 @@ protected:
 	afx_msg LRESULT OnSerialUpdateList(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnBnClickedButton1();
+	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
 };
