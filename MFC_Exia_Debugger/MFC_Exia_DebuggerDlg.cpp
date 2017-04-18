@@ -52,12 +52,14 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFC_Exia_DebuggerDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_Color_Status = RGB(255, 0, 0);
 }
 
 void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_COM, m_Combox_COM);
+	DDX_Control(pDX, IDC_STATIC_STATUS, m_Static_Status);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -65,8 +67,11 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_MESSAGE(WM_SERIAL_UPDATE_LIST, &CMFC_Exia_DebuggerDlg::OnSerialUpdateList)
-	ON_BN_CLICKED(IDC_BUTTON1, &CMFC_Exia_DebuggerDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON_OPEN_CLOSE, &CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn)
 	ON_WM_DEVICECHANGE()
+	ON_MESSAGE(WM_SERIAL_OPEN, &CMFC_Exia_DebuggerDlg::OnSerialOpen)
+	ON_MESSAGE(WM_SERIAL_CLOSE, &CMFC_Exia_DebuggerDlg::OnSerialClose)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -160,20 +165,75 @@ HCURSOR CMFC_Exia_DebuggerDlg::OnQueryDragIcon()
 }
 
 
-
-afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
+void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 {
+//更新列表
+	CString LastSelStr;
+	CString CurSelStr;
+	bool bMatchingSel = FALSE;
+	int CueSelIndex = m_Combox_COM.GetCurSel();
+	if (CueSelIndex >= 0)
+	{
+		m_Combox_COM.GetLBText(CueSelIndex, LastSelStr);
+	}
+
 	m_Combox_COM.ResetContent();
 	for (int i = 0; i < m_Serial.GetSerialNum(); i++)
 	{
-		m_Combox_COM.InsertString(i, m_Serial.GetSerialInfo(i)->str_Port.c_str());
+		CurSelStr = m_Serial.GetSerialInfo(i)->str_Port.c_str();
+		if (m_Serial.GetSerialInfo(i)->h_Handle)
+		{
+			CurSelStr += "(*)";
+		}
+		m_Combox_COM.InsertString(i, CurSelStr);
+		m_Combox_COM.GetLBText(i, CurSelStr);
+		if (CurSelStr == LastSelStr || CurSelStr + "(*)" == LastSelStr || CurSelStr == LastSelStr + "(*)")
+		{
+			m_Combox_COM.SetCurSel(i);
+			bMatchingSel = TRUE;
+		}
 	}
-	m_Combox_COM.SetCurSel(0);
+	if (!bMatchingSel)
+	{
+		m_Combox_COM.SetCurSel(0);
+	}
+//更新状态
+	if (m_Serial.IsOpen())
+	{
+		p_SerialInfo pCurSerial = m_Serial.GetCurSerial();
+		if (pCurSerial)
+		{
+			CString Info;
+			Info.Format("已连接(%s:%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
+			m_Static_Status.SetWindowTextA(Info);
+			//m_Str_Status.Format("已连接(%s:%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
+			m_Color_Status = RGB(0, 128, 0);
+			m_Static_Status.InvalidateRect(NULL);
+		}
+		else
+		{
+			m_Static_Status.SetWindowTextA("未连接");
+			m_Color_Status = RGB(255, 0, 0);
+			m_Static_Status.InvalidateRect(NULL);
+		}
+	}
+	else
+	{
+		m_Static_Status.SetWindowTextA("未连接");
+		m_Color_Status = RGB(255, 0, 0);
+		m_Static_Status.InvalidateRect(NULL);
+	}
+	return;
+}
+
+afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
+{
+	UpdateSerialState();
 	return 0;
 }
 
 
-void CMFC_Exia_DebuggerDlg::OnBnClickedButton1()
+void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	if (m_Serial.IsOpen())
@@ -202,4 +262,34 @@ BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 		}
 	}
 	return TRUE;
+}
+
+afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam)
+{
+	UpdateSerialState();
+	return 0;
+}
+
+
+afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lParam)
+{
+	UpdateSerialState();
+	return 0;
+}
+
+
+//修改字体颜色
+HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_STATUS)
+	{
+		pDC->SetTextColor(m_Color_Status);
+	}
+
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
 }

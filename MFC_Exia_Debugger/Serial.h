@@ -2,7 +2,7 @@
 #include <string>
 #include <afxtempl.h>
 
-//#define SEND_TEST		TRUE
+#define SEND_TEST		TRUE
 #define RECEIVE_TEST	TRUE
 
 #if RECEIVE_TEST
@@ -15,6 +15,8 @@
 #define OUTPUT_BUF_SIZE	500
 
 #define WM_SERIAL_UPDATE_LIST		WM_USER+1
+#define WM_SERIAL_OPEN				WM_USER+2
+#define WM_SERIAL_CLOSE				WM_USER+3
 
 typedef struct __ST_SERIAL_INFO__
 {
@@ -36,6 +38,7 @@ public:
 	bool Init(CWnd* pOwner);
 	bool UpdateSerialList();
 	INT_PTR GetSerialNum();
+	p_SerialInfo GetCurSerial();
 	p_SerialInfo GetSerialInfo(INT_PTR nIndex);
 	bool OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate);
 	bool IsOpen();

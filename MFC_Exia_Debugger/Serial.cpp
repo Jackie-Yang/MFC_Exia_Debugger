@@ -67,8 +67,11 @@ bool CSerial::UpdateSerialList()
 	LPSTR  ValueName, Value;
 	SerialInfo stSerialInfo;
 	static SerialInfo stCurSerialInfo;
+	stCurSerialInfo.str_Name = "";
+	stCurSerialInfo.str_Port = "";
+	stCurSerialInfo.h_Handle = NULL;
 
-	CheckSerialState();	//检查当前连接的串口是否连接正常
+	CheckSerialState();	//检查当前连接的串口是否连接正常,若串口已失效会将其关闭
 
 	//Get Key Handle
 	Ret = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_QUERY_VALUE, &hKey);
@@ -103,6 +106,8 @@ bool CSerial::UpdateSerialList()
 		stCurSerialInfo = *m_pSerialPort;
 		m_pSerialPort = &stCurSerialInfo;
 	}
+
+//开始更新m_SerialList
 	if (m_SerialList.GetSize() > 0)
 	{
 		m_SerialList.RemoveAll();
@@ -116,6 +121,9 @@ bool CSerial::UpdateSerialList()
 
 	for (DWORD i = 0; i < dwValueNumber; i++)
 	{
+		stSerialInfo.str_Name = "";
+		stSerialInfo.str_Port = "";
+		stSerialInfo.h_Handle = NULL;
 		//不能直接使用MaxValueNameLength，因为每次调用后会改变它的值
 		DWORD  ValueNameLength = MaxValueNameLength;
 		DWORD  ValueLength = MaxValueLength;
@@ -151,28 +159,37 @@ bool CSerial::UpdateSerialList()
 		//Add to List
 		stSerialInfo.str_Name = ValueName;
 		stSerialInfo.str_Port = Value;
-		if (IsOpen())
-		{
-			if (stSerialInfo.str_Port == m_pSerialPort->str_Port)	//加入这个SerialInfo是已经打开的，将之前临时保存的添加回去
-			{
-				m_pSerialPort->str_Name = stSerialInfo.str_Name;
-				m_pSerialPort = GetSerialInfo(m_SerialList.Add(*m_pSerialPort));
-			}
-			else
-			{
-				m_SerialList.Add(stSerialInfo);
-			}
-		}
-		else
-		{
-			m_SerialList.Add(stSerialInfo);
-		}
+		
+		m_SerialList.Add(stSerialInfo);
+	
 	}
 
 	if (m_SerialList.GetSize() > 0)
 	{
 		std::sort(m_SerialList.GetData(), m_SerialList.GetData() + m_SerialList.GetSize(), Sort_Port);
 	}
+//m_SerialList更新完毕
+
+	if (IsOpen())	//如果串口打开，将Handle存入List
+	{
+		p_SerialInfo pSerialInfo = NULL;
+		int i;
+		for (i = 0; i < GetSerialNum(); i++)
+		{
+			pSerialInfo = GetSerialInfo(i);
+			if (m_pSerialPort->str_Port == pSerialInfo->str_Port)
+			{
+				pSerialInfo->h_Handle = m_pSerialPort->h_Handle;
+				m_pSerialPort = pSerialInfo;
+				break;
+			}
+		}
+		if (i == GetSerialNum())
+		{
+			CloseSerial();	//串口正常打开，注册表却找不到响应的串口，这种情况应该不会出现，保险起见应该关掉该串口
+		}
+	}
+
 
 	delete [] Value;
 	delete [] ValueName;
@@ -190,6 +207,11 @@ bool CSerial::UpdateSerialList()
 INT_PTR CSerial::GetSerialNum()
 {
 	return m_SerialList.GetSize();
+}
+
+p_SerialInfo CSerial::GetCurSerial()
+{
+	return m_pSerialPort;
 }
 
 p_SerialInfo CSerial::GetSerialInfo(INT_PTR nIndex)
@@ -296,6 +318,12 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	}
 #endif
 
+	//串口打开成功，发送消息
+	if (m_pOwner)
+	{
+		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_OPEN, (WPARAM)0, (LPARAM)0);
+	}
+
 	return TRUE;
 }
 
@@ -342,7 +370,12 @@ bool CSerial::CloseSerial()
 		}
 #endif
 		m_pSerialPort = NULL;
-		return true;
+		//串口关闭成功，发送消息
+		if (m_pOwner)
+		{
+			::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_CLOSE, (WPARAM)0, (LPARAM)0);
+		}
+		return TRUE;
 	}
 	else
 	{
@@ -438,6 +471,12 @@ UINT CSerial::ReceiveData()
 					#if RECEIVE_TEST
 					printf("Receive Fail\n");
 					#endif	
+				}
+				else
+				{
+					#if RECEIVE_TEST
+					printf("Receive %d Byte\n", dwBytesRead);
+					#endif
 				}
 			}
 		}

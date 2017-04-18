@@ -33,12 +33,25 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-public:
-	// Combox:选择串口
-	CComboBox m_Combox_COM;
+
+	
 protected:
 	afx_msg LRESULT OnSerialUpdateList(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSerialOpen(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSerialClose(WPARAM wParam, LPARAM lParam);
+
 public:
-	afx_msg void OnBnClickedButton1();
+
+	COLORREF m_Color_Status;
+
+	void UpdateSerialState();
+
+	// Combox:选择串口
+	CComboBox m_Combox_COM;
+	//显示串口状态
+	CStatic m_Static_Status;
+
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedOpenCloseBtn();
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
 };
