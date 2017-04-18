@@ -2,8 +2,8 @@
 #include <string>
 #include <afxtempl.h>
 
-#define SEND_TEST		TRUE
-#define RECEIVE_TEST	TRUE
+#define SEND_TEST		FALSE
+#define RECEIVE_TEST	FALSE
 
 #if RECEIVE_TEST
 #include <io.h>    
