@@ -2,10 +2,10 @@
 #include <string>
 #include <afxtempl.h>
 
-#define SEND_TEST
-#define RECEIVE_TEST
+//#define SEND_TEST		TRUE
+#define RECEIVE_TEST	TRUE
 
-#ifdef RECEIVE_TEST
+#if RECEIVE_TEST
 #include <io.h>    
 #include <fcntl.h>  
 #endif
@@ -28,18 +28,25 @@ class CSerial
 {
 public:
 
-	CArray<SerialInfo> m_SerialList;
-	bool m_bNoSerial;
+	
 
 	CSerial();
 	~CSerial();
 
 	bool Init(CWnd* pOwner);
-	LONG UpdateSerialList();
+	bool UpdateSerialList();
+	INT_PTR GetSerialNum();
+	p_SerialInfo GetSerialInfo(INT_PTR nIndex);
 	bool OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate);
 	bool IsOpen();
+	bool IsWatching();
+	bool CheckSerialState();
 	bool CloseSerial();
 	DWORD SendData(const char *pData, DWORD nDataLength);
+
+	bool StartWatchingSerialList();
+	void StopWatchingSerialList();
+	
 
 private:
 
@@ -48,25 +55,37 @@ private:
 
 	//Serial
 	p_SerialInfo m_pSerialPort;
+	CArray<SerialInfo> m_SerialList;
 
-	//Update
-	HANDLE	m_hUpdateEvent;
-	HKEY	m_hUpdateKey;
-	HANDLE	m_hUpdateMutex;
-	CWinThread	*m_pUpdateThread;
 	CWinThread	*m_pReceiveThread;
 	UINT ReceiveData();
-#ifdef SEND_TEST
+
+
+	//Watching Thread
+	HANDLE	m_hWatchingEvent;
+	HKEY	m_hWatchingKey;
+	HANDLE	m_hWatchingMutex;
+	CWinThread	*m_pWatchingThread;
+	bool WatchingSerial();
+	//线程回调函数
+	static UINT Watching_Thread(void *args);
+	bool m_bNoSerial;
+	bool m_bIsWatching;
+
+	
+#if SEND_TEST
 	CWinThread	*m_pSendThread;
 #endif
 
-	bool UpdateSerial();
+	
+
 	//线程回调函数
-	static UINT Update_Thread(void *args);
 	static UINT Receive_Thread(void *args);
-#ifdef SEND_TEST
+#if SEND_TEST
 	static UINT Send_Thread(void *args);
 #endif
+
+	//用于串口列表排序
 	static bool Sort_Name(SerialInfo &Info1, SerialInfo &Info2);
 	static bool Sort_Port(SerialInfo &Info1, SerialInfo &Info2);
 };

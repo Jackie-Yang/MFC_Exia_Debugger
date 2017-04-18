@@ -6,17 +6,20 @@
 
 CSerial::CSerial()
 {
-	m_hUpdateEvent = NULL;
-	m_hUpdateEvent = NULL;
-	m_pUpdateThread = NULL;
 	m_pReceiveThread = NULL;
-#ifdef SEND_TEST
+#if SEND_TEST
 	m_pSendThread = NULL;
 #endif
 	m_pOwner = NULL;
-	m_bNoSerial = true;
-	m_hUpdateMutex = NULL;
 	m_pSerialPort = NULL;
+
+	//用于串口注册表监视线程
+	m_hWatchingEvent = NULL;
+	m_hWatchingKey = NULL;
+	m_hWatchingMutex = NULL;
+	m_pWatchingThread = NULL;
+	m_bNoSerial = true;
+	m_bIsWatching = FALSE;
 }
 
 
@@ -27,89 +30,21 @@ CSerial::~CSerial()
 		CloseSerial();
 	}
 
+	if (m_bIsWatching)
+	{
+		StopWatchingSerialList();
+	}
+
 	m_pOwner = NULL;
-	WaitForSingleObject(m_hUpdateMutex, INFINITE);
-	if (m_hUpdateEvent)
-	{
-		if (CloseHandle(m_hUpdateEvent))
-		{
-			m_hUpdateEvent = NULL;
-		}
-	}
-	if (m_hUpdateKey)
-	{
-		if (RegCloseKey(m_hUpdateKey) == ERROR_SUCCESS)
-		{
-			m_hUpdateKey = NULL;
-		}
-	}	
-	ReleaseMutex(m_hUpdateMutex);
-	//等待监听线程结束
-	if (m_pUpdateThread)
-	{
-		WaitForSingleObject(m_pUpdateThread->m_hThread, INFINITE);
-		m_pUpdateThread = NULL;
-	}
-	if (m_hUpdateMutex)
-	{
-		CloseHandle(m_hUpdateMutex);
-		m_hUpdateMutex = NULL;
-	}
+	
 }
 
 bool CSerial::Init(CWnd* pOwner)
 {
-	LONG   Ret;
 	m_pOwner = pOwner;
 
-	// Open a key.
-	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &m_hUpdateKey);
-	if (Ret != ERROR_SUCCESS)
-	{
-		if (Ret == ERROR_FILE_NOT_FOUND)
-		{
-			//无串口，监视Device
-			Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP", 0, KEY_NOTIFY, &m_hUpdateKey);
-			if (Ret != ERROR_SUCCESS)
-			{
-				goto FAIL_PROCESS;
-			}
-		}
-		else
-		{
-			goto FAIL_PROCESS;
-		}
-	}
-	else
-	{
-		m_bNoSerial = false;
-		//Get List
-		UpdateSerialList();
-	}
-
-	// Create an event.
-	m_hUpdateEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	if (m_hUpdateEvent == NULL)
-	{
-		goto FAIL_PROCESS;
-	}
-
-	//创建线程互斥锁
-	m_hUpdateMutex = CreateMutex(nullptr, FALSE, nullptr);
-	if (m_hUpdateMutex == NULL)
-	{
-		goto FAIL_PROCESS;
-	}
-
-	//创建子线程监视串口列表（创建的时候立即运行）  
-	m_pUpdateThread = AfxBeginThread(Update_Thread, this);
-	if (NULL == m_pUpdateThread)
-	{
-		goto FAIL_PROCESS;
-	}
-
 	//测试数据接收，打开终端
-#ifdef RECEIVE_TEST
+#if RECEIVE_TEST
 	AllocConsole();
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	int hCrt = _open_osfhandle((long)handle, _O_TEXT);
@@ -117,94 +52,12 @@ bool CSerial::Init(CWnd* pOwner)
 	*stdout = *hf;
 #endif
 
-	return TRUE;
-
-FAIL_PROCESS:
-	if (m_hUpdateEvent)
-	{
-		if (CloseHandle(m_hUpdateEvent))
-		{
-			m_hUpdateEvent = NULL;
-		}
-	}
-	if (m_hUpdateKey)
-	{
-		if (RegCloseKey(m_hUpdateKey) == ERROR_SUCCESS)
-		{
-			m_hUpdateKey = NULL;
-		}
-	}
-	return false;
-}
-
-UINT CSerial::Update_Thread(void *args)
-{
-	CSerial *pCSerial = (CSerial *)args;
-	BOOL ret = pCSerial->UpdateSerial();
-	return ret;
-}
-
-//监听串口
-bool CSerial::UpdateSerial()
-{
-	DWORD  dwFilter = REG_NOTIFY_CHANGE_NAME |
-		REG_NOTIFY_CHANGE_ATTRIBUTES |
-		REG_NOTIFY_CHANGE_LAST_SET |
-		REG_NOTIFY_CHANGE_SECURITY;
-	LONG   Ret;
-	// Watch the registry key for a change of value.
-	while (true)
-	{
-		WaitForSingleObject(m_hUpdateMutex, INFINITE);
-		if (!(m_hUpdateKey && m_hUpdateEvent))
-		{
-			break;
-		}
-		Ret = RegNotifyChangeKeyValue(m_hUpdateKey,
-			TRUE,
-			dwFilter,
-			m_hUpdateEvent,
-			TRUE);
-		if (Ret != ERROR_SUCCESS)
-		{
-			continue;
-		}
-		if (WaitForSingleObject(m_hUpdateEvent, 100) == WAIT_OBJECT_0)	//使用了互斥锁，因此这里等待需要设置超时，否则会造成死锁
-		{
-			if (m_bNoSerial)	//无串口，尝试监听串口
-			{
-				HKEY   TempKey;
-				Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &TempKey);
-				if (Ret == ERROR_SUCCESS)
-				{
-					if (RegCloseKey(m_hUpdateKey) == ERROR_SUCCESS)		//有串口，开始监听串口
-					{
-						m_hUpdateKey = TempKey;
-						m_bNoSerial = false;
-						Sleep(500);
-						UpdateSerialList();
-					}
-					else
-					{
-						RegCloseKey(TempKey);
-						TempKey = NULL;
-					}
-				}
-			}
-			else
-			{
-				UpdateSerialList();
-			}
-		}
-		ResetEvent(m_hUpdateEvent);	//复位事件
-		ReleaseMutex(m_hUpdateMutex);
-	}
-	
-	return 0;
+	return UpdateSerialList();
 }
 
 
-LONG CSerial::UpdateSerialList()
+
+bool CSerial::UpdateSerialList()
 {
 	LONG Ret;
 	HKEY hKey;
@@ -213,13 +66,16 @@ LONG CSerial::UpdateSerialList()
 	DWORD  dwValueNumber;
 	LPSTR  ValueName, Value;
 	SerialInfo stSerialInfo;
+	static SerialInfo stCurSerialInfo;
+
+	CheckSerialState();	//检查当前连接的串口是否连接正常
 
 	//Get Key Handle
 	Ret = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_QUERY_VALUE, &hKey);
 
 	if (ERROR_SUCCESS != Ret)
 	{
-		return Ret;
+		return FALSE;
 	}
 
 	//Get Value Num And Max Length
@@ -239,9 +95,14 @@ LONG CSerial::UpdateSerialList()
 	if (ERROR_SUCCESS != Ret) 
 	{
 		RegCloseKey(hKey);
-		return Ret;
+		return FALSE;
 	}
 
+	if (IsOpen())	//把当前工作的SerialInfo指针切换到临时结构体，因为在操作CArray的时候会重新分配内存改变其指针
+	{
+		stCurSerialInfo = *m_pSerialPort;
+		m_pSerialPort = &stCurSerialInfo;
+	}
 	if (m_SerialList.GetSize() > 0)
 	{
 		m_SerialList.RemoveAll();
@@ -290,7 +151,22 @@ LONG CSerial::UpdateSerialList()
 		//Add to List
 		stSerialInfo.str_Name = ValueName;
 		stSerialInfo.str_Port = Value;
-		m_SerialList.Add(stSerialInfo);
+		if (IsOpen())
+		{
+			if (stSerialInfo.str_Port == m_pSerialPort->str_Port)	//加入这个SerialInfo是已经打开的，将之前临时保存的添加回去
+			{
+				m_pSerialPort->str_Name = stSerialInfo.str_Name;
+				m_pSerialPort = GetSerialInfo(m_SerialList.Add(*m_pSerialPort));
+			}
+			else
+			{
+				m_SerialList.Add(stSerialInfo);
+			}
+		}
+		else
+		{
+			m_SerialList.Add(stSerialInfo);
+		}
 	}
 
 	if (m_SerialList.GetSize() > 0)
@@ -308,7 +184,17 @@ LONG CSerial::UpdateSerialList()
 	{
 		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_UPDATE_LIST, (WPARAM)0, (LPARAM)0);
 	}	
-	return ERROR_SUCCESS;
+	return TRUE;
+}
+
+INT_PTR CSerial::GetSerialNum()
+{
+	return m_SerialList.GetSize();
+}
+
+p_SerialInfo CSerial::GetSerialInfo(INT_PTR nIndex)
+{
+	return &m_SerialList.ElementAt(nIndex);	//ElementAt获得引用,GetAt获得值
 }
 
 
@@ -339,14 +225,14 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	{
 		m_pSerialPort->h_Handle = NULL;
 		m_pSerialPort = NULL;
-		return false;
+		return FALSE;
 	}
 
 	//设置缓冲区大小
 	if (!SetupComm(m_pSerialPort->h_Handle, INPUT_BUF_SIZE, OUTPUT_BUF_SIZE))
 	{
 		CloseSerial();
-		return false;
+		return FALSE;
 	}
 
 	DCB dcb;
@@ -359,7 +245,7 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	{
 		//DWORD dw = GetLastError();
 		CloseSerial();
-		return false;
+		return FALSE;
 	}
 
 	COMMTIMEOUTS TimeOuts;
@@ -378,7 +264,7 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	if (!SetCommTimeouts(m_pSerialPort->h_Handle, &TimeOuts))
 	{
 		CloseSerial();
-		return false;
+		return FALSE;
 	}//设置超时  
 
 
@@ -388,7 +274,7 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	if (!SetCommMask(m_pSerialPort->h_Handle, EV_RXCHAR))
 	{
 		CloseSerial();
-		return false;
+		return FALSE;
 	}
 
 
@@ -397,16 +283,16 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	if (NULL == m_pReceiveThread)
 	{
 		CloseSerial();
-		return false;
+		return FALSE;
 	}
 
 
-#ifdef SEND_TEST
+#if SEND_TEST
 	m_pSendThread = AfxBeginThread(Send_Thread, (LPVOID)this);
 	if (NULL == m_pSendThread)
 	{
 		CloseSerial();
-		return false;
+		return FALSE;
 	}
 #endif
 
@@ -423,13 +309,18 @@ bool CSerial::IsOpen()
 		}
 		else
 		{
-			return false;
+			return FALSE;
 		}
 	}
 	else
 	{
-		return false;
+		return FALSE;
 	}
+}
+
+bool CSerial::IsWatching()
+{
+	return m_bIsWatching;
 }
 
 bool CSerial::CloseSerial()
@@ -443,7 +334,7 @@ bool CSerial::CloseSerial()
 			WaitForSingleObject(m_pReceiveThread->m_hThread, INFINITE);
 			m_pReceiveThread = NULL;
 		}
-#ifdef SEND_TEST
+#if SEND_TEST
 		if (m_pSendThread)
 		{
 			WaitForSingleObject(m_pSendThread->m_hThread, INFINITE);
@@ -455,12 +346,43 @@ bool CSerial::CloseSerial()
 	}
 	else
 	{
-		return false;
+		return FALSE;
 	}
 }
 
-#ifdef SEND_TEST
-UINT CSerial::Send_Thread(void *args)
+
+bool CSerial::CheckSerialState()
+{
+	if (m_pSerialPort)
+	{
+		std::string PortName = "\\\\.\\" + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
+		HANDLE hPort = CreateFile(PortName.c_str(),//COM口  
+			GENERIC_READ | GENERIC_WRITE, //允许读和写  
+			0, //独占方式  
+			NULL,
+			OPEN_EXISTING, //打开而不是创建  
+			FILE_FLAG_OVERLAPPED, //异步方式  
+			NULL);
+		if (hPort == INVALID_HANDLE_VALUE)
+		{
+			if (GetLastError() == ERROR_ACCESS_DENIED) //已占用的串口，表示串口正常工作
+			{     
+				return TRUE;
+			}
+		}
+		else		//打开成功，一般不会出现
+		{
+			CloseHandle(hPort);
+		}
+		CloseSerial();
+	}
+	//串口已经不存在或者工作不正常
+	return FALSE;
+}
+
+
+#if SEND_TEST
+UINT CSerial::Send_Thread(void *args)		//测试发送功能，定时发送字符串
 {
 	char SendData[5] = {0};
 	unsigned long Count = 0;
@@ -513,7 +435,7 @@ UINT CSerial::ReceiveData()
 				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//无限等待这个I/O操作的完成
 				if (dwBytesRead != DMA_BUFF_SIZE)
 				{
-					#ifdef RECEIVE_TEST
+					#if RECEIVE_TEST
 					printf("Receive Fail\n");
 					#endif	
 				}
@@ -524,6 +446,7 @@ UINT CSerial::ReceiveData()
 
 	return 0;
 }
+
 
 DWORD CSerial::SendData(const char *pData, DWORD nDataLength)
 {
@@ -558,14 +481,184 @@ DWORD CSerial::SendData(const char *pData, DWORD nDataLength)
 
 
 
-//HANDLE hPort = ::CreateFile(sPort, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-//if (hPort == INVALID_HANDLE_VALUE)
-//{
-//	DWORD dwError = GetLastError();
-//
-//	if (dwError == ERROR_ACCESS_DENIED)
-//	{
-//		bSuccess = TRUE;
-//		portsu.Add(i);       //已占用的串口  
-//	}
-//}
+bool CSerial::StartWatchingSerialList()
+{
+	LONG   Ret;
+	// Open a key.
+	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &m_hWatchingKey);
+	if (Ret != ERROR_SUCCESS)
+	{
+		if (Ret == ERROR_FILE_NOT_FOUND)
+		{
+			//无串口，监视Device
+			Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP", 0, KEY_NOTIFY, &m_hWatchingKey);
+			if (Ret != ERROR_SUCCESS)
+			{
+				goto FAIL_PROCESS;
+			}
+		}
+		else
+		{
+			goto FAIL_PROCESS;
+		}
+	}
+	else
+	{
+		m_bNoSerial = FALSE;
+		//Get List
+		UpdateSerialList();
+	}
+
+	// Create an event.
+	m_hWatchingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if (m_hWatchingEvent == NULL)
+	{
+		goto FAIL_PROCESS;
+	}
+
+	//创建线程互斥锁
+	m_hWatchingMutex = CreateMutex(nullptr, FALSE, nullptr);
+	if (m_hWatchingMutex == NULL)
+	{
+		goto FAIL_PROCESS;
+	}
+
+	//创建子线程监视串口列表（创建的时候立即运行）  
+	m_pWatchingThread = AfxBeginThread(Watching_Thread, this);
+	if (NULL == m_pWatchingThread)
+	{
+		goto FAIL_PROCESS;
+	}
+
+
+	m_bIsWatching = TRUE;
+	return TRUE;
+
+FAIL_PROCESS:
+	if (m_hWatchingEvent)
+	{
+		if (CloseHandle(m_hWatchingEvent))
+		{
+			m_hWatchingEvent = NULL;
+		}
+	}
+	if (m_hWatchingKey)
+	{
+		if (RegCloseKey(m_hWatchingKey) == ERROR_SUCCESS)
+		{
+			m_hWatchingKey = NULL;
+		}
+	}
+	if (m_hWatchingMutex)
+	{
+		CloseHandle(m_hWatchingMutex);
+		m_hWatchingMutex = NULL;
+	}
+	return FALSE;
+}
+
+void CSerial::StopWatchingSerialList()
+{
+	if (m_hWatchingMutex)
+	{
+		WaitForSingleObject(m_hWatchingMutex, INFINITE);
+	}
+	if (m_hWatchingEvent)
+	{
+		if (CloseHandle(m_hWatchingEvent))
+		{
+			m_hWatchingEvent = NULL;
+		}
+	}
+	if (m_hWatchingKey)
+	{
+		if (RegCloseKey(m_hWatchingKey) == ERROR_SUCCESS)
+		{
+			m_hWatchingKey = NULL;
+		}
+	}
+	if (m_hWatchingMutex)
+	{
+		ReleaseMutex(m_hWatchingMutex);
+	}
+	//等待监听线程结束
+	if (m_pWatchingThread)
+	{
+		WaitForSingleObject(m_pWatchingThread->m_hThread, INFINITE);
+		m_pWatchingThread = NULL;
+	}
+	if (m_hWatchingMutex)
+	{
+		CloseHandle(m_hWatchingMutex);
+		m_hWatchingMutex = NULL;
+	}
+	m_bIsWatching = FALSE;
+}
+
+
+
+UINT CSerial::Watching_Thread(void *args)
+{
+	CSerial *pCSerial = (CSerial *)args;
+	BOOL ret = pCSerial->WatchingSerial();
+	return ret;
+}
+
+//监听串口
+bool CSerial::WatchingSerial()
+{
+	DWORD  dwFilter = REG_NOTIFY_CHANGE_NAME |
+		REG_NOTIFY_CHANGE_ATTRIBUTES |
+		REG_NOTIFY_CHANGE_LAST_SET |
+		REG_NOTIFY_CHANGE_SECURITY;
+	LONG   Ret;
+	// Watch the registry key for a change of value.
+	while (true)
+	{
+		WaitForSingleObject(m_hWatchingMutex, INFINITE);
+		if (!(m_hWatchingKey && m_hWatchingEvent))
+		{
+			break;
+		}
+		Ret = RegNotifyChangeKeyValue(m_hWatchingKey,
+			TRUE,
+			dwFilter,
+			m_hWatchingEvent,
+			TRUE);
+		if (Ret != ERROR_SUCCESS)
+		{
+			continue;
+		}
+		if (WaitForSingleObject(m_hWatchingEvent, 100) == WAIT_OBJECT_0)	//使用了互斥锁，因此这里等待需要设置超时，否则会造成死锁
+		{
+			if (m_bNoSerial)	//无串口，尝试监听串口
+			{
+				HKEY   TempKey;
+				Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &TempKey);
+				if (Ret == ERROR_SUCCESS)
+				{
+					if (RegCloseKey(m_hWatchingKey) == ERROR_SUCCESS)		//有串口，开始监听串口
+					{
+						m_hWatchingKey = TempKey;
+						m_bNoSerial = FALSE;
+						Sleep(500);
+						UpdateSerialList();
+					}
+					else
+					{
+						RegCloseKey(TempKey);
+						TempKey = NULL;
+					}
+				}
+			}
+			else
+			{
+				UpdateSerialList();
+			}
+		}
+		ResetEvent(m_hWatchingEvent);	//复位事件
+		ReleaseMutex(m_hWatchingMutex);
+	}
+
+	return 0;
+}

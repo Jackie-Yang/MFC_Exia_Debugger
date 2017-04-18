@@ -103,7 +103,7 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	if (m_Serial.Init(this) == false)
 	{
-		AfxMessageBox("´®¿Ú¼àÌýÊ§°Ü");
+		AfxMessageBox("´®¿Ú»ñÈ¡Ê§°Ü");
 	}
 
 
@@ -164,9 +164,9 @@ HCURSOR CMFC_Exia_DebuggerDlg::OnQueryDragIcon()
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
 {
 	m_Combox_COM.ResetContent();
-	for (int i = 0; i < m_Serial.m_SerialList.GetSize(); i++)
+	for (int i = 0; i < m_Serial.GetSerialNum(); i++)
 	{
-		m_Combox_COM.InsertString(i, m_Serial.m_SerialList.ElementAt((INT_PTR)i).str_Port.c_str());
+		m_Combox_COM.InsertString(i, m_Serial.GetSerialInfo(i)->str_Port.c_str());
 	}
 	m_Combox_COM.SetCurSel(0);
 	return 0;
@@ -182,8 +182,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButton1()
 	}
 	else
 	{
-		m_Serial.OpenSerial(&m_Serial.m_SerialList.ElementAt((INT_PTR)m_Combox_COM.GetCurSel()), CBR_115200);
-		
+		m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200);
 	}
 }
 
@@ -194,6 +193,7 @@ BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 	{
 		case DBT_DEVNODES_CHANGED:
 		{
+			m_Serial.UpdateSerialList();
 			break;
 		}
 		default:
