@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "basetsd.h"
 #include <afxtempl.h>
 
 #define SEND_TEST		FALSE
@@ -10,9 +11,9 @@
 #include <fcntl.h>  
 #endif
 
-#define DMA_BUFF_SIZE	36
-#define INPUT_BUF_SIZE	500
-#define OUTPUT_BUF_SIZE	500
+#define	BUF_SIZE		1024
+#define INPUT_BUF_SIZE	BUF_SIZE
+#define OUTPUT_BUF_SIZE	BUF_SIZE
 
 #define WM_SERIAL_UPDATE_LIST		WM_USER+1
 #define WM_SERIAL_OPEN				WM_USER+2
@@ -25,6 +26,14 @@ typedef struct __ST_SERIAL_INFO__
 	HANDLE h_Handle;
 }SerialInfo, * p_SerialInfo;
 
+typedef struct __CycBuf__
+{
+	UINT32	nWriteIndex;
+	UINT32	nReadIndex;
+	UINT32	nByteToRead;
+	HANDLE	hMutex;
+	UINT8	pData[BUF_SIZE];
+}CycBuf, *p_CycBuf;
 
 class CSerial
 {
@@ -49,7 +58,10 @@ public:
 
 	bool StartWatchingSerialList();
 	void StopWatchingSerialList();
-	
+
+	UINT32 BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize);
+	UINT32 BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize);
+	void BufClear(p_CycBuf pBuf);
 
 private:
 
@@ -59,6 +71,8 @@ private:
 	//Serial
 	p_SerialInfo m_pSerialPort;
 	CArray<SerialInfo> m_SerialList;
+
+	CycBuf m_SerialRecData;
 
 	CWinThread	*m_pReceiveThread;
 	UINT ReceiveData();

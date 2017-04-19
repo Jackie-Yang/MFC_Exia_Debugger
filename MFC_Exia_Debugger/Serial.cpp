@@ -7,6 +7,10 @@
 CSerial::CSerial()
 {
 	m_pReceiveThread = NULL;
+	m_SerialRecData.nByteToRead = 0;
+	m_SerialRecData.nReadIndex = 0;
+	m_SerialRecData.nWriteIndex = 0;
+
 #if SEND_TEST
 	m_pSendThread = NULL;
 #endif
@@ -223,13 +227,25 @@ p_SerialInfo CSerial::GetSerialInfo(INT_PTR nIndex)
 //sort回掉函数，如果不需要排序则返回true
 bool CSerial::Sort_Port(SerialInfo &Info1, SerialInfo &Info2)
 {
-	return strcmp(Info1.str_Port.c_str(), Info2.str_Port.c_str()) < 0;
+	if (Info1.str_Port.length() == Info2.str_Port.length())
+	{
+		return strcmp(Info1.str_Port.c_str(), Info2.str_Port.c_str()) < 0;
+	}
+	else
+	{
+		return Info1.str_Port.length() < Info2.str_Port.length();
+	}
+	
 }
 
 bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
 {
 	return strcmp(Info1.str_Name.c_str(), Info2.str_Name.c_str()) < 0;
 }
+
+
+
+
 
 bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 {
@@ -253,7 +269,9 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	//设置缓冲区大小
 	if (!SetupComm(m_pSerialPort->h_Handle, INPUT_BUF_SIZE, OUTPUT_BUF_SIZE))
 	{
-		CloseSerial();
+		DWORD dwError = GetLastError();		//保存错误
+		CloseSerial();						//关闭串口
+		SetLastError(dwError);				//设置错误标记
 		return FALSE;
 	}
 
@@ -265,8 +283,9 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	dcb.StopBits = ONESTOPBIT; //一个停止位  
 	if (!SetCommState(m_pSerialPort->h_Handle, &dcb))
 	{
-		//DWORD dw = GetLastError();
-		CloseSerial();
+		DWORD dwError = GetLastError();		//保存错误
+		CloseSerial();						//关闭串口
+		SetLastError(dwError);				//设置错误标记
 		return FALSE;
 	}
 
@@ -276,7 +295,7 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	//ReadTotalTimeout=( ReadTotalTimeoutMultiplier*bytes_to_read )+ReadTotalTimeoutConstant;
 	//即两个字节传输间隔超过ReadIntervalTimeout或者操作总时间大于ReadTotalTimeout则操作结束（如果没接收到第一个字符则按总时间计算）
 	TimeOuts.ReadIntervalTimeout = 100;
-	TimeOuts.ReadTotalTimeoutMultiplier = 100;
+	TimeOuts.ReadTotalTimeoutMultiplier = 0;
 	TimeOuts.ReadTotalTimeoutConstant = 0;
 	//在读一次输入缓冲区的内容后读操作就立即返回，  
 	//而不管是否读入了要求的字符。  
@@ -285,7 +304,9 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	TimeOuts.WriteTotalTimeoutConstant = 0;
 	if (!SetCommTimeouts(m_pSerialPort->h_Handle, &TimeOuts))
 	{
-		CloseSerial();
+		DWORD dwError = GetLastError();		//保存错误
+		CloseSerial();						//关闭串口
+		SetLastError(dwError);				//设置错误标记
 		return FALSE;
 	}//设置超时  
 
@@ -295,7 +316,9 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	//设置接收通知
 	if (!SetCommMask(m_pSerialPort->h_Handle, EV_RXCHAR))
 	{
-		CloseSerial();
+		DWORD dwError = GetLastError();		//保存错误
+		CloseSerial();						//关闭串口
+		SetLastError(dwError);				//设置错误标记
 		return FALSE;
 	}
 
@@ -304,9 +327,21 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	m_pReceiveThread = AfxBeginThread(Receive_Thread, (LPVOID)this);
 	if (NULL == m_pReceiveThread)
 	{
-		CloseSerial();
+		DWORD dwError = GetLastError();		//保存错误
+		CloseSerial();						//关闭串口
+		SetLastError(dwError);				//设置错误标记
 		return FALSE;
 	}
+
+	m_SerialRecData.hMutex = CreateMutex(nullptr, FALSE, nullptr);
+	if (m_SerialRecData.hMutex == NULL)
+	{
+		DWORD dwError = GetLastError();		//保存错误
+		CloseSerial();						//关闭串口
+		SetLastError(dwError);				//设置错误标记
+		return FALSE;
+	}
+	BufClear(&m_SerialRecData);
 
 
 #if SEND_TEST
@@ -326,6 +361,10 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 
 	return TRUE;
 }
+
+
+
+
 
 bool CSerial::IsOpen()
 {
@@ -361,6 +400,13 @@ bool CSerial::CloseSerial()
 		{
 			WaitForSingleObject(m_pReceiveThread->m_hThread, INFINITE);
 			m_pReceiveThread = NULL;
+		}
+
+		BufClear(&m_SerialRecData);
+		if (m_SerialRecData.hMutex)
+		{
+			CloseHandle(m_SerialRecData.hMutex);
+			m_SerialRecData.hMutex = NULL;
 		}
 #if SEND_TEST
 		if (m_pSendThread)
@@ -448,7 +494,7 @@ UINT CSerial::ReceiveData()
 	COMSTAT ComStat;				//这个结构体主要是用来获取端口信息的
 	DWORD dwErrorFlags;
 
-	char tempBuf[DMA_BUFF_SIZE];
+	UINT8 ReceiveData[BUF_SIZE];
 	//DWORD dwBytesLength = 1;
 	DWORD dwBytesRead = 0;
 
@@ -456,31 +502,48 @@ UINT CSerial::ReceiveData()
 	while (IsOpen())
 	{
 		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);
-
-		if (!ReadFile(m_pSerialPort->h_Handle, tempBuf, DMA_BUFF_SIZE, &dwBytesRead, &overlapped))
+		if (ComStat.cbInQue)	//如果串口inbuf中有接收到的字符就执行下面的操作
 		{
-			if (GetLastError() == ERROR_IO_PENDING) //GetLastError()函数返回ERROR_IO_PENDING,表明串口正在进行读操作 
+			dwBytesRead = 0;
+			if (!ReadFile(m_pSerialPort->h_Handle, ReceiveData, ComStat.cbInQue, &dwBytesRead, &overlapped))
 			{
-				//WaitForSingleObject(overlapped.hEvent, 2000);
-				//使用WaitForSingleObject函数等待，直到读操作完成或延时已达到2秒钟 
-				//当串口读操作进行完毕后，overlapped的hEvent事件会变为有信号 
+				if (GetLastError() == ERROR_IO_PENDING) //GetLastError()函数返回ERROR_IO_PENDING,表明串口正在进行读操作 
+				{
+					//WaitForSingleObject(overlapped.hEvent, 2000);
+					//使用WaitForSingleObject函数等待，直到读操作完成或延时已达到2秒钟 
+					//当串口读操作进行完毕后，overlapped的hEvent事件会变为有信号 
 
-				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//无限等待这个I/O操作的完成
-				if (dwBytesRead != DMA_BUFF_SIZE)
-				{
+					GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//无限等待这个I/O操作的完成
+					BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
 					#if RECEIVE_TEST
-					printf("Receive Fail\n");
-					#endif	
-				}
-				else
-				{
-					#if RECEIVE_TEST
-					printf("Receive %d Byte\n", dwBytesRead);
+					if (dwBytesRead)
+					{
+						printf("%s", ReceiveData);
+					}
+					else
+					{
+						printf("Receive Fail\n");
+					}
 					#endif
 				}
 			}
+			else
+			{
+				BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
+				#if RECEIVE_TEST
+				if (dwBytesRead)
+				{
+					printf("%s", ReceiveData);
+				}
+				else
+				{
+					printf("Receive Fail\n");
+				}
+				#endif
+			}
+			PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
 		}
-		PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+		
 	}
 
 	return 0;
@@ -700,4 +763,98 @@ bool CSerial::WatchingSerial()
 	}
 
 	return 0;
+}
+
+
+
+
+UINT32 CSerial::BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize)
+{
+	if (pBuf->hMutex)
+	{
+		WaitForSingleObject(pBuf->hMutex, INFINITE);
+	}
+	if (BUF_SIZE - pBuf->nWriteIndex >= nSize)
+	{
+		memcpy(pBuf->pData + pBuf->nWriteIndex, pData, nSize);
+	}
+	else
+	{
+		memcpy(pBuf->pData + pBuf->nWriteIndex, pData, BUF_SIZE - pBuf->nWriteIndex);
+		memcpy(pBuf->pData, pData + (BUF_SIZE - pBuf->nWriteIndex), nSize - (BUF_SIZE - pBuf->nWriteIndex));
+	}
+
+	pBuf->nWriteIndex += nSize;
+	if (pBuf->nWriteIndex >= BUF_SIZE)
+	{
+		pBuf->nWriteIndex = pBuf->nWriteIndex - BUF_SIZE;
+	}
+	pBuf->nByteToRead += nSize;
+	if (pBuf->nByteToRead > BUF_SIZE)	//溢出
+	{
+		pBuf->nReadIndex += pBuf->nByteToRead - BUF_SIZE;
+		if (pBuf->nReadIndex >= BUF_SIZE)
+		{
+			pBuf->nReadIndex = pBuf->nReadIndex - BUF_SIZE;
+		}
+		pBuf->nByteToRead = BUF_SIZE;
+	}
+	if (pBuf->hMutex)
+	{
+		ReleaseMutex(pBuf->hMutex);
+	}
+	return nSize;	//全部写入，但是溢出的会把最早的数据覆盖
+}
+
+UINT32 CSerial::BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize)
+{
+	if (pBuf->hMutex)
+	{
+		WaitForSingleObject(pBuf->hMutex, INFINITE);
+	}
+	if (nSize > pBuf->nByteToRead)
+	{
+		nSize = pBuf->nByteToRead;
+	}
+	if (nSize == 0)
+	{
+		return nSize;
+	}
+
+	if (BUF_SIZE - pBuf->nReadIndex >= nSize)
+	{
+		memcpy(pData, pBuf->pData + pBuf->nReadIndex, nSize);
+	}
+	else
+	{
+		memcpy(pData, pBuf->pData + pBuf->nReadIndex, BUF_SIZE - pBuf->nReadIndex);
+		memcpy(pData + (BUF_SIZE - pBuf->nReadIndex), pBuf->pData, nSize - (BUF_SIZE - pBuf->nReadIndex));
+	}
+
+	pBuf->nReadIndex += nSize;
+	if (pBuf->nReadIndex >= BUF_SIZE)
+	{
+		pBuf->nReadIndex = pBuf->nReadIndex - BUF_SIZE;
+	}
+	pBuf->nByteToRead -= nSize;
+	if (pBuf->hMutex)
+	{
+		ReleaseMutex(pBuf->hMutex);
+	}
+	return nSize;
+}
+
+void CSerial::BufClear(p_CycBuf pBuf)
+{
+	if (pBuf->hMutex)
+	{
+		WaitForSingleObject(pBuf->hMutex, INFINITE);
+	}
+	pBuf->nByteToRead = 0;
+	pBuf->nReadIndex = 0;
+	pBuf->nWriteIndex = 0;
+	if (pBuf->hMutex)
+	{
+		ReleaseMutex(pBuf->hMutex);
+	}
 }

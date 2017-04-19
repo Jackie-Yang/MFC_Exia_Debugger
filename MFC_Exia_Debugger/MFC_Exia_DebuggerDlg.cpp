@@ -107,10 +107,8 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 
-	if (m_Serial.Init(this) == false)
-	{
-		AfxMessageBox("串口获取失败");
-	}
+	m_Serial.Init(this);
+
 
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -185,11 +183,11 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 		CurSelStr = m_Serial.GetSerialInfo(i)->str_Port.c_str();
 		if (m_Serial.GetSerialInfo(i)->h_Handle)
 		{
-			CurSelStr += "(*)";
+			CurSelStr += " *";
 		}
 		m_Combox_COM.InsertString(i, CurSelStr);
 		m_Combox_COM.GetLBText(i, CurSelStr);
-		if (CurSelStr == LastSelStr || CurSelStr + "(*)" == LastSelStr || CurSelStr == LastSelStr + "(*)")
+		if (CurSelStr == LastSelStr || CurSelStr + " *" == LastSelStr || CurSelStr == LastSelStr + " *")
 		{
 			m_Combox_COM.SetCurSel(i);
 			bMatchingSel = TRUE;
@@ -240,14 +238,14 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 	{
 		if (!m_Serial.CloseSerial())
 		{
-			AfxMessageBox("串口关闭失败");
+			AfxMessageBox(GetLastErrorMessage("串口关闭失败："));
 		}
 	}
 	else
 	{
 		if (!m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200))
 		{
-			AfxMessageBox("串口打开失败");
+			AfxMessageBox(GetLastErrorMessage("串口打开失败："));
 		}
 	}
 }
@@ -320,4 +318,30 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const char* ErrorTip)
+{
+	CString ErrorMessage = ErrorTip;
+	LPVOID lpMsgBuf;
+
+	FormatMessageA(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |		//缓冲区由系统分配
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		dwError,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),	//语言设置为本地默认
+		(LPTSTR)&lpMsgBuf,
+		0,		//缓冲区由系统分配,不需要指定大小
+		NULL);
+	ErrorMessage += (LPTSTR)lpMsgBuf;
+	LocalFree(lpMsgBuf);	//释放系统分配的内存
+	return ErrorMessage;
+}
+
+CString CMFC_Exia_DebuggerDlg::GetLastErrorMessage(const char* ErrorTip)
+{
+	return GetErrorMessage(GetLastError(),ErrorTip);
 }

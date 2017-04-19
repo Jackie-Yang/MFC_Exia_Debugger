@@ -59,4 +59,7 @@ public:
 	afx_msg void OnBnClickedOpenCloseBtn();
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+	CString GetErrorMessage(DWORD dwError,const char* ErrorTip = NULL);
+	CString GetLastErrorMessage(const char* ErrorTip = NULL);
 };
