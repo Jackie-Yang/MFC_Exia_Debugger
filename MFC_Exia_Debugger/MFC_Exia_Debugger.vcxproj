@@ -124,6 +124,9 @@
     <None Include="res\MFC_Exia_Debugger.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\main_Blue_128px.ico" />
+    <Image Include="res\main_Red_One_128px.ico" />
+    <Image Include="res\main_Yellow_128px.ico" />
     <Image Include="res\MFC_Exia_Debugger.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

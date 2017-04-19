@@ -51,7 +51,7 @@ END_MESSAGE_MAP()
 CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFC_Exia_DebuggerDlg::IDD, pParent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_RED);
 	m_Color_Status = RGB(255, 0, 0);
 }
 
@@ -72,6 +72,7 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_MESSAGE(WM_SERIAL_OPEN, &CMFC_Exia_DebuggerDlg::OnSerialOpen)
 	ON_MESSAGE(WM_SERIAL_CLOSE, &CMFC_Exia_DebuggerDlg::OnSerialClose)
 	ON_WM_CTLCOLOR()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -165,6 +166,7 @@ HCURSOR CMFC_Exia_DebuggerDlg::OnQueryDragIcon()
 }
 
 
+//UI更新串口状态
 void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 {
 //更新列表
@@ -198,23 +200,20 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 		m_Combox_COM.SetCurSel(0);
 	}
 //更新状态
-	if (m_Serial.IsOpen())
+	p_SerialInfo pCurSerial = m_Serial.GetCurSerial();
+	if (m_Serial.IsOpen() && pCurSerial)
 	{
-		p_SerialInfo pCurSerial = m_Serial.GetCurSerial();
-		if (pCurSerial)
+		CString Info;
+		Info.Format("已连接 %s (%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
+		Info.Replace("\\Device\\", NULL);
+		m_Static_Status.SetWindowTextA(Info);
+		m_Color_Status = RGB(0, 128, 0);
+		m_Static_Status.InvalidateRect(NULL);
+		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowTextA("关闭串口");
+		m_TimerID_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 500, NULL);
+		if (m_TimerID_Update_Data == 0)
 		{
-			CString Info;
-			Info.Format("已连接(%s:%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
-			m_Static_Status.SetWindowTextA(Info);
-			//m_Str_Status.Format("已连接(%s:%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
-			m_Color_Status = RGB(0, 128, 0);
-			m_Static_Status.InvalidateRect(NULL);
-		}
-		else
-		{
-			m_Static_Status.SetWindowTextA("未连接");
-			m_Color_Status = RGB(255, 0, 0);
-			m_Static_Status.InvalidateRect(NULL);
+			AfxMessageBox("数据更新定时器设置失败");
 		}
 	}
 	else
@@ -222,15 +221,16 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 		m_Static_Status.SetWindowTextA("未连接");
 		m_Color_Status = RGB(255, 0, 0);
 		m_Static_Status.InvalidateRect(NULL);
+		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowTextA("打开串口");
+		if (m_TimerID_Update_Data)
+		{
+			KillTimer(m_TimerID_Update_Data);
+			m_TimerID_Update_Data = 0;
+		}
 	}
 	return;
 }
 
-afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
-{
-	UpdateSerialState();
-	return 0;
-}
 
 
 void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
@@ -238,15 +238,22 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 	// TODO:  在此添加控件通知处理程序代码
 	if (m_Serial.IsOpen())
 	{
-		m_Serial.CloseSerial();
+		if (!m_Serial.CloseSerial())
+		{
+			AfxMessageBox("串口关闭失败");
+		}
 	}
 	else
 	{
-		m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200);
+		if (!m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200))
+		{
+			AfxMessageBox("串口打开失败");
+		}
 	}
 }
 
 
+//收到设备更新消息，刷新串口列表
 BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
 	switch (nEventType)
@@ -264,13 +271,21 @@ BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 	return TRUE;
 }
 
+//刷新串口列表完成，UI刷新串口状态
+afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
+{
+	UpdateSerialState();
+	return 0;
+}
+
+//串口打开成功，UI刷新串口状态
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
 	return 0;
 }
 
-
+//串口关闭成功，UI刷新串口状态
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
@@ -292,4 +307,17 @@ HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
+}
+
+
+
+void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	if (m_TimerID_Update_Data && nIDEvent == m_TimerID_Update_Data)
+	{
+
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

@@ -16,8 +16,12 @@ public:
 // 对话框数据
 	enum { IDD = IDD_MFC_EXIA_DEBUGGER_DIALOG };
 
+// 定时器ID
+	enum { ID_TIMER_UPDATE_DATA = 1 };
+
 private:
 	CSerial m_Serial;
+	UINT_PTR m_TimerID_Update_Data;
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
@@ -54,4 +58,5 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnBnClickedOpenCloseBtn();
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

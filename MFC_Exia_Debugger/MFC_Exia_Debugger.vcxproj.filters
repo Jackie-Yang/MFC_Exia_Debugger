@@ -65,5 +65,14 @@
     <Image Include="res\MFC_Exia_Debugger.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\main_Red_One_128px.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\main_Yellow_128px.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\main_Blue_128px.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
