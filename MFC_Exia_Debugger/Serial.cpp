@@ -297,8 +297,6 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	TimeOuts.ReadIntervalTimeout = 100;
 	TimeOuts.ReadTotalTimeoutMultiplier = 0;
 	TimeOuts.ReadTotalTimeoutConstant = 0;
-	//在读一次输入缓冲区的内容后读操作就立即返回，  
-	//而不管是否读入了要求的字符。  
 	//设定写超时  
 	TimeOuts.WriteTotalTimeoutMultiplier = 100;
 	TimeOuts.WriteTotalTimeoutConstant = 0;
@@ -541,7 +539,7 @@ UINT CSerial::ReceiveData()
 				}
 				#endif
 			}
-			PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+			//PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
 		}
 		
 	}
