@@ -150,7 +150,7 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	m_Serial.Init(this);
 
-
+	m_Curve.Init(0.8f, 0.8f, 10, 10);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -302,7 +302,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 				KillTimer(m_Timer_Update_Data);
 				m_Timer_Update_Data = 0;
 			}
-			m_Timer_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 50, NULL);
+			m_Timer_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 20, NULL);
 			if (m_Timer_Update_Data == 0)
 			{
 				//AfxMessageBox("数据更新定时器设置失败");
@@ -396,6 +396,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		GetQuadrotorState();
 		m_Serial.ClearRecData();
+		m_Curve.AddData(3.0f);
 	}
 	else if (nIDEvent == m_Timer_Show_Data)
 	{

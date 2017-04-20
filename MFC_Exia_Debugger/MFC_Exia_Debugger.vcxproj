@@ -101,6 +101,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="Curve.h" />
     <ClInclude Include="MFC_Exia_Debugger.h" />
     <ClInclude Include="MFC_Exia_DebuggerDlg.h" />
