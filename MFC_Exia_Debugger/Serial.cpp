@@ -220,6 +220,10 @@ p_SerialInfo CSerial::GetCurSerial()
 
 p_SerialInfo CSerial::GetSerialInfo(INT_PTR nIndex)
 {
+	if (nIndex < 0 || nIndex >= m_SerialList.GetSize())
+	{
+		return NULL;
+	}
 	return &m_SerialList.ElementAt(nIndex);	//ElementAt获得引用,GetAt获得值
 }
 
@@ -250,6 +254,11 @@ bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
 bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 {
 	m_pSerialPort = pSerialInfo;
+	if (!m_pSerialPort)
+	{
+		SetLastError(ERROR_FILE_NOT_FOUND);
+		return FALSE;
+	}
 	std::string PortName = "\\\\.\\" + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
 	m_pSerialPort->h_Handle = CreateFile(PortName.c_str(),//COM口  
 		GENERIC_READ | GENERIC_WRITE, //允许读和写  
