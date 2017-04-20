@@ -26,7 +26,7 @@ typedef struct __ST_SERIAL_INFO__
 	HANDLE h_Handle;
 }SerialInfo, * p_SerialInfo;
 
-typedef struct __CycBuf__
+typedef struct __CYC_BUF__
 {
 	UINT32	nWriteIndex;
 	UINT32	nReadIndex;
@@ -37,9 +37,8 @@ typedef struct __CycBuf__
 
 class CSerial
 {
-public:
 
-	
+public:
 
 	CSerial();
 	~CSerial();
@@ -51,17 +50,23 @@ public:
 	p_SerialInfo GetSerialInfo(INT_PTR nIndex);
 	bool OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate);
 	bool IsOpen();
-	bool IsWatching();
 	bool CheckSerialState();
 	bool CloseSerial();
 	DWORD SendData(const char *pData, DWORD nDataLength);
 
+	UINT32 GetRecBufByte();
+	UINT32 GetRecData(PUINT8 pData, UINT32 nSize);
+	void ClearRecData();
+
+
 	bool StartWatchingSerialList();
 	void StopWatchingSerialList();
+	bool IsWatching();
 
-	UINT32 BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize);
-	UINT32 BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize);
-	void BufClear(p_CycBuf pBuf);
+
+
+
+
 
 private:
 
@@ -70,12 +75,16 @@ private:
 
 	//Serial
 	p_SerialInfo m_pSerialPort;
+
+	//Serial List
 	CArray<SerialInfo> m_SerialList;
 
+	//Receive Data
 	CycBuf m_SerialRecData;
-
 	CWinThread	*m_pReceiveThread;
 	UINT ReceiveData();
+	//线程回调函数
+	static UINT Receive_Thread(void *args);
 
 
 	//Watching Thread
@@ -89,16 +98,15 @@ private:
 	bool m_bNoSerial;
 	bool m_bIsWatching;
 
+
+//Buffer Function
+	UINT32 BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize);
+	UINT32 BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize);
+	void BufClear(p_CycBuf pBuf);
+
 	
 #if SEND_TEST
 	CWinThread	*m_pSendThread;
-#endif
-
-	
-
-	//线程回调函数
-	static UINT Receive_Thread(void *args);
-#if SEND_TEST
 	static UINT Send_Thread(void *args);
 #endif
 

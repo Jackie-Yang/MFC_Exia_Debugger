@@ -50,9 +50,31 @@ END_MESSAGE_MAP()
 
 CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFC_Exia_DebuggerDlg::IDD, pParent)
+	, m_str_THRO(_T("无信号"))
+	, m_str_RUDD(_T("无信号"))
+	, m_str_ELEV(_T("无信号"))
+	, m_str_AILE(_T("无信号"))
+	, m_str_BuffByte(_T("0 Bytes"))
+	, m_str_Accel_Sensor_X(_T("无信号"))
+	, m_str_Accel_Sensor_Y(_T("无信号"))
+	, m_str_Accel_Sensor_Z(_T("无信号"))
+	, m_str_Gyro_Sensor_X(_T("无信号"))
+	, m_str_Gyro_Sensor_Y(_T("无信号"))
+	, m_str_Gyro_Sensor_Z(_T("无信号"))
+	, m_str_HMC5883L_X(_T("无信号"))
+	, m_str_HMC5883L_Y(_T("无信号"))
+	, m_str_HMC5883L_Z(_T("无信号"))
+	, m_str_HMC5883L_Angle(_T("无信号"))
+	, m_str_Roll(_T("无信号"))
+	, m_str_Pitch(_T("无信号"))
+	, m_str_Yaw(_T("无信号"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_RED);
 	m_Color_Status = RGB(255, 0, 0);
+	m_Color_BuffByte = RGB(0, 0, 0);
+	m_Timer_Update_Data = 0;
+	m_Timer_Show_Data = 0;
+	memset(&m_State,0,sizeof(m_State));
 }
 
 void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
@@ -60,6 +82,25 @@ void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_COM, m_Combox_COM);
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_Static_Status);
+	DDX_Control(pDX, IDC_CURVE, m_Curve);
+	DDX_Text(pDX, IDC_STATIC_THRO, m_str_THRO);
+	DDX_Text(pDX, IDC_STATIC_RUDD, m_str_RUDD);
+	DDX_Text(pDX, IDC_STATIC_ELEV, m_str_ELEV);
+	DDX_Text(pDX, IDC_STATIC_AILE, m_str_AILE);
+	DDX_Text(pDX, IDC_BUFF_BYTE, m_str_BuffByte);
+	DDX_Text(pDX, IDC_ACCEL_SENSOR_X, m_str_Accel_Sensor_X);
+	DDX_Text(pDX, IDC_ACCEL_SENSOR_Y, m_str_Accel_Sensor_Y);
+	DDX_Text(pDX, IDC_ACCEL_SENSOR_Z, m_str_Accel_Sensor_Z);
+	DDX_Text(pDX, IDC_GYRO_SENSOR_X, m_str_Gyro_Sensor_X);
+	DDX_Text(pDX, IDC_GYRO_SENSOR_Y, m_str_Gyro_Sensor_Y);
+	DDX_Text(pDX, IDC_GYRO_SENSOR_Z, m_str_Gyro_Sensor_Z);
+	DDX_Text(pDX, IDC_HMC5883L_X, m_str_HMC5883L_X);
+	DDX_Text(pDX, IDC_HMC5883L_Y, m_str_HMC5883L_Y);
+	DDX_Text(pDX, IDC_HMC5883L_Z, m_str_HMC5883L_Z);
+	DDX_Text(pDX, IDC_HMC5883L_ANGLE, m_str_HMC5883L_Angle);
+	DDX_Text(pDX, IDC_ROLL, m_str_Roll);
+	DDX_Text(pDX, IDC_PITCH, m_str_Pitch);
+	DDX_Text(pDX, IDC_YAW, m_str_Yaw);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -208,11 +249,6 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 		m_Color_Status = RGB(0, 128, 0);
 		m_Static_Status.InvalidateRect(NULL);
 		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowTextA("关闭串口");
-		m_TimerID_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 500, NULL);
-		if (m_TimerID_Update_Data == 0)
-		{
-			AfxMessageBox("数据更新定时器设置失败");
-		}
 	}
 	else
 	{
@@ -220,11 +256,6 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 		m_Color_Status = RGB(255, 0, 0);
 		m_Static_Status.InvalidateRect(NULL);
 		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowTextA("打开串口");
-		if (m_TimerID_Update_Data)
-		{
-			KillTimer(m_TimerID_Update_Data);
-			m_TimerID_Update_Data = 0;
-		}
 	}
 	return;
 }
@@ -238,14 +269,58 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 	{
 		if (!m_Serial.CloseSerial())
 		{
-			AfxMessageBox(GetLastErrorMessage("串口关闭失败："));
+			MessageBoxA(GetLastErrorMessage(), "串口关闭失败", MB_ICONERROR | MB_OK);
+			//AfxMessageBox(GetLastErrorMessage("串口关闭失败："));
+		}
+		else
+		{
+			//关闭数据定时器
+			if (m_Timer_Update_Data)
+			{
+				KillTimer(m_Timer_Update_Data);
+				m_Timer_Update_Data = 0;
+			}
+			if (m_Timer_Show_Data)
+			{
+				KillTimer(m_Timer_Show_Data);
+				m_Timer_Show_Data = 0;
+			}
 		}
 	}
 	else
 	{
 		if (!m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200))
 		{
-			AfxMessageBox(GetLastErrorMessage("串口打开失败："));
+			MessageBoxA(GetLastErrorMessage(), "串口打开失败", MB_ICONERROR | MB_OK);
+			//AfxMessageBox(GetLastErrorMessage("串口打开失败："));
+		}
+		else
+		{
+			//开启数据更新定时器
+			if (m_Timer_Update_Data)	//已经开启则先关闭
+			{
+				KillTimer(m_Timer_Update_Data);
+				m_Timer_Update_Data = 0;
+			}
+			m_Timer_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 50, NULL);
+			if (m_Timer_Update_Data == 0)
+			{
+				//AfxMessageBox("数据更新定时器设置失败");
+				MessageBoxA(GetLastErrorMessage(), "数据更新定时器设置失败", MB_ICONERROR | MB_OK);
+			}
+
+			//开启数据显示定时器
+			if (m_Timer_Show_Data)	//已经开启则先关闭
+			{
+				KillTimer(m_Timer_Show_Data);
+				m_Timer_Show_Data = 0;
+			}
+			m_Timer_Show_Data = SetTimer(ID_TIMER_SHOW_DATA, 500, NULL);
+			if (m_Timer_Show_Data == 0)
+			{
+				//AfxMessageBox("数据更新定时器设置失败");
+				MessageBoxA(GetLastErrorMessage(), "数据显示定时器设置失败", MB_ICONERROR | MB_OK);
+			}
 		}
 	}
 }
@@ -303,6 +378,11 @@ HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		pDC->SetTextColor(m_Color_Status);
 	}
 
+	if (pWnd->GetDlgCtrlID() == IDC_BUFF_BYTE)
+	{
+		pDC->SetTextColor(m_Color_BuffByte);
+	}
+
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
 }
@@ -312,9 +392,14 @@ HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	if (m_TimerID_Update_Data && nIDEvent == m_TimerID_Update_Data)
+	if (nIDEvent == m_Timer_Update_Data)
 	{
-
+		GetQuadrotorState();
+		m_Serial.ClearRecData();
+	}
+	else if (nIDEvent == m_Timer_Show_Data)
+	{
+		ShowQuadrotorState();
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -344,4 +429,116 @@ CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const char* ErrorT
 CString CMFC_Exia_DebuggerDlg::GetLastErrorMessage(const char* ErrorTip)
 {
 	return GetErrorMessage(GetLastError(),ErrorTip);
+}
+
+
+
+
+#define CHECK_DATA(DATA,VALUE)	if (m_Serial.GetRecData((PUINT8)&DATA, sizeof(DATA)) < sizeof(DATA))\
+								{\
+									return FALSE;\
+								}\
+								if (DATA != VALUE)\
+								{\
+									continue;\
+								}					
+bool CMFC_Exia_DebuggerDlg::GetQuadrotorState()
+{
+	UINT8 u8CheckData = 0;
+	UINT16 u16CheckData = 0;
+	Quadrotor_State TempState;
+	while (TRUE)
+	{
+		CHECK_DATA(u8CheckData, 0x7F);
+
+		CHECK_DATA(u8CheckData, 0xFF);
+
+		CHECK_DATA(u16CheckData, sizeof(Quadrotor_State));
+
+		if (m_Serial.GetRecData((PUINT8)&TempState, sizeof(Quadrotor_State)) < sizeof(Quadrotor_State))
+		{
+			return FALSE;
+		}
+
+		CHECK_DATA(u16CheckData, 123);
+
+		CHECK_DATA(u16CheckData, 0xFEFF);
+
+		m_State = TempState;
+		return TRUE;
+	}
+
+	return TRUE;
+}
+
+void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
+{
+	UINT nBufByte = m_Serial.GetRecBufByte();
+	if (nBufByte > BUF_SIZE * 0.8)
+	{
+		m_Color_BuffByte = RGB(255, 0, 0);
+	}
+	else
+	{
+		m_Color_BuffByte = RGB(0, 0, 0);
+	}
+	//GetDlgItem(IDC_BUFF_BYTE)->InvalidateRect(NULL);
+	m_str_BuffByte.Format("%u Bytes", nBufByte);
+
+
+	if (m_State.Thro)
+	{
+		m_str_THRO.Format("%u", m_State.Thro);
+	}
+	else
+	{
+		m_str_THRO = "无信号";
+	}
+
+	if (m_State.Rudd)
+	{
+		m_str_RUDD.Format("%u", m_State.Rudd);
+	}
+	else
+	{
+		m_str_RUDD = "无信号";
+	}
+
+	if (m_State.Elev)
+	{
+		m_str_ELEV.Format("%u", m_State.Elev);
+	}
+	else
+	{
+		m_str_ELEV = "无信号";
+	}
+
+	if (m_State.Aile)
+	{
+		m_str_AILE.Format("%u", m_State.Aile);
+	}
+	else
+	{
+		m_str_AILE = "无信号";
+	}
+	
+	m_str_Accel_Sensor_X.Format("%d", m_State.Accel_X);
+	m_str_Accel_Sensor_Y.Format("%d", m_State.Accel_Y);
+	m_str_Accel_Sensor_Z.Format("%d", m_State.Accel_Z);
+
+	m_str_Gyro_Sensor_X.Format("%d", m_State.Gyro_X);
+	m_str_Gyro_Sensor_Y.Format("%d", m_State.Gyro_Y);
+	m_str_Gyro_Sensor_Z.Format("%d", m_State.Gyro_Z);
+
+	m_str_HMC5883L_X.Format("%d", m_State.HMC5883L_X);
+	m_str_HMC5883L_Y.Format("%d", m_State.HMC5883L_Y);
+	m_str_HMC5883L_Z.Format("%d", m_State.HMC5883L_Z);
+	m_str_HMC5883L_Angle.Format("%.1f", m_State.HMC5883L_Angle / 10.0f);
+
+	m_str_Roll.Format("%.1f", m_State.Roll / 10.0f);
+	m_str_Pitch.Format("%.1f", m_State.Pitch / 10.0f);
+	m_str_Yaw.Format("%.1f", m_State.Yaw / 10.0f);
+	
+
+	UpdateData(FALSE);
 }

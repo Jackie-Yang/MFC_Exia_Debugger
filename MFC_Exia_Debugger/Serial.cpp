@@ -312,6 +312,7 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);	//清空缓冲区
 
 	//设置接收通知
+	//WaitCommEvent在重叠I/O模式下不会阻塞， 而是立即返回的。报ERROR_IO_PENDING
 	if (!SetCommMask(m_pSerialPort->h_Handle, EV_RXCHAR))
 	{
 		DWORD dwError = GetLastError();		//保存错误
@@ -400,7 +401,7 @@ bool CSerial::CloseSerial()
 			m_pReceiveThread = NULL;
 		}
 
-		BufClear(&m_SerialRecData);
+		ClearRecData();
 		if (m_SerialRecData.hMutex)
 		{
 			CloseHandle(m_SerialRecData.hMutex);
@@ -492,14 +493,13 @@ UINT CSerial::ReceiveData()
 	COMSTAT ComStat;				//这个结构体主要是用来获取端口信息的
 	DWORD dwErrorFlags;
 
-	UINT8 ReceiveData[BUF_SIZE];
-	//DWORD dwBytesLength = 1;
+	UINT8 ReceiveData[BUF_SIZE] = {0};
 	DWORD dwBytesRead = 0;
 
 	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//创建CEvent对象
 	while (IsOpen())
 	{
-		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);
+		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);	//更新ComStat
 		if (ComStat.cbInQue)	//如果串口inbuf中有接收到的字符就执行下面的操作
 		{
 			dwBytesRead = 0;
@@ -509,39 +509,21 @@ UINT CSerial::ReceiveData()
 				{
 					//WaitForSingleObject(overlapped.hEvent, 2000);
 					//使用WaitForSingleObject函数等待，直到读操作完成或延时已达到2秒钟 
-					//当串口读操作进行完毕后，overlapped的hEvent事件会变为有信号 
-
+					//当串口读操作进行完毕后，overlapped的hEvent事件会变为有信号,WaitForSingleObject仍要GetOverlappedResult获取结果
 					GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//无限等待这个I/O操作的完成
 					BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
-					#if RECEIVE_TEST
-					if (dwBytesRead)
-					{
-						printf("%s", ReceiveData);
-					}
-					else
-					{
-						printf("Receive Fail\n");
-					}
-					#endif
 				}
 			}
 			else
 			{
 				BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
-				#if RECEIVE_TEST
-				if (dwBytesRead)
-				{
-					printf("%s", ReceiveData);
-				}
-				else
-				{
-					printf("Receive Fail\n");
-				}
-				#endif
 			}
 			//PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+			#if RECEIVE_TEST
+			printf("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesRead, m_SerialRecData.nByteToRead);
+			#endif
 		}
-		
+		Sleep(10);		//一直轮询会加重CPU负担
 	}
 
 	return 0;
@@ -772,6 +754,21 @@ UINT32 CSerial::BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize)
 	{
 		WaitForSingleObject(pBuf->hMutex, INFINITE);
 	}
+
+	if (nSize > BUF_SIZE - pBuf->nByteToRead)	//写满无法再写
+	{
+		nSize = BUF_SIZE - pBuf->nByteToRead;
+	}
+
+	if (nSize == 0)
+	{
+		if (pBuf->hMutex)
+		{
+			ReleaseMutex(pBuf->hMutex);
+		}
+		return nSize;
+	}
+
 	if (BUF_SIZE - pBuf->nWriteIndex >= nSize)
 	{
 		memcpy(pBuf->pData + pBuf->nWriteIndex, pData, nSize);
@@ -788,20 +785,21 @@ UINT32 CSerial::BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize)
 		pBuf->nWriteIndex = pBuf->nWriteIndex - BUF_SIZE;
 	}
 	pBuf->nByteToRead += nSize;
-	if (pBuf->nByteToRead > BUF_SIZE)	//溢出
-	{
-		pBuf->nReadIndex += pBuf->nByteToRead - BUF_SIZE;
-		if (pBuf->nReadIndex >= BUF_SIZE)
-		{
-			pBuf->nReadIndex = pBuf->nReadIndex - BUF_SIZE;
-		}
-		pBuf->nByteToRead = BUF_SIZE;
-	}
+	//不会溢出了，写满了不会再写
+	//if (pBuf->nByteToRead > BUF_SIZE)	//溢出
+	//{
+	//	pBuf->nReadIndex += pBuf->nByteToRead - BUF_SIZE;
+	//	if (pBuf->nReadIndex >= BUF_SIZE)
+	//	{
+	//		pBuf->nReadIndex = pBuf->nReadIndex - BUF_SIZE;
+	//	}
+	//	pBuf->nByteToRead = BUF_SIZE;
+	//}
 	if (pBuf->hMutex)
 	{
 		ReleaseMutex(pBuf->hMutex);
 	}
-	return nSize;	//全部写入，但是溢出的会把最早的数据覆盖
+	return nSize;
 }
 
 UINT32 CSerial::BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize)
@@ -816,6 +814,10 @@ UINT32 CSerial::BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize)
 	}
 	if (nSize == 0)
 	{
+		if (pBuf->hMutex)
+		{
+			ReleaseMutex(pBuf->hMutex);
+		}
 		return nSize;
 	}
 
@@ -855,4 +857,19 @@ void CSerial::BufClear(p_CycBuf pBuf)
 	{
 		ReleaseMutex(pBuf->hMutex);
 	}
+}
+
+UINT32 CSerial::GetRecBufByte()
+{
+	return m_SerialRecData.nByteToRead;
+}
+
+UINT32 CSerial::GetRecData(PUINT8 pData, UINT32 nSize)
+{
+	return BufGetData(&m_SerialRecData, pData, nSize);
+}
+
+void CSerial::ClearRecData()
+{
+	BufClear(&m_SerialRecData);
 }

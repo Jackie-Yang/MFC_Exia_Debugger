@@ -101,6 +101,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Curve.h" />
     <ClInclude Include="MFC_Exia_Debugger.h" />
     <ClInclude Include="MFC_Exia_DebuggerDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Curve.cpp" />
     <ClCompile Include="MFC_Exia_Debugger.cpp" />
     <ClCompile Include="MFC_Exia_DebuggerDlg.cpp" />
     <ClCompile Include="Serial.cpp" />
