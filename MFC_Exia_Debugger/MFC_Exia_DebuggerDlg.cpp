@@ -272,20 +272,6 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 			MessageBoxA(GetLastErrorMessage(), "串口关闭失败", MB_ICONERROR | MB_OK);
 			//AfxMessageBox(GetLastErrorMessage("串口关闭失败："));
 		}
-		else
-		{
-			//关闭数据定时器
-			if (m_Timer_Update_Data)
-			{
-				KillTimer(m_Timer_Update_Data);
-				m_Timer_Update_Data = 0;
-			}
-			if (m_Timer_Show_Data)
-			{
-				KillTimer(m_Timer_Show_Data);
-				m_Timer_Show_Data = 0;
-			}
-		}
 	}
 	else
 	{
@@ -293,34 +279,6 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 		{
 			MessageBoxA(GetLastErrorMessage(), "串口打开失败", MB_ICONERROR | MB_OK);
 			//AfxMessageBox(GetLastErrorMessage("串口打开失败："));
-		}
-		else
-		{
-			//开启数据更新定时器
-			if (m_Timer_Update_Data)	//已经开启则先关闭
-			{
-				KillTimer(m_Timer_Update_Data);
-				m_Timer_Update_Data = 0;
-			}
-			m_Timer_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 20, NULL);
-			if (m_Timer_Update_Data == 0)
-			{
-				//AfxMessageBox("数据更新定时器设置失败");
-				MessageBoxA(GetLastErrorMessage(), "数据更新定时器设置失败", MB_ICONERROR | MB_OK);
-			}
-
-			//开启数据显示定时器
-			if (m_Timer_Show_Data)	//已经开启则先关闭
-			{
-				KillTimer(m_Timer_Show_Data);
-				m_Timer_Show_Data = 0;
-			}
-			m_Timer_Show_Data = SetTimer(ID_TIMER_SHOW_DATA, 500, NULL);
-			if (m_Timer_Show_Data == 0)
-			{
-				//AfxMessageBox("数据更新定时器设置失败");
-				MessageBoxA(GetLastErrorMessage(), "数据显示定时器设置失败", MB_ICONERROR | MB_OK);
-			}
 		}
 	}
 }
@@ -355,13 +313,49 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM 
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
+	//开启数据更新定时器
+	if (m_Timer_Update_Data)	//已经开启则先关闭
+	{
+		KillTimer(m_Timer_Update_Data);
+		m_Timer_Update_Data = 0;
+	}
+	m_Timer_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 20, NULL);
+	if (m_Timer_Update_Data == 0)
+	{
+		//AfxMessageBox("数据更新定时器设置失败");
+		MessageBoxA(GetLastErrorMessage(), "数据更新定时器设置失败", MB_ICONERROR | MB_OK);
+	}
+
+	//开启数据显示定时器
+	if (m_Timer_Show_Data)	//已经开启则先关闭
+	{
+		KillTimer(m_Timer_Show_Data);
+		m_Timer_Show_Data = 0;
+	}
+	m_Timer_Show_Data = SetTimer(ID_TIMER_SHOW_DATA, 500, NULL);
+	if (m_Timer_Show_Data == 0)
+	{
+		//AfxMessageBox("数据更新定时器设置失败");
+		MessageBoxA(GetLastErrorMessage(), "数据显示定时器设置失败", MB_ICONERROR | MB_OK);
+	}
 	return 0;
 }
 
-//串口关闭成功，UI刷新串口状态
+//串口关闭成功
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
+	//关闭数据定时器
+	if (m_Timer_Update_Data)
+	{
+		KillTimer(m_Timer_Update_Data);
+		m_Timer_Update_Data = 0;
+	}
+	if (m_Timer_Show_Data)
+	{
+		KillTimer(m_Timer_Show_Data);
+		m_Timer_Show_Data = 0;
+	}
 	return 0;
 }
 
@@ -396,7 +390,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		GetQuadrotorState();
 		m_Serial.ClearRecData();
-		m_Curve.AddData(3.0f);
+		m_Curve.AddData(m_State.Gyro_X);
 	}
 	else if (nIDEvent == m_Timer_Show_Data)
 	{

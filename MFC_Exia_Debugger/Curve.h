@@ -26,11 +26,11 @@ private:
 	float m_GridStepY;
 
 	bool RegisterWindowClass();
-	void DrawAll(CDC * pDC);
-	void DrawBG(CDC *pDC);
-	void DrawGrid(CDC *pDC);
-	void DrawAxis(CDC *pDC);
-	void DrawCurve(CDC *pDC);
+	void DrawAll(CDC * pDC, CRect rect);
+	void DrawBG(CDC *pDC, CRect rect);
+	void DrawGrid(CDC *pDC, CRect rect);
+	void DrawAxis(CDC *pDC, CRect rect);
+	void DrawCurve(CDC *pDC, CRect rect);
 
 	float *m_pDataBuf;
 	unsigned int m_nDataIndex;

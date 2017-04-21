@@ -137,7 +137,7 @@ void CCurve::OnPaint()
 	CBitmap *pOldBit = MemDC.SelectObject(&MemBitmap);
 
 	//绘图   
-	DrawAll(&MemDC);
+	DrawAll(&MemDC, rect);
 
 	//将内存中的图拷贝到屏幕上进行显示   
 	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &MemDC, 0, 0, SRCCOPY);
@@ -151,23 +151,22 @@ void CCurve::OnPaint()
 
 
 
-void CCurve::DrawAll(CDC * pDC)
+void CCurve::DrawAll(CDC * pDC, CRect rect)
 {
 	int nOldMode = pDC->SetBkMode(TRANSPARENT);	//背景色透明
 	//优先级高放后边，会覆盖前面的
-	DrawBG(pDC);
-	DrawGrid(pDC);
-	DrawCurve(pDC);
-	DrawAxis(pDC);
+	DrawBG(pDC, rect);
+	DrawGrid(pDC, rect);
+	DrawCurve(pDC,rect);
+	DrawAxis(pDC, rect);
+
 
 	pDC->SetBkMode(nOldMode);
 }
 
 
-void CCurve::DrawBG(CDC *pDC)
+void CCurve::DrawBG(CDC *pDC, CRect rect)
 {
-	CRect rect;
-	GetClientRect(&rect);	//获取控件区域
 	CBrush *pOldBrush = pDC->SelectObject(&m_Brush_BG);	//选中画笔绘制,并保存以前的画笔
 	pDC->Rectangle(0, rect.Height(), rect.Width(), 0);		//在控件区域画一个矩形框
 	//pDC->SetBkMode(TRANSPARENT);	//文字背景色透明
@@ -175,18 +174,15 @@ void CCurve::DrawBG(CDC *pDC)
 	pDC->SelectObject(pOldBrush);		//恢复以前的画笔
 }
 
-void CCurve::DrawAxis(CDC *pDC)
+void CCurve::DrawAxis(CDC *pDC, CRect rect)
 {
 
 }
 
-void CCurve::DrawGrid(CDC *pDC)
+void CCurve::DrawGrid(CDC *pDC, CRect rect)
 {
-	CRect rect;
-	GetClientRect(&rect);	//获取控件区域
-	int nOffset;
+	float nOffset = m_GridStepX - (m_nOffset - (int)(m_nOffset / m_GridStepX) * m_GridStepX);
 
-	nOffset = (int)m_GridStepX - m_nOffset % (int)m_GridStepX;
 	CPen *pOldPen = pDC->SelectObject(&m_Pen_Grid);	//选中画笔绘制,并保存以前的画笔
 
 	for (float X = (float)m_RectGrid.left + nOffset; (int)X <= m_RectGrid.right; X += m_GridStepX)
@@ -195,7 +191,7 @@ void CCurve::DrawGrid(CDC *pDC)
 		pDC->LineTo((int)X, m_RectGrid.bottom);
 	}
 
-	for (float Y = (float)m_RectGrid.top; (int)Y <= m_RectGrid.bottom; Y += m_GridStepY)
+	for (float Y = (float)m_RectGrid.top; (int)Y < m_RectGrid.bottom; Y += m_GridStepY)
 	{
 		pDC->MoveTo(m_RectGrid.left, (int)Y);
 		pDC->LineTo(m_RectGrid.right, (int)Y);
@@ -205,11 +201,12 @@ void CCurve::DrawGrid(CDC *pDC)
 	pDC->SelectObject(&pOldPen);
 }
 
-void CCurve::DrawCurve(CDC *pDC)
+void CCurve::DrawCurve(CDC *pDC, CRect rect)
 {
-	CRect rect;
-	GetClientRect(&rect);	//获取控件区域
 	unsigned int nIndex;
+	int nZeroY = m_RectGrid.bottom - m_RectGrid.Height() / 2;
+	CPen *pOldPen = pDC->SelectObject(&m_Pen_Curve);	//选中画笔绘制,并保存以前的画笔
+
 	if (m_nDataCount > m_nBufSize)
 	{
 		nIndex = m_nDataIndex;
@@ -218,7 +215,7 @@ void CCurve::DrawCurve(CDC *pDC)
 	{
 		nIndex = 0;
 	}
-	pDC->MoveTo(m_RectGrid.left, (int)*(m_pDataBuf + nIndex++));
+	pDC->MoveTo(m_RectGrid.left, nZeroY - (int)*(m_pDataBuf + nIndex++));
 	for (unsigned int i = 1; i < m_nBufSize; i++)
 	{
 		if (nIndex >= m_nBufSize)
@@ -229,8 +226,10 @@ void CCurve::DrawCurve(CDC *pDC)
 		{
 			break;
 		}
-		pDC->LineTo(m_RectGrid.left + i, (int)*(m_pDataBuf + nIndex++));
+		pDC->LineTo(m_RectGrid.left + i, nZeroY - (int)*(m_pDataBuf + nIndex++));
 	}
+
+	pDC->SelectObject(&pOldPen);
 }
 
 
@@ -262,4 +261,8 @@ void CCurve::AddData(float fData)
 	}
 	Invalidate();
 	UpdateWindow();
+	if (m_nOffset == 0)
+	{
+		fData = 1;
+	}
 }
