@@ -390,7 +390,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		GetQuadrotorState();
 		m_Serial.ClearRecData();
-		m_Curve.AddData(m_State.Gyro_X);
+		m_Curve.AddData(m_State.Pitch);
 	}
 	else if (nIDEvent == m_Timer_Show_Data)
 	{

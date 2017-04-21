@@ -19,6 +19,9 @@ class CMFC_Exia_DebuggerApp : public CWinApp
 {
 public:
 	CMFC_Exia_DebuggerApp();
+	~CMFC_Exia_DebuggerApp();
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR gdiplusToken;
 
 // ÖØÐ´
 public:
