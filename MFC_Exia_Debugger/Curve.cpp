@@ -204,7 +204,8 @@ void CCurve::DrawGrid(CDC *pDC, CRect rect)
 void CCurve::DrawCurve(CDC *pDC, CRect rect)
 {
 	POINT DataPoint[1024] = { { 0 } };
-	unsigned int nIndex;
+	unsigned int i, nIndex;
+	unsigned int nDataToDraw;
 	int nZeroY = m_RectGrid.bottom - m_RectGrid.Height() / 2;
 	CPen *pOldPen = pDC->SelectObject(&m_Pen_Curve);	//选中画笔绘制,并保存以前的画笔
 
@@ -222,21 +223,23 @@ void CCurve::DrawCurve(CDC *pDC, CRect rect)
 	Pen newPen(Color::Red, 1);
 
 
-	for (unsigned int i = 0; i < m_nBufSize; i++)
+	for (i = 0; i < m_nBufSize; i++)
 	{
-		if (nIndex >= m_nBufSize)
-		{
-			nIndex = 0;
-		}
 		if (m_nDataCount <= i)
 		{
 			break;
+		}
+		if (nIndex >= m_nBufSize)
+		{
+			nIndex = 0;
 		}
 		DataPoint[i].x = m_RectGrid.left + i;
 		DataPoint[i].y = nZeroY - (int)*(m_pDataBuf + nIndex++);
 	}
 
-	for (unsigned int i = 1; i < m_nBufSize; i++)
+	nDataToDraw = i;
+
+	for (i = 1; i < nDataToDraw; i++)
 	{
 		graphics.DrawLine(&newPen, DataPoint[i - 1].x, DataPoint[i - 1].y, DataPoint[i].x, DataPoint[i].y);
 	}
