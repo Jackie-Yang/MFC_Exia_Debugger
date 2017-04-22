@@ -16,16 +16,22 @@ CCurve::CCurve()
 	m_Brush_BG.CreateSolidBrush(BLACK);
 	m_Pen_Grid.CreatePen(PS_DOT, 1, TEAL);
 	m_Pen_Curve.CreatePen(PS_SOLID, 1, RED);
+	m_Pen_Axis.CreatePen(PS_SOLID, 1, MAGENTA);
 
-	m_RectGrid.SetRect(0,0,0,0);
+	m_RectCurve.SetRect(0,0,0,0);
+	m_RectBG.SetRect(0, 0, 0, 0);
 	m_GridStepX = 0;
 	m_GridStepY = 0;
+	m_AxisStepX = 0;
+	m_AxisStepY = 0;
+	m_PointStepX = 0;
 
 	m_nOffset = 0;
 	m_nDataIndex = 0;
 	m_nDataCount = 0;
 	m_nBufSize = 0;
 	m_pDataBuf = NULL;
+	m_bAntialias = FALSE;
 }
 
 CCurve::~CCurve()
@@ -79,23 +85,25 @@ bool CCurve::RegisterWindowClass()
 }
 
 //要resize的话可以把参数作为成员变量存下来
-void CCurve::Init(float fScaleX, float fScaleY, int nGridX, int nGridY)
+void CCurve::Init(unsigned int nBufSize, float fScaleX, float fScaleY, int nGridX, int nGridY)
 {
-	CRect rect;
-	GetClientRect(&rect);	//获取控件区域
+	GetClientRect(&m_RectBG);	//获取控件区域
 
 	int nPaddingX, nPaddingY;
-	nPaddingX = (int)(rect.Width() * (1 - fScaleX) * 0.5f);
-	nPaddingY = (int)(rect.Height() * (1 - fScaleY) * 0.5f);
+	nPaddingX = (int)(m_RectBG.Width() * (1 - fScaleX) * 0.5f);
+	nPaddingY = (int)(m_RectBG.Height() * (1 - fScaleY) * 0.5f);
 
-	m_RectGrid.top = nPaddingY;
-	m_RectGrid.right = rect.Width() - nPaddingX;
+	m_RectCurve.top = nPaddingY;
+	m_RectCurve.right = m_RectBG.Width() - nPaddingX;
 
-	m_RectGrid.left = nPaddingX;
-	m_RectGrid.bottom = rect.Height() - nPaddingY;
+	m_RectCurve.left = nPaddingX;
+	m_RectCurve.bottom = m_RectBG.Height() - nPaddingY;
 
-	m_GridStepX = m_RectGrid.Width() / (float)nGridX;
-	m_GridStepY = m_RectGrid.Height() / (float)nGridY;
+	m_GridStepX = m_RectCurve.Width() / (float)nGridX;
+	m_GridStepY = m_RectCurve.Height() / (float)nGridY;
+
+	m_AxisStepX = m_GridStepX / 5.0f;
+	m_AxisStepY = m_GridStepY / 5.0f;
 
 	if (m_pDataBuf)
 	{
@@ -103,8 +111,10 @@ void CCurve::Init(float fScaleX, float fScaleY, int nGridX, int nGridY)
 		m_pDataBuf = NULL;
 	}
 
-	m_nBufSize = m_RectGrid.Width();
-	m_pDataBuf = new float[m_nBufSize];
+	//m_nBufSize = m_RectCurve.Width();
+	m_nBufSize = nBufSize;
+	m_PointStepX = (float)m_RectCurve.Width() / (float)m_nBufSize;
+	m_pDataBuf = new float[m_nBufSize];	//数据缓存为坐标区域宽度
 	m_nDataIndex = 0;
 	m_nDataCount = 0;
 	m_nOffset = 0;
@@ -118,10 +128,6 @@ void CCurve::OnPaint()
 	
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CWnd::OnPaint()
-	CRect rect;
-	GetClientRect(rect);
-
-	
 
 	//使用双缓存绘图，先画到内存，这样加上不使用OnEraseBkgnd擦除背景会有比较流畅的绘图效果
 	CDC   MemDC;   //首先定义一个显示设备对象   
@@ -130,17 +136,17 @@ void CCurve::OnPaint()
 	MemDC.CreateCompatibleDC(NULL);
 	//这时还不能绘图，因为没有地方画  
 	//建立一个与屏幕显示兼容的位图
-	MemBitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+	MemBitmap.CreateCompatibleBitmap(&dc, m_RectBG.Width(), m_RectBG.Height());
 
 	//将位图选入到内存显示设备中   
 	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上   
 	CBitmap *pOldBit = MemDC.SelectObject(&MemBitmap);
 
 	//绘图   
-	DrawAll(&MemDC, rect);
+	DrawAll(&MemDC);
 
 	//将内存中的图拷贝到屏幕上进行显示   
-	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &MemDC, 0, 0, SRCCOPY);
+	dc.BitBlt(0, 0, m_RectBG.Width(), m_RectBG.Height(), &MemDC, 0, 0, SRCCOPY);
 	//绘图完成后的清理   
 	MemBitmap.DeleteObject();
 	MemDC.DeleteDC();
@@ -148,66 +154,94 @@ void CCurve::OnPaint()
 
 }
 
+void CCurve::Update()
+{
+	Invalidate();
+	UpdateWindow();
+}
 
 
 
-void CCurve::DrawAll(CDC * pDC, CRect rect)
+void CCurve::DrawAll(CDC * pDC)
 {
 	int nOldMode = pDC->SetBkMode(TRANSPARENT);	//背景色透明
 	//优先级高放后边，会覆盖前面的
-	DrawBG(pDC, rect);
-	DrawGrid(pDC, rect);
-	DrawCurve(pDC,rect);
-	DrawAxis(pDC, rect);
-
+	DrawBG(pDC);
+	DrawGrid(pDC);
+	DrawCurve(pDC);
+	DrawAxis(pDC);
 
 	pDC->SetBkMode(nOldMode);
 }
 
 
-void CCurve::DrawBG(CDC *pDC, CRect rect)
+void CCurve::DrawBG(CDC *pDC)
 {
 	CBrush *pOldBrush = pDC->SelectObject(&m_Brush_BG);	//选中画笔绘制,并保存以前的画笔
-	pDC->Rectangle(0, rect.Height(), rect.Width(), 0);		//在控件区域画一个矩形框
-	//pDC->SetBkMode(TRANSPARENT);	//文字背景色透明
-
+	pDC->Rectangle(0, m_RectBG.Height(), m_RectBG.Width(), 0);		//在控件区域画一个矩形框
 	pDC->SelectObject(pOldBrush);		//恢复以前的画笔
 }
 
-void CCurve::DrawAxis(CDC *pDC, CRect rect)
+void CCurve::DrawAxis(CDC *pDC)
 {
+	float nOffset = m_nOffset * m_PointStepX;
+	nOffset = -(nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//计算偏移
+	CPen *pOldPen = pDC->SelectObject(&m_Pen_Axis);	//选中画笔绘制,并保存以前的画笔
+	int i = 0;
 
+	for (float X = (float)m_RectCurve.left + nOffset; (int)X <= m_RectCurve.right; X += m_AxisStepX, i++)
+	{
+		if ((int)X > m_RectCurve.left && i % 5)
+		{
+			pDC->MoveTo((int)X, m_RectCurve.bottom - 4);
+			pDC->LineTo((int)X, m_RectCurve.bottom);
+		}
+	}
+
+	i = 0;
+	for (float Y = (float)m_RectCurve.top; (int)Y <= m_RectCurve.bottom; Y += m_AxisStepY, i++)
+	{
+		if (i % 5)
+		{
+			pDC->MoveTo(m_RectCurve.left, (int)Y);
+			pDC->LineTo(m_RectCurve.left + 4, (int)Y);
+		}
+	}
+
+	pDC->SelectObject(&pOldPen);
 }
 
-void CCurve::DrawGrid(CDC *pDC, CRect rect)
+void CCurve::DrawGrid(CDC *pDC)
 {
-	float nOffset = m_GridStepX - (m_nOffset - (int)(m_nOffset / m_GridStepX) * m_GridStepX);
+	float nOffset = m_nOffset * m_PointStepX;
+	nOffset = m_GridStepX - (nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//计算偏移
+	CString str;
 
 	CPen *pOldPen = pDC->SelectObject(&m_Pen_Grid);	//选中画笔绘制,并保存以前的画笔
 
-	for (float X = (float)m_RectGrid.left + nOffset; (int)X <= m_RectGrid.right; X += m_GridStepX)
+	pDC->MoveTo(m_RectCurve.left, m_RectCurve.top);	//第一条线要画
+	pDC->LineTo(m_RectCurve.left, m_RectCurve.bottom);
+
+	for (float X = (float)m_RectCurve.left + nOffset; (int)X <= m_RectCurve.right; X += m_GridStepX)
 	{
-		pDC->MoveTo((int)X, m_RectGrid.top);
-		pDC->LineTo((int)X, m_RectGrid.bottom);
+		pDC->MoveTo((int)X, m_RectCurve.top);
+		pDC->LineTo((int)X, m_RectCurve.bottom);
 	}
 
-	for (float Y = (float)m_RectGrid.top; (int)Y < m_RectGrid.bottom; Y += m_GridStepY)
+	for (float Y = (float)m_RectCurve.top; (int)Y <= m_RectCurve.bottom; Y += m_GridStepY)
 	{
-		pDC->MoveTo(m_RectGrid.left, (int)Y);
-		pDC->LineTo(m_RectGrid.right, (int)Y);
+		pDC->MoveTo(m_RectCurve.left, (int)Y);
+		pDC->LineTo(m_RectCurve.right, (int)Y);
 	}
 
 
 	pDC->SelectObject(&pOldPen);
 }
 
-void CCurve::DrawCurve(CDC *pDC, CRect rect)
+void CCurve::DrawCurve(CDC *pDC)
 {
-	POINT DataPoint[1024] = { { 0 } };
 	unsigned int i, nIndex;
-	unsigned int nDataToDraw;
-	int nZeroY = m_RectGrid.bottom - m_RectGrid.Height() / 2;
-	CPen *pOldPen = pDC->SelectObject(&m_Pen_Curve);	//选中画笔绘制,并保存以前的画笔
+	int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//坐标轴中间为0
 
 	if (m_nDataCount > m_nBufSize)
 	{
@@ -218,49 +252,100 @@ void CCurve::DrawCurve(CDC *pDC, CRect rect)
 		nIndex = 0;
 	}
 
-	Graphics graphics(pDC->m_hDC);
-	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
-	Pen newPen(Color::Red, 1);
+	POINT LastPoint;
+	POINT NewPoint;
 
-
-	for (i = 0; i < m_nBufSize; i++)
+	if (m_bAntialias)	//Gdi+抗锯齿
 	{
-		if (m_nDataCount <= i)
+		Graphics graphics(pDC->m_hDC);
+		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+		Pen newPen(Color::Red, 1);
+		//第一个点
+		LastPoint.x = m_RectCurve.left;
+		LastPoint.y = nZeroY - (int)*(m_pDataBuf + nIndex++);
+		if (LastPoint.y < m_RectCurve.top)
 		{
-			break;
+			LastPoint.y = m_RectCurve.top;
 		}
-		if (nIndex >= m_nBufSize)
+		else if (LastPoint.y > m_RectCurve.bottom)	//越界
 		{
-			nIndex = 0;
+			LastPoint.y = m_RectCurve.bottom;
 		}
-		DataPoint[i].x = m_RectGrid.left + i;
-		DataPoint[i].y = nZeroY - (int)*(m_pDataBuf + nIndex++);
+
+		for (i = 1; i < m_nBufSize; i++, nIndex++)
+		{
+			if (m_nDataCount <= i)
+			{
+				break;
+			}
+			if (nIndex >= m_nBufSize)
+			{
+				nIndex = 0;
+			}
+			NewPoint.x = (int)(m_RectCurve.left + i * m_PointStepX);	//计算x坐标
+			if (NewPoint.x == LastPoint.x)	//如果x坐标和上一点一样，则不画
+			{
+				continue;
+			}
+			NewPoint.y = nZeroY - (int)*(m_pDataBuf + nIndex);
+			if (NewPoint.y < m_RectCurve.top)
+			{
+				NewPoint.y = m_RectCurve.top;
+			}
+			else if (NewPoint.y > m_RectCurve.bottom)	//越界
+			{
+				NewPoint.y = m_RectCurve.bottom;
+			}
+			graphics.DrawLine(&newPen, LastPoint.x, LastPoint.y, NewPoint.x, NewPoint.y);
+			LastPoint = NewPoint;
+		}
 	}
-
-	nDataToDraw = i;
-
-	for (i = 1; i < nDataToDraw; i++)
+	else	//普通画法不抗锯齿
 	{
-		graphics.DrawLine(&newPen, DataPoint[i - 1].x, DataPoint[i - 1].y, DataPoint[i].x, DataPoint[i].y);
+		CPen *pOldPen = pDC->SelectObject(&m_Pen_Curve);	//选中画笔绘制,并保存以前的画笔
+		//第一个点
+		LastPoint.x = m_RectCurve.left;
+		LastPoint.y = nZeroY - (int)*(m_pDataBuf + nIndex++);
+		if (LastPoint.y < m_RectCurve.top)
+		{
+			LastPoint.y = m_RectCurve.top;
+		}
+		else if (LastPoint.y > m_RectCurve.bottom)	//越界
+		{
+			LastPoint.y = m_RectCurve.bottom;
+		}
+
+		pDC->MoveTo(LastPoint.x, LastPoint.y);
+		for (unsigned int i = 1; i < m_nBufSize; i++, nIndex++)
+		{
+			if (nIndex >= m_nBufSize)
+			{
+				nIndex = 0;
+			}
+			if (m_nDataCount <= i)
+			{
+				break;
+			}
+			NewPoint.x = (int)(m_RectCurve.left + i * m_PointStepX);	//计算x坐标
+			if (NewPoint.x == LastPoint.x)	//如果x坐标和上一点一样，则不画
+			{
+				continue;
+			}
+			NewPoint.y = nZeroY - (int)*(m_pDataBuf + nIndex);
+			if (NewPoint.y < m_RectCurve.top)
+			{
+				NewPoint.y = m_RectCurve.top;
+			}
+			else if (NewPoint.y > m_RectCurve.bottom)	//越界
+			{
+				NewPoint.y = m_RectCurve.bottom;
+			}
+			pDC->LineTo(NewPoint.x, NewPoint.y);
+			LastPoint = NewPoint;
+		}
+		pDC->SelectObject(&pOldPen);
 	}
-
-
-
-	//pDC->MoveTo(m_RectGrid.left, nZeroY - (int)*(m_pDataBuf + nIndex++));
-	//for (unsigned int i = 1; i < m_nBufSize; i++)
-	//{
-	//	if (nIndex >= m_nBufSize)
-	//	{
-	//		nIndex = 0;
-	//	}
-	//	if (m_nDataCount <= i)
-	//	{
-	//		break;
-	//	}
-	//	pDC->LineTo(m_RectGrid.left + i, nZeroY - (int)*(m_pDataBuf + nIndex++));
-	//}
-
-	pDC->SelectObject(&pOldPen);
+	
 }
 
 
@@ -289,11 +374,5 @@ void CCurve::AddData(float fData)
 	if (++m_nDataCount >= m_nBufSize)
 	{
 		m_nOffset = m_nDataCount % m_nBufSize;
-	}
-	Invalidate();
-	UpdateWindow();
-	if (m_nOffset == 0)
-	{
-		fData = 1;
 	}
 }

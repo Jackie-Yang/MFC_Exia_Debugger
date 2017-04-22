@@ -150,7 +150,8 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	m_Serial.Init(this);
 
-	m_Curve.Init(0.8f, 0.8f, 10, 10);
+	m_Curve.Init(500, 0.8f, 0.8f, 10, 10);
+	//m_Curve.m_bAntialias = TRUE;
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -388,9 +389,14 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent == m_Timer_Update_Data)
 	{
+		static int i = 0;
 		GetQuadrotorState();
 		m_Serial.ClearRecData();
 		m_Curve.AddData(m_State.Pitch);
+		//if (i++ % 3 == 0)
+		{
+			m_Curve.Update();
+		}
 	}
 	else if (nIDEvent == m_Timer_Show_Data)
 	{
