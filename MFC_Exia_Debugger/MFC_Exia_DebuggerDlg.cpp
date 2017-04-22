@@ -75,6 +75,20 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	m_Timer_Update_Data = 0;
 	m_Timer_Show_Data = 0;
 	memset(&m_State,0,sizeof(m_State));
+
+	m_pCurveDLG = new CurveDLG();
+	if (m_pCurveDLG)
+	{
+		m_pCurveDLG->Create(IDD_MFC_EXIA_CURVE_DIALOG); //创建一个非模态对话框 
+	}
+}
+
+CMFC_Exia_DebuggerDlg::~CMFC_Exia_DebuggerDlg()
+{
+	if (m_pCurveDLG)
+	{
+		delete m_pCurveDLG;
+	}
 }
 
 void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
@@ -82,7 +96,6 @@ void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_COM, m_Combox_COM);
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_Static_Status);
-	DDX_Control(pDX, IDC_CURVE, m_Curve);
 	DDX_Text(pDX, IDC_STATIC_THRO, m_str_THRO);
 	DDX_Text(pDX, IDC_STATIC_RUDD, m_str_RUDD);
 	DDX_Text(pDX, IDC_STATIC_ELEV, m_str_ELEV);
@@ -114,6 +127,7 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_MESSAGE(WM_SERIAL_CLOSE, &CMFC_Exia_DebuggerDlg::OnSerialClose)
 	ON_WM_CTLCOLOR()
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_OPEN_CURVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve)
 END_MESSAGE_MAP()
 
 
@@ -149,9 +163,7 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 	// TODO:  在此添加额外的初始化代码
 
 	m_Serial.Init(this);
-
-	m_Curve.Init(500, 0.8f, 0.8f, 10, 10);
-	//m_Curve.m_bAntialias = TRUE;
+	
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -392,11 +404,19 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 		static int i = 0;
 		GetQuadrotorState();
 		m_Serial.ClearRecData();
-		m_Curve.AddData(m_State.Pitch);
-		//if (i++ % 3 == 0)
+
+		if (m_pCurveDLG)
 		{
-			m_Curve.Update();
+			m_pCurveDLG->m_Curve.AddData(m_State.Pitch);
+			//if (i++ % 3 == 0)
+			m_pCurveDLG->UpdateCurve();
+			//if (m_pCurveDLG->IsWindowVisible() && !m_pCurveDLG->IsIconic())
+			//{
+			//	m_pCurveDLG->m_Curve.Update();
+			//}
 		}
+
+		
 	}
 	else if (nIDEvent == m_Timer_Show_Data)
 	{
@@ -542,4 +562,17 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	
 
 	UpdateData(FALSE);
+}
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (m_pCurveDLG)
+	{
+		m_pCurveDLG->ShowWindow(SW_SHOWNORMAL);
+	}
+	else
+	{
+		MessageBoxA("无法打开曲线监控窗口", "打开失败", MB_ICONERROR | MB_OK);
+	}
 }

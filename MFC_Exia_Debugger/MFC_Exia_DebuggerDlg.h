@@ -5,7 +5,7 @@
 #pragma once
 #include "Serial.h"
 #include "afxwin.h"
-#include "Curve.h"
+#include "CurveDLG.h"
 
 //把原来对齐方式设置压栈，并设新的对齐方式设置为一个字节对齐(不对齐)
 #pragma  pack (push,1)
@@ -51,13 +51,15 @@ typedef struct __QUADROTOR_STATE__
 // CMFC_Exia_DebuggerDlg 对话框
 class CMFC_Exia_DebuggerDlg : public CDialogEx
 {
-// 构造
 public:
+	// 构造
 	CMFC_Exia_DebuggerDlg(CWnd* pParent = NULL);	// 标准构造函数
+	//析构
+	~CMFC_Exia_DebuggerDlg();
 
 //枚举
 	// 对话框数据
-	enum { IDD = IDD_MFC_EXIA_DEBUGGER_DIALOG };
+	enum { IDD = IDD_MAIN_DIALOG };
 	// 定时器ID
 	enum 
 	{ 
@@ -90,6 +92,9 @@ public:
 
 
 private:
+
+	CurveDLG *m_pCurveDLG;	//曲线图对话框
+
 	CSerial m_Serial;
 	UINT_PTR m_Timer_Update_Data;
 	UINT_PTR m_Timer_Show_Data;
@@ -140,5 +145,5 @@ public:
 	CString m_str_Roll;
 	CString m_str_Pitch;
 	CString m_str_Yaw;
-	CCurve m_Curve;
+	afx_msg void OnBnClickedButtonOpenCurve();
 };

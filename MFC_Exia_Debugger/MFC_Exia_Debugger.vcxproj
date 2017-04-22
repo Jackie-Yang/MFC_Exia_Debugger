@@ -103,6 +103,7 @@
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="Curve.h" />
+    <ClInclude Include="CurveDLG.h" />
     <ClInclude Include="MFC_Exia_Debugger.h" />
     <ClInclude Include="MFC_Exia_DebuggerDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -112,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Curve.cpp" />
+    <ClCompile Include="CurveDLG.cpp" />
     <ClCompile Include="MFC_Exia_Debugger.cpp" />
     <ClCompile Include="MFC_Exia_DebuggerDlg.cpp" />
     <ClCompile Include="Serial.cpp" />
@@ -131,6 +133,7 @@
     <Image Include="res\main_Red_One_128px.ico" />
     <Image Include="res\main_Yellow_128px.ico" />
     <Image Include="res\MFC_Exia_Debugger.ico" />
+    <Image Include="res\Monitor_128px_.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

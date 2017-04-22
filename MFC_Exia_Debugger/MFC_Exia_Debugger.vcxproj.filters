@@ -42,6 +42,9 @@
     <ClInclude Include="Color.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CurveDLG.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Exia_Debugger.cpp">
@@ -57,6 +60,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Curve.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CurveDLG.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -81,6 +87,9 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\main_Blue_128px.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\Monitor_128px_.ico">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>
