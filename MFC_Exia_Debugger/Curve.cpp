@@ -13,10 +13,9 @@ IMPLEMENT_DYNAMIC(CCurve, CWnd)
 CCurve::CCurve()
 { 
 	RegisterWindowClass();
-	m_Brush_BG.CreateSolidBrush(BLACK);
-	m_Pen_Grid.CreatePen(PS_DOT, 1, TEAL);
-	m_Pen_Curve.CreatePen(PS_SOLID, 1, RED);
-	m_Pen_Axis.CreatePen(PS_SOLID, 1, MAGENTA);
+	m_CBrush_BG.CreateSolidBrush(BLACK);
+	m_CPen_Grid.CreatePen(PS_DOT, 1, TEAL);
+	m_CPen_Axis.CreatePen(PS_SOLID, 1, MAGENTA);
 
 	m_RectCurve.SetRect(0,0,0,0);
 	m_RectBG.SetRect(0, 0, 0, 0);
@@ -31,16 +30,30 @@ CCurve::CCurve()
 	m_nDataCount = 0;
 	m_nMaxX = 0;
 	m_nMaxY = 0;
-	m_pDataBuf = NULL;
-	m_bAntialias = FALSE;
+	m_bEnhance = FALSE;
+
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+	{
+		m_pDataBuf[Curve] = NULL;
+	}
 }
 
 CCurve::~CCurve()
 {
-	if (m_pDataBuf)
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		delete[]m_pDataBuf;
-		m_pDataBuf = NULL;
+		if (m_pDataBuf[Curve])
+		{
+			delete[]m_pDataBuf[Curve];
+			m_pDataBuf[Curve] = NULL;
+		}
+	}
+	
+	if (m_bEnhance)
+	{
+		// 关闭GDI+
+		GdiplusShutdown(gdiplusToken);
+		m_bEnhance = FALSE;
 	}
 }
 
@@ -116,12 +129,15 @@ void CCurve::Init(unsigned int nMaxX, unsigned int nMaxY, unsigned int nDataMAX,
 
 	if (nMaxX != m_nMaxX)	//没有改变nMaxX时不用修改这些数据
 	{
-		if (m_pDataBuf)
+		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
-			delete[]m_pDataBuf;
-			m_pDataBuf = NULL;
+			if (m_pDataBuf[Curve])
+			{
+				delete[]m_pDataBuf[Curve];
+				m_pDataBuf[Curve] = NULL;
+			}
+			m_pDataBuf[Curve] = new float[nMaxX];	//数据缓存
 		}
-		m_pDataBuf = new float[nMaxX];	//数据缓存
 		m_nDataIndex = 0;
 		m_nDataCount = 0;
 		m_nOffset = 0;
@@ -194,7 +210,7 @@ void CCurve::DrawAll(CDC * pDC)
 
 void CCurve::DrawBG(CDC *pDC)
 {
-	CBrush *pOldBrush = pDC->SelectObject(&m_Brush_BG);	//选中画笔绘制,并保存以前的画笔
+	CBrush *pOldBrush = pDC->SelectObject(&m_CBrush_BG);	//选中画笔绘制,并保存以前的画笔
 	pDC->Rectangle(0, m_RectBG.Height(), m_RectBG.Width(), 0);		//在控件区域画一个矩形框
 	pDC->SelectObject(pOldBrush);		//恢复以前的画笔
 }
@@ -203,7 +219,7 @@ void CCurve::DrawAxis(CDC *pDC)
 {
 	float nOffset = m_nOffset * m_PointStepX;
 	nOffset = -(nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//计算偏移
-	CPen *pOldPen = pDC->SelectObject(&m_Pen_Axis);	//选中画笔绘制,并保存以前的画笔
+	CPen *pOldPen = pDC->SelectObject(&m_CPen_Axis);	//选中画笔绘制,并保存以前的画笔
 	int i = 0;
 
 	for (float X = (float)m_RectCurve.left + nOffset; (int)X <= m_RectCurve.right; X += m_AxisStepX, i++)
@@ -232,7 +248,7 @@ void CCurve::DrawGrid(CDC *pDC)
 {
 	float nOffset = m_nOffset * m_PointStepX;
 	nOffset = - (nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//计算偏移
-	CPen *pOldPen = pDC->SelectObject(&m_Pen_Grid);	//选中画笔绘制网格,并保存以前的画笔
+	CPen *pOldPen = pDC->SelectObject(&m_CPen_Grid);	//选中画笔绘制网格,并保存以前的画笔
 
 	//绘制文字
 	int NumY = m_nMaxY;						//Y轴坐标从最大值开始画
@@ -288,109 +304,150 @@ void CCurve::DrawGrid(CDC *pDC)
 
 void CCurve::DrawCurve(CDC *pDC)
 {
+	const int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//坐标轴中间为0
+	//i是实际区域坐标，nIndex是数据的坐标
 	unsigned int i, nIndex;
-	int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//坐标轴中间为0
+	
 
-	if (m_nDataCount > m_nMaxX)
+	if (m_bEnhance)	//Gdi+抗锯齿
 	{
-		nIndex = m_nDataIndex;
-	}
-	else
-	{
-		nIndex = 0;
-	}
-
-	POINT LastPoint;
-	POINT NewPoint;
-
-	if (m_bAntialias)	//Gdi+抗锯齿
-	{
-		Graphics graphics(pDC->m_hDC);
-		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
-		Pen newPen(Color::Red, 1);
-		//第一个点
-		LastPoint.x = m_RectCurve.left;
-		LastPoint.y = nZeroY - (int)(*(m_pDataBuf + nIndex++) * m_PointStepY);
-		if (LastPoint.y < m_RectCurve.top)
+		Gdiplus::Point *pGdiPoint = NULL;
+		pGdiPoint = new Gdiplus::Point[m_nMaxX];
+		if (!pGdiPoint)
 		{
-			LastPoint.y = m_RectCurve.top;
-		}
-		else if (LastPoint.y > m_RectCurve.bottom)	//越界
-		{
-			LastPoint.y = m_RectCurve.bottom;
+			return;
 		}
 
-		for (i = 1; i < m_nMaxX; i++, nIndex++)
+		Gdiplus::Point LastPoint;
+		Gdiplus::Point NewPoint;
+		Gdiplus::Graphics graphics(pDC->m_hDC);
+		graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+		Gdiplus::Pen Pen_Curve(Gdiplus::Color::Transparent, 1);
+		Gdiplus::Color m_Coloe[CURVE_LINE];
+		//四条曲线
+		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
-			if (m_nDataCount <= i)
+			int nPointCount = 0;	//需要画的点数
+			if (m_nDataCount > m_nMaxX)
 			{
-				break;
+				nIndex = m_nDataIndex;
 			}
-			if (nIndex >= m_nMaxX)
+			else
 			{
 				nIndex = 0;
 			}
-			NewPoint.x = (int)(m_RectCurve.left + i * m_PointStepX);	//计算x坐标
-			if (NewPoint.x == LastPoint.x)	//如果x坐标和上一点一样，则不画
+			Pen_Curve.SetColor(Gdiplus::Color::Red);
+			//第一个点
+			LastPoint.X = m_RectCurve.left;
+			LastPoint.Y = nZeroY - (int)(*(m_pDataBuf[Curve] + nIndex++) * m_PointStepY);
+			pGdiPoint[nPointCount++] = LastPoint;
+			if (LastPoint.Y < m_RectCurve.top)
 			{
-				continue;
+				LastPoint.Y = m_RectCurve.top;
 			}
-			NewPoint.y = nZeroY - (int)(*(m_pDataBuf + nIndex) * m_PointStepY);	//计算y坐标
-			if (NewPoint.y < m_RectCurve.top)
+			else if (LastPoint.Y > m_RectCurve.bottom)	//越界
 			{
-				NewPoint.y = m_RectCurve.top;
+				LastPoint.Y = m_RectCurve.bottom;
 			}
-			else if (NewPoint.y > m_RectCurve.bottom)	//越界
+
+			float X = m_PointStepX;	//X坐标
+			for (i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
-				NewPoint.y = m_RectCurve.bottom;
+				if (m_nDataCount <= i)
+				{
+					break;
+				}
+				if (nIndex >= m_nMaxX)
+				{
+					nIndex = 0;
+				}
+				NewPoint.X = (int)(m_RectCurve.left + X);	//计算x实际坐标
+				if (NewPoint.X == LastPoint.X)	//如果x坐标和上一点一样，则不画
+				{
+					continue;
+				}
+				NewPoint.Y = nZeroY - (int)(*(m_pDataBuf[Curve] + nIndex) * m_PointStepY);	//计算y坐标
+				if (NewPoint.Y < m_RectCurve.top)
+				{
+					NewPoint.Y = m_RectCurve.top;
+				}
+				else if (NewPoint.Y > m_RectCurve.bottom)	//越界
+				{
+					NewPoint.Y = m_RectCurve.bottom;
+				}
+				//graphics.DrawLine(&Pen_Curve, LastPoint, NewPoint);
+				pGdiPoint[nPointCount++] = NewPoint;
+				LastPoint = NewPoint;
 			}
-			graphics.DrawLine(&newPen, LastPoint.x, LastPoint.y, NewPoint.x, NewPoint.y);
-			LastPoint = NewPoint;
+
+			graphics.DrawLines(&Pen_Curve, pGdiPoint, nPointCount);	//直接画出所有点，不然占用CPU资源很高
+		}
+		graphics.ReleaseHDC(pDC->m_hDC);
+		if (pGdiPoint)
+		{
+			delete[] pGdiPoint;
 		}
 	}
 	else	//普通画法不抗锯齿
 	{
-		CPen *pOldPen = pDC->SelectObject(&m_Pen_Curve);	//选中画笔绘制,并保存以前的画笔
-		//第一个点
-		LastPoint.x = m_RectCurve.left;
-		LastPoint.y = nZeroY - (int)(*(m_pDataBuf + nIndex++) * m_PointStepY);
-		if (LastPoint.y < m_RectCurve.top)
-		{
-			LastPoint.y = m_RectCurve.top;
-		}
-		else if (LastPoint.y > m_RectCurve.bottom)	//越界
-		{
-			LastPoint.y = m_RectCurve.bottom;
-		}
+		CPen CPen_Curve[CURVE_LINE] = NORMAL_CURVE_INIT;
+		CPen *pOldPen = pDC->SelectObject(CPen_Curve);	//选中画笔绘制,并保存以前的画笔
+		POINT LastPoint;
+		POINT NewPoint;
 
-		pDC->MoveTo(LastPoint.x, LastPoint.y);
-		for (unsigned int i = 1; i < m_nMaxX; i++, nIndex++)
+		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
-			if (nIndex >= m_nMaxX)
+			if (m_nDataCount > m_nMaxX)
+			{
+				nIndex = m_nDataIndex;
+			}
+			else
 			{
 				nIndex = 0;
 			}
-			if (m_nDataCount <= i)
+			//第一个点
+			LastPoint.x = m_RectCurve.left;
+			LastPoint.y = nZeroY - (int)(*(m_pDataBuf[Curve] + nIndex++) * m_PointStepY);
+			if (LastPoint.y < m_RectCurve.top)
 			{
-				break;
+				LastPoint.y = m_RectCurve.top;
 			}
-			NewPoint.x = (int)(m_RectCurve.left + i * m_PointStepX);	//计算x坐标
-			if (NewPoint.x == LastPoint.x)	//如果x坐标和上一点一样，则不画
+			else if (LastPoint.y > m_RectCurve.bottom)	//越界
 			{
-				continue;
+				LastPoint.y = m_RectCurve.bottom;
 			}
-			NewPoint.y = nZeroY - (int)(*(m_pDataBuf + nIndex) * m_PointStepY);	//计算y坐标
-			if (NewPoint.y < m_RectCurve.top)
+
+			pDC->MoveTo(LastPoint.x, LastPoint.y);
+			float X = m_PointStepX;	//X坐标
+			for (unsigned int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
-				NewPoint.y = m_RectCurve.top;
+				if (nIndex >= m_nMaxX)
+				{
+					nIndex = 0;
+				}
+				if (m_nDataCount <= i)
+				{
+					break;
+				}
+				NewPoint.x = (int)(m_RectCurve.left + X);	//计算x坐标
+				if (NewPoint.x == LastPoint.x)	//如果x坐标和上一点一样，则不画
+				{
+					continue;
+				}
+				NewPoint.y = nZeroY - (int)(*(m_pDataBuf[Curve] + nIndex) * m_PointStepY);	//计算y坐标
+				if (NewPoint.y < m_RectCurve.top)
+				{
+					NewPoint.y = m_RectCurve.top;
+				}
+				else if (NewPoint.y > m_RectCurve.bottom)	//越界
+				{
+					NewPoint.y = m_RectCurve.bottom;
+				}
+				pDC->LineTo(NewPoint.x, NewPoint.y);
+				LastPoint = NewPoint;
 			}
-			else if (NewPoint.y > m_RectCurve.bottom)	//越界
-			{
-				NewPoint.y = m_RectCurve.bottom;
-			}
-			pDC->LineTo(NewPoint.x, NewPoint.y);
-			LastPoint = NewPoint;
 		}
+		
 		pDC->SelectObject(&pOldPen);
 	}
 	
@@ -408,18 +465,21 @@ BOOL CCurve::OnEraseBkgnd(CDC* pDC)
 
 
 
-void CCurve::AddData(float fData)
+void CCurve::AddData(float(*fData)[CURVE_LINE])
 {
 	if (m_nDataCount >= m_nDataMAX)
 	{
 		ClearData();
 	}
-	if (!m_pDataBuf)
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		return;
+		if (!m_pDataBuf[Curve])
+		{
+			return;
+		}
+		*(m_pDataBuf[Curve] + m_nDataIndex) = (*fData)[Curve];
 	}
-	*(m_pDataBuf + m_nDataIndex++) = fData;
-	if (m_nDataIndex >= m_nMaxX)
+	if (++m_nDataIndex >= m_nMaxX)
 	{
 		m_nDataIndex = 0;
 	}
@@ -443,4 +503,27 @@ void CCurve::OnSize(UINT nType, int cx, int cy)
 	// TODO:  在此处添加消息处理程序代码
 	Init(m_nMaxX, m_nMaxY, m_nDataMAX, m_fScaleX, m_fScaleY, m_nGridX, m_nGridY);
 	Update();
+}
+
+
+void CCurve::CurveEnhance(bool bOpen)
+{
+	if (bOpen)
+	{
+		if (!m_bEnhance)
+		{
+			//添加的初始化GDI+  
+			GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+			m_bEnhance = TRUE;
+		}
+	}
+	else
+	{
+		if (m_bEnhance)
+		{
+			// 关闭GDI+
+			GdiplusShutdown(gdiplusToken);
+			m_bEnhance = FALSE;
+		}
+	}
 }

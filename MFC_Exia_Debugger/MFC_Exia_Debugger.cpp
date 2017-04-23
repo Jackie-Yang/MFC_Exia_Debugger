@@ -29,13 +29,12 @@ CMFC_Exia_DebuggerApp::CMFC_Exia_DebuggerApp()
 	// 将所有重要的初始化放置在 InitInstance 中
 }
 
-// CMFC_Exia_DebuggerApp 析构
-CMFC_Exia_DebuggerApp::~CMFC_Exia_DebuggerApp()
-{
-	// TODO:  在此处添加析构代码，
-	// 关闭GDI+
-	GdiplusShutdown(gdiplusToken);
-}
+//// CMFC_Exia_DebuggerApp 析构
+//CMFC_Exia_DebuggerApp::~CMFC_Exia_DebuggerApp()
+//{
+//	// TODO:  在此处添加析构代码，
+//	
+//}
 
 
 // 唯一的一个 CMFC_Exia_DebuggerApp 对象
@@ -78,8 +77,7 @@ BOOL CMFC_Exia_DebuggerApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
-	//添加的初始化GDI+  
-	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+	
 
 	CMFC_Exia_DebuggerDlg dlg;
 	m_pMainWnd = &dlg;

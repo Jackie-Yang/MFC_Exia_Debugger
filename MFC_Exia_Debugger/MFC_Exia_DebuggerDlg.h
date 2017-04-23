@@ -146,4 +146,5 @@ public:
 	CString m_str_Pitch;
 	CString m_str_Yaw;
 	afx_msg void OnBnClickedButtonOpenCurve();
+	afx_msg void OnBnClickedCurveEnhance();
 };

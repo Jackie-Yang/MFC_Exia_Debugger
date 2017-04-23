@@ -128,6 +128,7 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_CURVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve)
+	ON_BN_CLICKED(IDC_CURVE_ENHANCE, &CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance)
 END_MESSAGE_MAP()
 
 
@@ -402,18 +403,16 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == m_Timer_Update_Data)
 	{
 		static int i = 0;
-		GetQuadrotorState();
+		bool result;
+		result = GetQuadrotorState();
 		m_Serial.ClearRecData();
 
-		if (m_pCurveDLG)
+		if (result && m_pCurveDLG)
 		{
-			m_pCurveDLG->m_Curve.AddData(m_State.Pitch);
+			float CurveData[CURVE_LINE] = { m_State.Roll, m_State.Pitch, 0, 0 };
+			m_pCurveDLG->m_Curve.AddData(&CurveData);
 			//if (i++ % 3 == 0)
 			m_pCurveDLG->UpdateCurve();
-			//if (m_pCurveDLG->IsWindowVisible() && !m_pCurveDLG->IsIconic())
-			//{
-			//	m_pCurveDLG->m_Curve.Update();
-			//}
 		}
 
 		
@@ -574,5 +573,20 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve()
 	else
 	{
 		MessageBoxA("无法打开曲线监控窗口", "打开失败", MB_ICONERROR | MB_OK);
+	}
+}
+
+
+//设置图像增强
+void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (((CButton*)GetDlgItem(IDC_CURVE_ENHANCE))->GetCheck())
+	{
+		m_pCurveDLG->m_Curve.CurveEnhance(TRUE);
+	}
+	else
+	{
+		m_pCurveDLG->m_Curve.CurveEnhance(FALSE);
 	}
 }

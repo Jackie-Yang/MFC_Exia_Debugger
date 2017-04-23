@@ -58,8 +58,7 @@ BOOL CurveDLG::OnInitDialog()
 
 	GetClientRect(&m_CurClientRect);	//当前客户区大小
 
-	m_Curve.Init(1000, 1000, 10000, 0.8f, 0.8f, 10, 10);
-	//m_Curve.m_bAntialias = TRUE;
+	m_Curve.Init(800, 1000, 10000, 0.8f, 0.8f, 10, 10);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -93,7 +92,7 @@ void CurveDLG::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	CDialogEx::OnGetMinMaxInfo(lpMMI);
 }
 
-//窗口还原时显示出数据
+//窗口从最小化还原时更新曲线(最小化时不绘图)
 BOOL CurveDLG::OnQueryOpen()
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
@@ -104,7 +103,7 @@ BOOL CurveDLG::OnQueryOpen()
 
 void CurveDLG::UpdateCurve()
 {
-	if (IsWindowVisible() && !IsIconic())
+	if (IsWindowVisible() && !IsIconic())	//在最小化时不进行绘图
 	{
 		m_Curve.Update();
 	}
