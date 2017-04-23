@@ -24,11 +24,12 @@ protected:
 
 private:
 	POINT				m_ptMinTrackSize;		//窗口的最小大小
-	CRect				m_CurClientRect;				//窗口的当前大小
+	CRect				m_CurClientRect;		//窗口的当前大小
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	afx_msg BOOL OnQueryOpen();
 	void UpdateCurve();
+	virtual void PostNcDestroy();
 };

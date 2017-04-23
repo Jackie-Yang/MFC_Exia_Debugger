@@ -10,15 +10,15 @@
 
 IMPLEMENT_DYNAMIC(CCurve, CWnd)
 
-CCurve::CCurve()
+CCurve::CCurve():	//初始化画笔花刷
+m_CBrush_BG(STYLE_BG),
+m_CPen_Grid(STYLE_GRID),
+m_CPen_Axis(STYLE_AXIS),
+m_RectCurve(0, 0, 0, 0),
+m_RectBG(0, 0, 0, 0)
 { 
 	RegisterWindowClass();
-	m_CBrush_BG.CreateSolidBrush(BLACK);
-	m_CPen_Grid.CreatePen(PS_DOT, 1, TEAL);
-	m_CPen_Axis.CreatePen(PS_SOLID, 1, MAGENTA);
 
-	m_RectCurve.SetRect(0,0,0,0);
-	m_RectBG.SetRect(0, 0, 0, 0);
 	m_GridStepX = 0;
 	m_GridStepY = 0;
 	m_AxisStepX = 0;
@@ -36,6 +36,10 @@ CCurve::CCurve()
 	{
 		m_pDataBuf[Curve] = NULL;
 	}
+
+	//初始化曲线颜色
+	GDI_CURVE_INIT(m_GDI_CurveColor);
+	NORMAL_CURVE_INIT(m_CPen_NormalCurve);
 }
 
 CCurve::~CCurve()
@@ -244,6 +248,7 @@ void CCurve::DrawAxis(CDC *pDC)
 	pDC->SelectObject(&pOldPen);
 }
 
+//绘制网格
 void CCurve::DrawGrid(CDC *pDC)
 {
 	float nOffset = m_nOffset * m_PointStepX;
@@ -304,10 +309,9 @@ void CCurve::DrawGrid(CDC *pDC)
 
 void CCurve::DrawCurve(CDC *pDC)
 {
-	const int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//坐标轴中间为0
+	const int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//坐标轴中间为Y轴0坐标
 	//i是实际区域坐标，nIndex是数据的坐标
 	unsigned int i, nIndex;
-	
 
 	if (m_bEnhance)	//Gdi+抗锯齿
 	{
@@ -323,7 +327,7 @@ void CCurve::DrawCurve(CDC *pDC)
 		Gdiplus::Graphics graphics(pDC->m_hDC);
 		graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 		Gdiplus::Pen Pen_Curve(Gdiplus::Color::Transparent, 1);
-		Gdiplus::Color m_Coloe[CURVE_LINE];
+		
 		//四条曲线
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
@@ -336,11 +340,10 @@ void CCurve::DrawCurve(CDC *pDC)
 			{
 				nIndex = 0;
 			}
-			Pen_Curve.SetColor(Gdiplus::Color::Red);
+			Pen_Curve.SetColor(m_GDI_CurveColor[Curve]);
 			//第一个点
 			LastPoint.X = m_RectCurve.left;
 			LastPoint.Y = nZeroY - (int)(*(m_pDataBuf[Curve] + nIndex++) * m_PointStepY);
-			pGdiPoint[nPointCount++] = LastPoint;
 			if (LastPoint.Y < m_RectCurve.top)
 			{
 				LastPoint.Y = m_RectCurve.top;
@@ -349,6 +352,7 @@ void CCurve::DrawCurve(CDC *pDC)
 			{
 				LastPoint.Y = m_RectCurve.bottom;
 			}
+			pGdiPoint[nPointCount++] = LastPoint;
 
 			float X = m_PointStepX;	//X坐标
 			for (i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
@@ -390,12 +394,12 @@ void CCurve::DrawCurve(CDC *pDC)
 	}
 	else	//普通画法不抗锯齿
 	{
-		CPen CPen_Curve[CURVE_LINE] = NORMAL_CURVE_INIT;
-		CPen *pOldPen = pDC->SelectObject(CPen_Curve);	//选中画笔绘制,并保存以前的画笔
+		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//选中画笔绘制,并保存以前的画笔
 		POINT LastPoint;
 		POINT NewPoint;
 
-		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+		//画CURVE_LINE条曲线，每次画完切换下一种画笔
+		for (int Curve = 0; Curve < CURVE_LINE; Curve++, pDC->SelectObject(m_CPen_NormalCurve + Curve))
 		{
 			if (m_nDataCount > m_nMaxX)
 			{
@@ -416,9 +420,9 @@ void CCurve::DrawCurve(CDC *pDC)
 			{
 				LastPoint.y = m_RectCurve.bottom;
 			}
-
+			//移动到第一个点，之后的点连续画
 			pDC->MoveTo(LastPoint.x, LastPoint.y);
-			float X = m_PointStepX;	//X坐标
+			float X = m_PointStepX;	//第一个点X坐标
 			for (unsigned int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
 				if (nIndex >= m_nMaxX)
@@ -464,7 +468,8 @@ BOOL CCurve::OnEraseBkgnd(CDC* pDC)
 }
 
 
-
+//添加曲线数据：
+//参数：float(*fData)[CURVE_LINE]为，指向一个与曲线数目相同的数组
 void CCurve::AddData(float(*fData)[CURVE_LINE])
 {
 	if (m_nDataCount >= m_nDataMAX)
@@ -489,6 +494,7 @@ void CCurve::AddData(float(*fData)[CURVE_LINE])
 	}
 }
 
+//清空所有曲线数据
 void CCurve::ClearData()
 {
 	m_nDataIndex = 0;
@@ -505,7 +511,7 @@ void CCurve::OnSize(UINT nType, int cx, int cy)
 	Update();
 }
 
-
+//设置图像增强，对曲线进行抗锯齿处理
 void CCurve::CurveEnhance(bool bOpen)
 {
 	if (bOpen)

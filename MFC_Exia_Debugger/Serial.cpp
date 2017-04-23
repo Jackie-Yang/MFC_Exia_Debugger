@@ -68,7 +68,7 @@ bool CSerial::UpdateSerialList()
 	DWORD  MaxValueNameLength;
 	DWORD  MaxValueLength;
 	DWORD  dwValueNumber;
-	LPSTR  ValueName, Value;
+	LPSTR  ValueName = NULL, Value = NULL;
 	SerialInfo stSerialInfo;
 	static SerialInfo stCurSerialInfo;
 	stCurSerialInfo.str_Name = "";
@@ -761,7 +761,10 @@ UINT32 CSerial::BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize)
 {
 	if (pBuf->hMutex)
 	{
-		WaitForSingleObject(pBuf->hMutex, INFINITE);
+		if (WaitForSingleObject(pBuf->hMutex, INFINITE))	//!= WAIT_OBJECT_0
+		{
+			return 0;
+		}
 	}
 
 	if (nSize > BUF_SIZE - pBuf->nByteToRead)	//Ð´ÂúÎÞ·¨ÔÙÐ´
@@ -815,7 +818,10 @@ UINT32 CSerial::BufGetData(p_CycBuf pBuf, PUINT8 pData, UINT32 nSize)
 {
 	if (pBuf->hMutex)
 	{
-		WaitForSingleObject(pBuf->hMutex, INFINITE);
+		if (WaitForSingleObject(pBuf->hMutex, INFINITE))	//!= WAIT_OBJECT_0
+		{
+			return 0;
+		}
 	}
 	if (nSize > pBuf->nByteToRead)
 	{
@@ -857,7 +863,10 @@ void CSerial::BufClear(p_CycBuf pBuf)
 {
 	if (pBuf->hMutex)
 	{
-		WaitForSingleObject(pBuf->hMutex, INFINITE);
+		if (WaitForSingleObject(pBuf->hMutex, INFINITE))	//!= WAIT_OBJECT_0
+		{
+			return;
+		}
 	}
 	pBuf->nByteToRead = 0;
 	pBuf->nReadIndex = 0;

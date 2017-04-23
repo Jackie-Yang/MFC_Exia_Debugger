@@ -64,7 +64,8 @@ public:
 	enum 
 	{ 
 		ID_TIMER_UPDATE_DATA = 1, 
-		ID_TIMER_SHOW_DATA 
+		ID_TIMER_SHOW_DATA ,
+		ID_TIMER_UPDATE_CURVE
 	};
 
 //¿Ø¼þ
@@ -98,6 +99,7 @@ private:
 	CSerial m_Serial;
 	UINT_PTR m_Timer_Update_Data;
 	UINT_PTR m_Timer_Show_Data;
+	UINT_PTR m_Timer_Update_Curve;
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
@@ -147,4 +149,5 @@ public:
 	CString m_str_Yaw;
 	afx_msg void OnBnClickedButtonOpenCurve();
 	afx_msg void OnBnClickedCurveEnhance();
+	afx_msg void OnDestroy();
 };

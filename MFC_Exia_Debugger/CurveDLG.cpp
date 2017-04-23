@@ -58,7 +58,7 @@ BOOL CurveDLG::OnInitDialog()
 
 	GetClientRect(&m_CurClientRect);	//当前客户区大小
 
-	m_Curve.Init(800, 1000, 10000, 0.8f, 0.8f, 10, 10);
+	m_Curve.Init(1000, 1000, 10000, 0.8f, 0.8f, 10, 10);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -107,4 +107,11 @@ void CurveDLG::UpdateCurve()
 	{
 		m_Curve.Update();
 	}
+}
+
+void CurveDLG::PostNcDestroy()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+	CDialogEx::PostNcDestroy();
+	delete this;
 }

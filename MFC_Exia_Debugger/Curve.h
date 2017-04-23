@@ -4,23 +4,37 @@
 // CCurve
 
 #include "Color.h"
-#define COLOR_CURVE1	Red
-#define COLOR_CURVE2	Blue
-#define COLOR_CURVE3	Cyan
-#define COLOR_CURVE4	Yellow
 
 
+//默认风格
+//Default Style
+
+#define STYLE_BG		CCurve::Black
+#define STYLE_GRID		PS_DOT, 1, CCurve::Teal
+#define STYLE_AXIS		PS_SOLID, 1, CCurve::Magenta
+
+
+//添加曲线的方法，CURVE_LINE设置成响应的曲线数目，添加颜色的宏定义，进行AddData时传入的数组指针大小应该和曲线数目一致，不然也会报错
+//曲线设定
 #define CURVE_LINE	4
-#define GDI_CURVE_INIT		(Gdiplus::Color::COLOR_CURVE1, 1), \
-							(Gdiplus::Color::COLOR_CURVE2, 1), \
-							(Gdiplus::Color::COLOR_CURVE3, 1), \
-							(Gdiplus::Color::COLOR_CURVE4, 1) 
-#define NORMAL_CURVE_INIT { \
-							CPen(PS_SOLID, 1, CCurve::COLOR_CURVE1), \
-							CPen(PS_SOLID, 1, CCurve::COLOR_CURVE2), \
-							CPen(PS_SOLID, 1, CCurve::COLOR_CURVE3), \
-							CPen(PS_SOLID, 1, CCurve::COLOR_CURVE4) \
-												}
+//曲线设置的颜色需要与曲线定义的数量一致
+#define COLOR_CURVE0	Red
+#define COLOR_CURVE1	RoyalBlue
+#define COLOR_CURVE2	Cyan
+#define COLOR_CURVE3	Yellow
+#define GDI_CURVE_INIT(COLOR_ARRAY)	do{\
+										COLOR_ARRAY[0] = Gdiplus::Color::COLOR_CURVE0; \
+										COLOR_ARRAY[1] = Gdiplus::Color::COLOR_CURVE1; \
+										COLOR_ARRAY[2] = Gdiplus::Color::COLOR_CURVE2; \
+										COLOR_ARRAY[3] = Gdiplus::Color::COLOR_CURVE3;\
+									}while(0)
+
+#define NORMAL_CURVE_INIT(CPEN_ARRAY) do{ \
+										CPEN_ARRAY[0].CreatePen(PS_SOLID, 1, CCurve::COLOR_CURVE0);\
+										CPEN_ARRAY[1].CreatePen(PS_SOLID, 1, CCurve::COLOR_CURVE1);\
+										CPEN_ARRAY[2].CreatePen(PS_SOLID, 1, CCurve::COLOR_CURVE2);\
+										CPEN_ARRAY[3].CreatePen(PS_SOLID, 1, CCurve::COLOR_CURVE3); \
+									}while(0)
 
 class CCurve : public CWnd
 {
@@ -39,6 +53,10 @@ private:
 	CBrush m_CBrush_BG;
 	CPen m_CPen_Grid;
 	CPen m_CPen_Axis;
+	CPen m_CPen_NormalCurve[CURVE_LINE];
+
+	//用GDI画曲线的颜色
+	Gdiplus::Color m_GDI_CurveColor[CURVE_LINE];
 
 
 	CRect m_RectBG;
@@ -58,11 +76,11 @@ private:
 	float m_PointStepY;
 
 	bool RegisterWindowClass();
-	void DrawAll(CDC * pDC);
-	void DrawBG(CDC *pDC);
-	void DrawGrid(CDC *pDC);
-	void DrawAxis(CDC *pDC);
-	void DrawCurve(CDC *pDC);
+	void DrawAll(CDC * pDC);		//绘制所有元素
+	void DrawBG(CDC *pDC);			//绘制背景
+	void DrawGrid(CDC *pDC);		//绘制网格
+	void DrawAxis(CDC *pDC);		//绘制坐标
+	void DrawCurve(CDC *pDC);		//绘制曲线
 
 	float *m_pDataBuf[CURVE_LINE];
 	unsigned int m_nDataIndex;

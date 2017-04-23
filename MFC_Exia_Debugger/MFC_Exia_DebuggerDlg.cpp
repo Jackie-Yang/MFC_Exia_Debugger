@@ -74,6 +74,7 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	m_Color_BuffByte = RGB(0, 0, 0);
 	m_Timer_Update_Data = 0;
 	m_Timer_Show_Data = 0;
+	m_Timer_Update_Curve = 0;
 	memset(&m_State,0,sizeof(m_State));
 
 	m_pCurveDLG = new CurveDLG();
@@ -87,7 +88,67 @@ CMFC_Exia_DebuggerDlg::~CMFC_Exia_DebuggerDlg()
 {
 	if (m_pCurveDLG)
 	{
-		delete m_pCurveDLG;
+		m_pCurveDLG->DestroyWindow();
+		//delete m_pCurveDLG;
+	}
+}
+
+BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// 将“关于...”菜单项添加到系统菜单中。
+
+	// IDM_ABOUTBOX 必须在系统命令范围内。
+	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+	ASSERT(IDM_ABOUTBOX < 0xF000);
+
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	if (pSysMenu != NULL)
+	{
+		BOOL bNameValid;
+		CString strAboutMenu;
+		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
+		ASSERT(bNameValid);
+		if (!strAboutMenu.IsEmpty())
+		{
+			pSysMenu->AppendMenu(MF_SEPARATOR);
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+		}
+	}
+
+	// 设置此对话框的图标。  当应用程序主窗口不是对话框时，框架将自动
+	//  执行此操作
+	SetIcon(m_hIcon, TRUE);			// 设置大图标
+	SetIcon(m_hIcon, FALSE);		// 设置小图标
+
+	// TODO:  在此添加额外的初始化代码
+
+	m_Serial.Init(this);
+
+
+	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+}
+
+void CMFC_Exia_DebuggerDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+	// TODO:  在此处添加消息处理程序代码
+	//关闭定时器,在析构中关闭定时器会崩溃，因为析构的时候窗口已经销毁
+	if (m_Timer_Update_Data)
+	{
+		KillTimer(m_Timer_Update_Data);
+		m_Timer_Update_Data = 0;
+	}
+	if (m_Timer_Show_Data)
+	{
+		KillTimer(m_Timer_Show_Data);
+		m_Timer_Show_Data = 0;
+	}
+	if (m_Timer_Update_Curve)
+	{
+		KillTimer(m_Timer_Update_Curve);
+		m_Timer_Update_Curve = 0;
 	}
 }
 
@@ -129,45 +190,11 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_CURVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve)
 	ON_BN_CLICKED(IDC_CURVE_ENHANCE, &CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
-BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
 
-	// 将“关于...”菜单项添加到系统菜单中。
-
-	// IDM_ABOUTBOX 必须在系统命令范围内。
-	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	ASSERT(IDM_ABOUTBOX < 0xF000);
-
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
-	{
-		BOOL bNameValid;
-		CString strAboutMenu;
-		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
-		ASSERT(bNameValid);
-		if (!strAboutMenu.IsEmpty())
-		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-		}
-	}
-
-	// 设置此对话框的图标。  当应用程序主窗口不是对话框时，框架将自动
-	//  执行此操作
-	SetIcon(m_hIcon, TRUE);			// 设置大图标
-	SetIcon(m_hIcon, FALSE);		// 设置小图标
-
-	// TODO:  在此添加额外的初始化代码
-
-	m_Serial.Init(this);
-	
-
-	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
-}
 
 void CMFC_Exia_DebuggerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -258,7 +285,7 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 	{
 		CString Info;
 		Info.Format("已连接 %s (%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
-		Info.Replace("\\Device\\", NULL);
+		Info.Replace("\\Device\\", "");
 		m_Static_Status.SetWindowTextA(Info);
 		m_Color_Status = RGB(0, 128, 0);
 		m_Static_Status.InvalidateRect(NULL);
@@ -352,6 +379,19 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 		//AfxMessageBox("数据更新定时器设置失败");
 		MessageBoxA(GetLastErrorMessage(), "数据显示定时器设置失败", MB_ICONERROR | MB_OK);
 	}
+
+	//开启曲线更新定时器
+	if (m_Timer_Update_Curve)	//已经开启则先关闭
+	{
+		KillTimer(m_Timer_Update_Curve);
+		m_Timer_Update_Curve = 0;
+	}
+	m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, 20, NULL);
+	if (m_Timer_Update_Curve == 0)
+	{
+		//AfxMessageBox("数据更新定时器设置失败");
+		MessageBoxA(GetLastErrorMessage(), "曲线更新定时器设置失败", MB_ICONERROR | MB_OK);
+	}
 	return 0;
 }
 
@@ -359,7 +399,7 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
-	//关闭数据定时器
+	//关闭定时器
 	if (m_Timer_Update_Data)
 	{
 		KillTimer(m_Timer_Update_Data);
@@ -369,6 +409,11 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lPara
 	{
 		KillTimer(m_Timer_Show_Data);
 		m_Timer_Show_Data = 0;
+	}
+	if (m_Timer_Update_Curve)
+	{
+		KillTimer(m_Timer_Update_Curve);
+		m_Timer_Update_Curve = 0;
 	}
 	return 0;
 }
@@ -402,17 +447,16 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent == m_Timer_Update_Data)
 	{
-		static int i = 0;
+		static float i = 0;
 		bool result;
 		result = GetQuadrotorState();
 		m_Serial.ClearRecData();
 
 		if (result && m_pCurveDLG)
 		{
-			float CurveData[CURVE_LINE] = { m_State.Roll, m_State.Pitch, 0, 0 };
+			float CurveData[CURVE_LINE] = { m_State.Roll, m_State.Pitch, 1000 * cos(i), 1000 * sin(i) };
+			i += 0.01f;
 			m_pCurveDLG->m_Curve.AddData(&CurveData);
-			//if (i++ % 3 == 0)
-			m_pCurveDLG->UpdateCurve();
 		}
 
 		
@@ -420,6 +464,11 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	else if (nIDEvent == m_Timer_Show_Data)
 	{
 		ShowQuadrotorState();
+	}
+	else if (nIDEvent == m_Timer_Update_Curve)	//刷新曲线
+	{
+		if (m_pCurveDLG)
+		m_pCurveDLG->UpdateCurve();
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -429,7 +478,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const char* ErrorTip)
 {
 	CString ErrorMessage = ErrorTip;
-	LPVOID lpMsgBuf;
+	LPVOID lpMsgBuf = NULL;
 
 	FormatMessageA(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |		//缓冲区由系统分配
@@ -590,3 +639,6 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
 		m_pCurveDLG->m_Curve.CurveEnhance(FALSE);
 	}
 }
+
+
+
