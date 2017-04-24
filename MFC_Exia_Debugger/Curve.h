@@ -6,6 +6,22 @@
 #include "Color.h"
 
 
+//设置建议：
+//LENGTH_DEFAULT,LENGTH_MAX,LENGTH_MIN应该为GRID_STEP整数倍
+//而且(LENGTH_MAX - LENGTH_MIN) / GRID_STEP应该为整数
+//不满足以上建议会自动调整实际效果
+#define X_GRID_STEP			100		//X轴每格数据长度,建议设置为100的倍数
+#define Y_GRID_STEP			200		//Y轴每格数据长度，建议设置为100的倍数
+
+#define X_LENGTH_DEFAULT	800		//默认X轴长度
+#define X_LENGTH_MAX		1000	//X轴长度最大值
+#define X_LENGTH_MIN		500		//X轴长度最小值
+
+#define Y_LENGTH_DEFAULT	1000	//默认Y轴正半轴长度（负半轴相同）
+#define Y_LENGTH_MAX		1000	//Y轴正半轴长度最大值
+#define Y_LENGTH_MIN		400		//Y轴正半轴长度最小值
+
+
 //默认风格
 //Default Style
 
@@ -84,10 +100,10 @@ private:
 
 	float *m_pDataBuf[CURVE_LINE];
 	unsigned int m_nDataIndex;
-	unsigned int m_nDataCount;
-	unsigned int m_nDataMAX;
-	unsigned int m_nMaxX;
-	unsigned int m_nMaxY;
+	int m_nDataCount;
+	int m_nDataMAX;
+	int m_nMaxX;
+	int m_nMaxY;
 	int m_nOffset;
 	
 
@@ -96,10 +112,12 @@ private:
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 
+	//设置参数
+	void SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY);
+
 public:
 	afx_msg void OnPaint();
-	
-	void Init(unsigned int nMaxX, unsigned int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY, int nGridX, int nGridY);
+	void Init(unsigned int nDataMAX, float fScaleX, float fScaleY);
 
 	void AddData(float(*fData)[CURVE_LINE]);
 	void ClearData();
@@ -255,6 +273,8 @@ public:
 		Yellow = RGB(255, 255, 0), // 纯黄 
 		YellowGreen = RGB(154, 205, 50) // 黄绿色 
 	};
+
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 };
 
 

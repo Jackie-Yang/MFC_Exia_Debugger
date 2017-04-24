@@ -34,7 +34,7 @@ m_RectBG(0, 0, 0, 0)
 
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_pDataBuf[Curve] = NULL;
+		m_pDataBuf[Curve] = new float[X_LENGTH_MAX];	//数据缓存
 	}
 
 	//初始化曲线颜色
@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CCurve, CWnd)
 	ON_WM_PAINT()
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZE()
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 
@@ -102,12 +103,44 @@ bool CCurve::RegisterWindowClass()
 	return TRUE;
 }
 
-
-void CCurve::Init(unsigned int nMaxX, unsigned int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY, int nGridX, int nGridY)
+//初始化曲线图：
+//nDataMAX:数据索引的最大值（X轴能显示的最大值，会自动调整为X_GRID_STEP的整数倍，但是只能存放最多1000个最新的数据）
+//fScaleX,fScaleY:曲线的宽度，高度占控件的比例
+void CCurve::Init(unsigned int nDataMAX, float fScaleX, float fScaleY)
 {
-	nMaxX = nMaxX / 100 * 100;	//大小应该设置为100的整数倍
-	nMaxY = nMaxY / 100 * 100;
-	nDataMAX = nDataMAX / 100 * 100;
+	SetParm(X_LENGTH_DEFAULT, Y_LENGTH_DEFAULT, nDataMAX, fScaleX, fScaleY);
+}
+
+
+//设置绘制参数：
+//nMaxX,nMaxY:X轴长度，Y轴正半轴长度（负半轴相同）
+void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY)
+{
+	if (nMaxX > X_LENGTH_MAX)
+	{
+		nMaxX = X_LENGTH_MAX;
+	}
+	else if (nMaxX < X_LENGTH_MIN)
+	{
+		nMaxX = X_LENGTH_MIN;
+	}
+	if (nMaxY > Y_LENGTH_MAX)
+	{
+		nMaxY = Y_LENGTH_MAX;
+	}
+	else if (nMaxY < Y_LENGTH_MIN)
+	{
+		nMaxY = Y_LENGTH_MIN;
+	}
+
+	//进行调整，调整后根据格数（整数格）及每格的大小，nMaxX，nMaxY会改变，可能会小于宏定义的设定最小值，但不会大于最大值
+	m_nGridX = nMaxX / X_GRID_STEP;
+	m_nGridY = nMaxY / Y_GRID_STEP * 2;		//有正负半轴，所以乘以2
+	nMaxX = m_nGridX * X_GRID_STEP;	
+	nMaxY = m_nGridY / 2 * Y_GRID_STEP;
+	nDataMAX = nDataMAX / X_GRID_STEP * X_GRID_STEP;	//大小应该设置为X_GRID_STEP的整数倍
+
+	
 
 	GetClientRect(&m_RectBG);	//获取控件区域
 
@@ -121,8 +154,8 @@ void CCurve::Init(unsigned int nMaxX, unsigned int nMaxY, unsigned int nDataMAX,
 	m_RectCurve.left = nPaddingX;
 	m_RectCurve.bottom = m_RectBG.Height() - nPaddingY;
 
-	m_GridStepX = m_RectCurve.Width() / (float)nGridX;
-	m_GridStepY = m_RectCurve.Height() / (float)nGridY;
+	m_GridStepX = m_RectCurve.Width() / (float)m_nGridX;
+	m_GridStepY = m_RectCurve.Height() / (float)m_nGridY;
 
 	m_AxisStepX = m_GridStepX / 5.0f;
 	m_AxisStepY = m_GridStepY / 5.0f;
@@ -131,28 +164,35 @@ void CCurve::Init(unsigned int nMaxX, unsigned int nMaxY, unsigned int nDataMAX,
 	m_PointStepX = (float)m_RectCurve.Width() / (float)nMaxX;
 	m_PointStepY = (float)m_RectCurve.Height() / (float)nMaxY / 2;
 
-	if (nMaxX != m_nMaxX)	//没有改变nMaxX时不用修改这些数据
+	//if (nMaxX != m_nMaxX)	//没有改变nMaxX时不用修改这些数据
+	//{
+	//	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+	//	{
+	//		if (m_pDataBuf[Curve])
+	//		{
+	//			delete[]m_pDataBuf[Curve];
+	//			m_pDataBuf[Curve] = NULL;
+	//		}
+	//		m_pDataBuf[Curve] = new float[nMaxX];	//数据缓存
+	//	}
+	//	m_nDataIndex = 0;
+	//	m_nDataCount = 0;
+	//	m_nOffset = 0;
+	//	m_nMaxX = nMaxX;
+	//}
+	m_nMaxX = nMaxX;
+	if (m_nDataCount >= m_nMaxX)		//数据量大于X轴当前能显示的数据量，计算X轴偏移
 	{
-		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
-		{
-			if (m_pDataBuf[Curve])
-			{
-				delete[]m_pDataBuf[Curve];
-				m_pDataBuf[Curve] = NULL;
-			}
-			m_pDataBuf[Curve] = new float[nMaxX];	//数据缓存
-		}
-		m_nDataIndex = 0;
-		m_nDataCount = 0;
-		m_nOffset = 0;
-		m_nMaxX = nMaxX;
+		m_nOffset = m_nDataCount % m_nMaxX;
 	}
-	
+	else
+	{
+		m_nOffset = 0;
+	}
+	m_nMaxY = nMaxY;
+
 	m_fScaleX = fScaleX;
 	m_fScaleY = fScaleY;
-	m_nGridX = nGridX;
-	m_nGridY = nGridY;
-	m_nMaxY = nMaxY;
 	m_nDataMAX = nDataMAX;
 	//把参数作为成员变量存下来.要resize的话可以用
 }
@@ -311,7 +351,7 @@ void CCurve::DrawCurve(CDC *pDC)
 {
 	const int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//坐标轴中间为Y轴0坐标
 	//i是实际区域坐标，nIndex是数据的坐标
-	unsigned int i, nIndex;
+	int nIndex;
 
 	if (m_bEnhance)	//Gdi+抗锯齿
 	{
@@ -332,9 +372,22 @@ void CCurve::DrawCurve(CDC *pDC)
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
 			int nPointCount = 0;	//需要画的点数
+			//计算nIndex取数据的起始位置
 			if (m_nDataCount > m_nMaxX)
 			{
-				nIndex = m_nDataIndex;
+				//要取最新的m_nMaxX个数据
+				if (m_nDataCount > X_LENGTH_MAX)
+				{
+					nIndex = m_nDataIndex + X_LENGTH_MAX - m_nMaxX;
+					if (nIndex >= X_LENGTH_MAX)	//越界处理
+					{
+						nIndex = nIndex - X_LENGTH_MAX;
+					}
+				}
+				else
+				{
+					nIndex = m_nDataCount - m_nMaxX;
+				}
 			}
 			else
 			{
@@ -355,13 +408,13 @@ void CCurve::DrawCurve(CDC *pDC)
 			pGdiPoint[nPointCount++] = LastPoint;
 
 			float X = m_PointStepX;	//X坐标
-			for (i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
+			for (int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
 				if (m_nDataCount <= i)
 				{
 					break;
 				}
-				if (nIndex >= m_nMaxX)
+				if (nIndex >= X_LENGTH_MAX)
 				{
 					nIndex = 0;
 				}
@@ -401,9 +454,22 @@ void CCurve::DrawCurve(CDC *pDC)
 		//画CURVE_LINE条曲线，每次画完切换下一种画笔
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++, pDC->SelectObject(m_CPen_NormalCurve + Curve))
 		{
+			//计算nIndex取数据的起始位置
 			if (m_nDataCount > m_nMaxX)
 			{
-				nIndex = m_nDataIndex;
+				//要取最新的m_nMaxX个数据
+				if (m_nDataCount > X_LENGTH_MAX)
+				{
+					nIndex = m_nDataIndex + X_LENGTH_MAX - m_nMaxX;	
+					if (nIndex >= X_LENGTH_MAX)	//越界处理
+					{
+						nIndex = nIndex - X_LENGTH_MAX;
+					}
+				}
+				else
+				{
+					nIndex = m_nDataCount - m_nMaxX;
+				}
 			}
 			else
 			{
@@ -423,9 +489,9 @@ void CCurve::DrawCurve(CDC *pDC)
 			//移动到第一个点，之后的点连续画
 			pDC->MoveTo(LastPoint.x, LastPoint.y);
 			float X = m_PointStepX;	//第一个点X坐标
-			for (unsigned int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
+			for (int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
-				if (nIndex >= m_nMaxX)
+				if (nIndex >= X_LENGTH_MAX)
 				{
 					nIndex = 0;
 				}
@@ -472,7 +538,7 @@ BOOL CCurve::OnEraseBkgnd(CDC* pDC)
 //参数：float(*fData)[CURVE_LINE]为，指向一个与曲线数目相同的数组
 void CCurve::AddData(float(*fData)[CURVE_LINE])
 {
-	if (m_nDataCount >= m_nDataMAX)
+	if (m_nDataCount >= m_nDataMAX)		//数据量大于最大数据，清空
 	{
 		ClearData();
 	}
@@ -484,11 +550,11 @@ void CCurve::AddData(float(*fData)[CURVE_LINE])
 		}
 		*(m_pDataBuf[Curve] + m_nDataIndex) = (*fData)[Curve];
 	}
-	if (++m_nDataIndex >= m_nMaxX)
+	if (++m_nDataIndex >= X_LENGTH_MAX)		//Index大于数组索引最大值
 	{
 		m_nDataIndex = 0;
 	}
-	if (++m_nDataCount >= m_nMaxX)
+	if (++m_nDataCount >= m_nMaxX)		//数据量大于X轴当前能显示的数据量，开始计算X轴偏移
 	{
 		m_nOffset = m_nDataCount % m_nMaxX;
 	}
@@ -502,14 +568,7 @@ void CCurve::ClearData()
 	m_nOffset = 0;
 }
 
-void CCurve::OnSize(UINT nType, int cx, int cy)
-{
-	CWnd::OnSize(nType, cx, cy);
 
-	// TODO:  在此处添加消息处理程序代码
-	Init(m_nMaxX, m_nMaxY, m_nDataMAX, m_fScaleX, m_fScaleY, m_nGridX, m_nGridY);
-	Update();
-}
 
 //设置图像增强，对曲线进行抗锯齿处理
 void CCurve::CurveEnhance(bool bOpen)
@@ -532,4 +591,39 @@ void CCurve::CurveEnhance(bool bOpen)
 			m_bEnhance = FALSE;
 		}
 	}
+}
+
+
+//窗口大小改变时重新计算
+void CCurve::OnSize(UINT nType, int cx, int cy)
+{
+	CWnd::OnSize(nType, cx, cy);
+
+	// TODO:  在此处添加消息处理程序代码
+	SetParm(m_nMaxX, m_nMaxY, m_nDataMAX, m_fScaleX, m_fScaleY);
+	Update();
+}
+
+
+//滚动鼠标滚轮时更改坐标轴长度
+BOOL CCurve::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	int nChengeValueX = 0, nChengeValueY = 0;
+	ScreenToClient(&pt);	//转换成客户区坐标（控件中）
+
+	if (pt.x >= m_RectCurve.left && pt.x <= m_RectCurve.right)	//在曲线图左侧到右侧范围滚动，调整X轴
+	{
+		nChengeValueX = X_GRID_STEP * (zDelta / 120);
+	}
+
+	if (pt.y >= m_RectCurve.top && pt.y <= m_RectCurve.bottom)	//在曲线图顶端到底端范围滚动，调整Y轴
+	{
+		nChengeValueY = Y_GRID_STEP * (zDelta / 120);
+	}
+
+	SetParm(m_nMaxX + nChengeValueX, m_nMaxY + nChengeValueY, m_nDataMAX, m_fScaleX, m_fScaleY);
+	Update();
+
+	return CWnd::OnMouseWheel(nFlags, zDelta, pt);
 }

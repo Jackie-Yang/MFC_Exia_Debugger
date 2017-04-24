@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CurveDLG, CDialogEx)
 	ON_WM_SIZE()
 	ON_WM_GETMINMAXINFO()
 	ON_WM_QUERYOPEN()
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 
@@ -58,7 +59,7 @@ BOOL CurveDLG::OnInitDialog()
 
 	GetClientRect(&m_CurClientRect);	//当前客户区大小
 
-	m_Curve.Init(1000, 1000, 10000, 0.8f, 0.8f, 10, 10);
+	m_Curve.Init(10000, 0.8f, 0.8f);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -114,4 +115,13 @@ void CurveDLG::PostNcDestroy()
 	// TODO:  在此添加专用代码和/或调用基类
 	CDialogEx::PostNcDestroy();
 	delete this;
+}
+
+
+void CurveDLG::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+
+	// TODO:  在此处添加消息处理程序代码
+	m_Curve.SetFocus();		//设置曲线控件为焦点，否则无法捕获鼠标滚动信息
 }

@@ -32,4 +32,5 @@ public:
 	afx_msg BOOL OnQueryOpen();
 	void UpdateCurve();
 	virtual void PostNcDestroy();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };
