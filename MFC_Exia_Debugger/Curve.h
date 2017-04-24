@@ -28,9 +28,9 @@
 #define STYLE_BG		CCurve::Black
 #define STYLE_GRID		PS_DOT, 1, CCurve::Teal
 #define STYLE_AXIS		PS_SOLID, 1, CCurve::Magenta
+#define TEXT_COLOR		Cyan
 
-
-//添加曲线的方法，CURVE_LINE设置成响应的曲线数目，添加颜色的宏定义，进行AddData时传入的数组指针大小应该和曲线数目一致，不然也会报错
+//添加曲线的方法，CURVE_LINE设置成响应的曲线数目，添加颜色和标签的宏定义，进行AddData时传入的数组指针大小应该和曲线数目一致，不然也会报错
 //曲线设定
 #define CURVE_LINE	4
 //曲线设置的颜色需要与曲线定义的数量一致
@@ -38,6 +38,9 @@
 #define COLOR_CURVE1	RoyalBlue
 #define COLOR_CURVE2	Cyan
 #define COLOR_CURVE3	Yellow
+
+//曲线初始化参数
+//因为GDI+的颜色定义不同，所以曲线要用两种
 #define GDI_CURVE_INIT(COLOR_ARRAY)	do{\
 										COLOR_ARRAY[0] = Gdiplus::Color::COLOR_CURVE0; \
 										COLOR_ARRAY[1] = Gdiplus::Color::COLOR_CURVE1; \
@@ -51,6 +54,19 @@
 										CPEN_ARRAY[2].CreatePen(PS_SOLID, 1, CCurve::COLOR_CURVE2);\
 										CPEN_ARRAY[3].CreatePen(PS_SOLID, 1, CCurve::COLOR_CURVE3); \
 									}while(0)
+
+#define LABEL_STRING_INIT(CSTRING_ARRAY) do{ \
+										CSTRING_ARRAY[0] = "通道一";\
+										CSTRING_ARRAY[1] = "通道二";\
+										CSTRING_ARRAY[2] = "通道三";\
+										CSTRING_ARRAY[3] = "通道四"; \
+											}while(0)
+
+typedef struct __CURVE_DATA__
+{
+	float fData;
+	float fGain;
+}CurveData,*pCurveData;
 
 class CCurve : public CWnd
 {
@@ -97,9 +113,11 @@ private:
 	void DrawGrid(CDC *pDC);		//绘制网格
 	void DrawAxis(CDC *pDC);		//绘制坐标
 	void DrawCurve(CDC *pDC);		//绘制曲线
+	void DrawLabel(CDC *pDC);		//绘制标签
 
-	float *m_pDataBuf[CURVE_LINE];
+	CurveData m_pDataBuf[CURVE_LINE][X_LENGTH_MAX];
 	unsigned int m_nDataIndex;
+	unsigned int m_nDataShowIndex;
 	int m_nDataCount;
 	int m_nDataMAX;
 	int m_nMaxX;
@@ -109,25 +127,29 @@ private:
 
 	//GDI+相关
 	bool m_bEnhance;
-	GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 
 	//设置参数
 	void SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY);
 
 public:
-	afx_msg void OnPaint();
-	void Init(unsigned int nDataMAX, float fScaleX, float fScaleY);
 
-	void AddData(float(*fData)[CURVE_LINE]);
+	CString m_LabelStr[CURVE_LINE];
+	CString m_ValueStr[CURVE_LINE];
+	void Init(unsigned int nDataMAX, float fScaleX, float fScaleY);
+	void SetLabelStr(CString(*pStr)[CURVE_LINE]);
+	void UpdateValueStr();
+	void AddData(CurveData(*pData)[CURVE_LINE]);
+	bool CurveEnhance(bool bOpen);
 	void ClearData();
 	void Update();
+	bool ScreenShot(CString strFilePath);
 
+	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-
-	void CurveEnhance(bool bOpen);
-	
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 
 	//主要是为了兼容GDI+中的颜色名字
 	enum
@@ -274,7 +296,7 @@ public:
 		YellowGreen = RGB(154, 205, 50) // 黄绿色 
 	};
 
-	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	
 };
 
 

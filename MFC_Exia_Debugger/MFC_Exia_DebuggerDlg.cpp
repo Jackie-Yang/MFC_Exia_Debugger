@@ -191,6 +191,7 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_CURVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve)
 	ON_BN_CLICKED(IDC_CURVE_ENHANCE, &CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_SCREENSHOT, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot)
 END_MESSAGE_MAP()
 
 
@@ -454,7 +455,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 
 		if (result && m_pCurveDLG)
 		{
-			float CurveData[CURVE_LINE] = { m_State.Roll, m_State.Pitch, 1000 * cos(i), 1000 * sin(i) };
+			CurveData CurveData[CURVE_LINE] = { { m_State.Roll, 1.0f }, { m_State.Pitch, 1.0f }, { cos(i), 1000.0f }, { sin(i), 1000.0f } };
 			i += 0.01f;
 			m_pCurveDLG->m_Curve.AddData(&CurveData);
 		}
@@ -464,6 +465,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	else if (nIDEvent == m_Timer_Show_Data)
 	{
 		ShowQuadrotorState();
+		m_pCurveDLG->UpdateValueStr();
 	}
 	else if (nIDEvent == m_Timer_Update_Curve)	//刷新曲线
 	{
@@ -617,7 +619,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve()
 	// TODO:  在此添加控件通知处理程序代码
 	if (m_pCurveDLG)
 	{
-		m_pCurveDLG->ShowWindow(SW_SHOWNORMAL);
+		m_pCurveDLG->ShowWindow(SW_SHOW);
 	}
 	else
 	{
@@ -632,13 +634,49 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
 	// TODO:  在此添加控件通知处理程序代码
 	if (((CButton*)GetDlgItem(IDC_CURVE_ENHANCE))->GetCheck())
 	{
-		m_pCurveDLG->m_Curve.CurveEnhance(TRUE);
+		if (!m_pCurveDLG->CurveEnhance(TRUE))
+		{
+			((CButton*)GetDlgItem(IDC_CURVE_ENHANCE))->SetCheck(FALSE);
+			MessageBoxA(_T("无法打开画质增强"), _T("打开失败"), MB_ICONERROR | MB_OK);
+		}
 	}
 	else
 	{
-		m_pCurveDLG->m_Curve.CurveEnhance(FALSE);
+		m_pCurveDLG->CurveEnhance(FALSE);
 	}
 }
 
 
 
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CTime CurTime; 
+	CurTime = CTime::GetCurrentTime();	//获取系统时间
+	CString stFilePath_save = CurTime.Format("ScreenShot %Y_%m_%d %H.%M.%S.bmp");
+
+	int nDot_index = stFilePath_save.ReverseFind('.');	//获取后缀'.'位置
+	////获取后缀名
+	CString szFileType = stFilePath_save.Right(stFilePath_save.GetLength() - nDot_index);
+	szFileType.MakeLower();	//统一后缀小写
+
+
+	// 设置过滤器，过滤出Bmp文件
+	CString szOpenFilter = "位图文件 (*.bmp;*.dib)|*.bmp;*.dib|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|GIF (*.gif)|*.gif||";
+	// 构造保存文件对话框 
+	CFileDialog SaveDlgDst(FALSE, szFileType, stFilePath_save, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
+
+	if (SaveDlgDst.DoModal() == IDOK)
+	{
+		stFilePath_save = SaveDlgDst.GetPathName();
+
+		if (!m_pCurveDLG->m_Curve.ScreenShot(stFilePath_save))
+		{
+			AfxMessageBox(_T("文件保存失败,请检查文件名及后缀名"), MB_ICONINFORMATION);
+		}
+
+	}
+
+}

@@ -31,6 +31,9 @@ public:
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	afx_msg BOOL OnQueryOpen();
 	void UpdateCurve();
+	void SetLabelStr(CString(*pStr)[CURVE_LINE]);
+	void UpdateValueStr();
+	bool CurveEnhance(bool bOpen);
 	virtual void PostNcDestroy();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };

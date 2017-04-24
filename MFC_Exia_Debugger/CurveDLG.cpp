@@ -110,6 +110,24 @@ void CurveDLG::UpdateCurve()
 	}
 }
 
+void CurveDLG::SetLabelStr(CString(*pStr)[CURVE_LINE])
+{
+	m_Curve.SetLabelStr(pStr);
+	if (IsWindowVisible() && !IsIconic())	//在最小化时不进行绘图
+	{
+		m_Curve.Update();
+	}
+}
+
+void CurveDLG::UpdateValueStr()
+{
+	m_Curve.UpdateValueStr();
+	if (IsWindowVisible() && !IsIconic())	//在最小化时不进行绘图
+	{
+		m_Curve.Update();
+	}
+}
+
 void CurveDLG::PostNcDestroy()
 {
 	// TODO:  在此添加专用代码和/或调用基类
@@ -124,4 +142,14 @@ void CurveDLG::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	// TODO:  在此处添加消息处理程序代码
 	m_Curve.SetFocus();		//设置曲线控件为焦点，否则无法捕获鼠标滚动信息
+}
+
+bool CurveDLG::CurveEnhance(bool bOpen)
+{
+	bool ret = m_Curve.CurveEnhance(bOpen);
+	if (ret)
+	{
+		UpdateCurve();
+	}
+	return ret;
 }

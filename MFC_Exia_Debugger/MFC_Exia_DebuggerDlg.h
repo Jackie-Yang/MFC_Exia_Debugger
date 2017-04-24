@@ -150,4 +150,5 @@ public:
 	afx_msg void OnBnClickedButtonOpenCurve();
 	afx_msg void OnBnClickedCurveEnhance();
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButtonScreenshot();
 };
