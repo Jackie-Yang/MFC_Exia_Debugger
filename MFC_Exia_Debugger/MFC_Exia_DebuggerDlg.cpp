@@ -127,6 +127,47 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 	m_Serial.Init(this);
 
 
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+	{
+		m_ComBoxGain[Curve].InsertString(0, "0.1");
+		m_ComBoxGain[Curve].InsertString(1, "0.2");
+		m_ComBoxGain[Curve].InsertString(2, "0.5");
+		m_ComBoxGain[Curve].InsertString(3, "1");
+		m_ComBoxGain[Curve].InsertString(4, "2");
+		m_ComBoxGain[Curve].InsertString(5, "5");
+		m_ComBoxGain[Curve].InsertString(6, "10");
+		m_ComBoxGain[Curve].InsertString(7, "20");
+		m_ComBoxGain[Curve].InsertString(8, "50");
+		m_ComBoxGain[Curve].InsertString(9, "100");
+		m_ComBoxGain[Curve].InsertString(10, "200");
+		m_ComBoxGain[Curve].InsertString(11, "500");
+		m_ComBoxGain[Curve].InsertString(12, "1000");
+		m_ComBoxGain[Curve].InsertString(13, "2000");
+		m_ComBoxGain[Curve].InsertString(14, "5000");
+		m_ComBoxGain[Curve].InsertString(15, "10000");
+		m_ComBoxGain[Curve].SetCurSel(3);
+		m_GainSelected[Curve] = 3;
+	}
+
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+	{
+		m_ComBoxCurve[Curve].InsertString(0, "无信号");
+		m_ComBoxCurve[Curve].InsertString(1, "侧滚(Roll)");
+		m_ComBoxCurve[Curve].InsertString(2, "俯仰(Pitch)");
+		m_ComBoxCurve[Curve].InsertString(3, "偏摆(Yaw)");
+		m_ComBoxCurve[Curve].SetCurSel(0);
+		m_CurveSelected[Curve] = 0;
+	}
+
+	UpdateSelected();
+
+	m_CombocRefresh.InsertString(0, "50Hz");
+	m_CombocRefresh.InsertString(1, "25Hz");
+	m_CombocRefresh.InsertString(2, "10Hz");
+	m_CombocRefresh.SetCurSel(0);
+	m_nRefreshTime = 20;	//1000/50Hz = 20
+
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -175,6 +216,15 @@ void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_ROLL, m_str_Roll);
 	DDX_Text(pDX, IDC_PITCH, m_str_Pitch);
 	DDX_Text(pDX, IDC_YAW, m_str_Yaw);
+	DDX_Control(pDX, IDC_CURVE1_GAIN, m_ComBoxGain[0]);
+	DDX_Control(pDX, IDC_CURVE2_GAIN, m_ComBoxGain[1]);
+	DDX_Control(pDX, IDC_CURVE3_GAIN, m_ComBoxGain[2]);
+	DDX_Control(pDX, IDC_CURVE4_GAIN, m_ComBoxGain[3]);
+	DDX_Control(pDX, IDC_CURVE1, m_ComBoxCurve[0]);
+	DDX_Control(pDX, IDC_CURVE2, m_ComBoxCurve[1]);
+	DDX_Control(pDX, IDC_CURVE3, m_ComBoxCurve[2]);
+	DDX_Control(pDX, IDC_CURVE4, m_ComBoxCurve[3]);
+	DDX_Control(pDX, IDC_CURVE_REFRESH, m_CombocRefresh);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -192,6 +242,16 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CURVE_ENHANCE, &CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_SCREENSHOT, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CURVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonClearCurve)
+	ON_CBN_SELCHANGE(IDC_CURVE1, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE2, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE3, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE4, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE1_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE2_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE3_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE4_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CBN_SELCHANGE(IDC_CURVE_REFRESH, &CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh)
 END_MESSAGE_MAP()
 
 
@@ -387,7 +447,7 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 		KillTimer(m_Timer_Update_Curve);
 		m_Timer_Update_Curve = 0;
 	}
-	m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, 20, NULL);
+	m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, m_nRefreshTime, NULL);
 	if (m_Timer_Update_Curve == 0)
 	{
 		//AfxMessageBox("数据更新定时器设置失败");
@@ -443,24 +503,23 @@ HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 
 
+//定时器处理
 void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
+
+	//从串口更新数据
 	if (nIDEvent == m_Timer_Update_Data)
 	{
-		static float i = 0;
 		bool result;
-		result = GetQuadrotorState();
-		m_Serial.ClearRecData();
+		result = GetQuadrotorState();	//获取数据
+		m_Serial.ClearRecData();	//清空缓冲区
 
-		if (result && m_pCurveDLG)
+		if (result && m_pCurveDLG)	//获取成功则添加到曲线中
 		{
-			CurveData CurveData[CURVE_LINE] = { { m_State.Roll, 1.0f }, { m_State.Pitch, 1.0f }, { cos(i), 1000.0f }, { sin(i), 1000.0f } };
-			i += 0.01f;
-			m_pCurveDLG->m_Curve.AddData(&CurveData);
+			SetCurveData();	//根据曲线选项设置曲线数据
+			m_pCurveDLG->m_Curve.AddData(&m_CurveData);
 		}
-
-		
 	}
 	else if (nIDEvent == m_Timer_Show_Data)
 	{
@@ -474,6 +533,65 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+//根据曲线选项设置曲线数据
+void CMFC_Exia_DebuggerDlg::SetCurveData()
+{
+	CString str;
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+	{
+		m_ComBoxGain[Curve].GetLBText(m_GainSelected[Curve], str);
+		m_CurveData[Curve].fGain = (float)atof(str);
+		switch (m_CurveSelected[Curve])
+		{
+			case 1:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Roll;
+				break;
+			}
+			case 2:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Pitch;
+				break;
+			}
+			case 3:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Yaw;
+				break;
+			}
+			default:
+			{
+				m_CurveData[Curve].fData = 0.0f;;
+				break;
+			}
+		}
+	}
+
+}
+
+void CMFC_Exia_DebuggerDlg::UpdateSelected()
+{
+	CString GainStr;
+	CString CurveStr;
+	CString LabelStr[CURVE_LINE];
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
+	{
+		m_GainSelected[Curve] = m_ComBoxGain[Curve].GetCurSel();		//更新选中项
+		m_CurveSelected[Curve] = m_ComBoxCurve[Curve].GetCurSel();
+		if (m_CurveSelected[Curve])
+		{
+			m_ComBoxGain[Curve].GetLBText(m_GainSelected[Curve], GainStr);	//获取选中项字符串
+			m_ComBoxCurve[Curve].GetLBText(m_CurveSelected[Curve], CurveStr);
+			LabelStr[Curve].Format("%s(x%s)", CurveStr, GainStr);
+		}
+		else
+		{
+			LabelStr[Curve] = "无信号";
+		}
+	}
+	m_pCurveDLG->SetLabelStr(&LabelStr);
 }
 
 
@@ -542,6 +660,8 @@ bool CMFC_Exia_DebuggerDlg::GetQuadrotorState()
 	return TRUE;
 }
 
+
+//将获取到的数据显示到控件
 void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 {
 	UINT nBufByte = m_Serial.GetRecBufByte();
@@ -649,7 +769,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
 
 
 
-
+//曲线截图
 void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -679,4 +799,38 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 
 	}
 
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonClearCurve()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	m_pCurveDLG->m_Curve.ClearData();
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CString RefreshStr;
+	INT_PTR RefreshTime;
+	m_CombocRefresh.GetWindowTextA(RefreshStr);
+	RefreshTime = atoi(RefreshStr);
+	RefreshTime = 1000 / RefreshTime;
+	if (RefreshTime != m_nRefreshTime)
+	{
+		m_nRefreshTime = RefreshTime;
+		//开启曲线更新定时器
+		if (m_Timer_Update_Curve)	//已经开启则先关闭
+		{
+			KillTimer(m_Timer_Update_Curve);
+			m_Timer_Update_Curve = 0;
+		}
+		m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, m_nRefreshTime, NULL);
+		if (m_Timer_Update_Curve == 0)
+		{
+			//AfxMessageBox("数据更新定时器设置失败");
+			MessageBoxA(GetLastErrorMessage(), "曲线更新定时器设置失败", MB_ICONERROR | MB_OK);
+		}
+	}
 }

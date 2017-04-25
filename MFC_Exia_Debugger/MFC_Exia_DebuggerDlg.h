@@ -151,4 +151,17 @@ public:
 	afx_msg void OnBnClickedCurveEnhance();
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonScreenshot();
+	afx_msg void OnBnClickedButtonClearCurve();
+
+	CComboBox m_ComBoxCurve[CURVE_LINE];			//CURVE_LINE有多少曲线就应该放置多少控件
+	CComboBox m_ComBoxGain[CURVE_LINE];			//CURVE_LINE有多少曲线就应该放置多少控件
+	int m_CurveSelected[CURVE_LINE];
+	int m_GainSelected[CURVE_LINE];
+	CurveData m_CurveData[CURVE_LINE];	//待添加到曲线的数据
+	void SetCurveData();
+	afx_msg void UpdateSelected();
+
+	CComboBox m_CombocRefresh;
+	UINT_PTR m_nRefreshTime;
+	afx_msg void OnCbnSelchangeCurveRefresh();
 };
