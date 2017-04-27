@@ -45,6 +45,9 @@
     <ClInclude Include="CurveDLG.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Quadrotor_State.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Exia_Debugger.cpp">

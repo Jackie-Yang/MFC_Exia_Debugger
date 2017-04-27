@@ -6,47 +6,8 @@
 #include "Serial.h"
 #include "afxwin.h"
 #include "CurveDLG.h"
+#include "Quadrotor_State.h"
 
-//把原来对齐方式设置压栈，并设新的对齐方式设置为一个字节对齐(不对齐)
-#pragma  pack (push,1)
-typedef struct __QUADROTOR_STATE__
-{
-	UINT16 Rudd;
-	UINT16 Thro;
-	UINT16 Aile;
-	UINT16 Elev;
-	UINT16 Check_Data;
-	UINT16 Check_State;
-	UINT16 Temp1;
-	UINT16 Temp2;
-	UINT16 Temp3;
-	UINT16 Temp4;
-	INT16 Accel_X;
-	INT16 Accel_Y;
-	INT16 Accel_Z;
-	INT16 Gyro_X;
-	INT16 Gyro_Y;
-	INT16 Gyro_Z;
-	UINT16 MPU6050_Temp;
-	INT32 MS5611_Temp;
-	INT32 MS5611_Press;
-	INT32 MS5611_HIGH;
-	INT16 HMC5883L_X;
-	INT16 HMC5883L_Y;
-	INT16 HMC5883L_Z;
-	INT16 HMC5883L_Angle;
-	UINT16 KS10X_High;
-	UINT16 High_Accel;
-	INT16 Roll;
-	INT16 Pitch;
-	INT16 Yaw;
-	UINT16 Motor1;
-	UINT16 Motor2;
-	UINT16 Motor3;
-	UINT16 Motor4;
-}Quadrotor_State, *p_Quadrotor_State;
-#pragma pack(pop) 
-//恢复对齐状态
 
 // CMFC_Exia_DebuggerDlg 对话框
 class CMFC_Exia_DebuggerDlg : public CDialogEx
@@ -83,6 +44,7 @@ public:
 	CString GetLastErrorMessage(const char* ErrorTip = NULL);
 	void UpdateSerialState();
 	bool GetQuadrotorState();
+	void InitQuadrotorState();
 	void ShowQuadrotorState();
 
 //处理函数
@@ -164,4 +126,20 @@ public:
 	CComboBox m_CombocRefresh;
 	UINT_PTR m_nRefreshTime;
 	afx_msg void OnCbnSelchangeCurveRefresh();
+	CString m_str_Motor1;
+	CString m_str_Motor2;
+	CString m_str_Motor3;
+	CString m_str_Motor4;
+	CString m_str_Gyro_X;
+	CString m_str_Gyro_Y;
+	CString m_str_Gyro_Z;
+	CString m_str_Accel_X;
+	CString m_str_Accel_Y;
+	CString m_str_Accel_Z;
+	CString m_str_HIGH_KS10X;
+	CString m_str_HIGH_MS5611;
+	CString m_str_Temp_MPU6050;
+	CString m_str_Temp_MS5611;
+	CString m_str_Press_MS5611;
+	CString m_str_HIGH_Accel;
 };

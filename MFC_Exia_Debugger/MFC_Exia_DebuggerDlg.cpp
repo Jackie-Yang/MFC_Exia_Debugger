@@ -68,6 +68,22 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	, m_str_Roll(_T("无信号"))
 	, m_str_Pitch(_T("无信号"))
 	, m_str_Yaw(_T("无信号"))
+	, m_str_Motor1(_T("无信号"))
+	, m_str_Motor2(_T("无信号"))
+	, m_str_Motor3(_T("无信号"))
+	, m_str_Motor4(_T("无信号"))
+	, m_str_Gyro_X(_T("无信号"))
+	, m_str_Gyro_Y(_T("无信号"))
+	, m_str_Gyro_Z(_T("无信号"))
+	, m_str_Accel_X(_T("无信号"))
+	, m_str_Accel_Y(_T("无信号"))
+	, m_str_Accel_Z(_T("无信号"))
+	, m_str_HIGH_KS10X(_T("无信号"))
+	, m_str_HIGH_MS5611(_T("无信号"))
+	, m_str_Temp_MPU6050(_T("无信号"))
+	, m_str_Temp_MS5611(_T("无信号"))
+	, m_str_Press_MS5611(_T("无信号"))
+	, m_str_HIGH_Accel(_T("无信号"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_RED);
 	m_Color_Status = RGB(255, 0, 0);
@@ -155,15 +171,21 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 		m_ComBoxCurve[Curve].InsertString(1, "侧滚(Roll)");
 		m_ComBoxCurve[Curve].InsertString(2, "俯仰(Pitch)");
 		m_ComBoxCurve[Curve].InsertString(3, "偏摆(Yaw)");
+		m_ComBoxCurve[Curve].InsertString(4, "X轴角速度");
+		m_ComBoxCurve[Curve].InsertString(5, "Y轴角速度");
+		m_ComBoxCurve[Curve].InsertString(6, "Z轴角速度");
+		m_ComBoxCurve[Curve].InsertString(7, "X轴加速度");
+		m_ComBoxCurve[Curve].InsertString(8, "Y轴加速度");
+		m_ComBoxCurve[Curve].InsertString(9, "Z轴加速度");
 		m_ComBoxCurve[Curve].SetCurSel(0);
 		m_CurveSelected[Curve] = 0;
 	}
 
 	UpdateSelected();
 
-	m_CombocRefresh.InsertString(0, "50Hz");
-	m_CombocRefresh.InsertString(1, "25Hz");
-	m_CombocRefresh.InsertString(2, "10Hz");
+	m_CombocRefresh.InsertString(0, "刷新率：50Hz");
+	m_CombocRefresh.InsertString(1, "刷新率：25Hz");
+	m_CombocRefresh.InsertString(2, "刷新率：10Hz");
 	m_CombocRefresh.SetCurSel(0);
 	m_nRefreshTime = 20;	//1000/50Hz = 20
 
@@ -225,6 +247,22 @@ void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CURVE3, m_ComBoxCurve[2]);
 	DDX_Control(pDX, IDC_CURVE4, m_ComBoxCurve[3]);
 	DDX_Control(pDX, IDC_CURVE_REFRESH, m_CombocRefresh);
+	DDX_Text(pDX, IDC_MOTOR1, m_str_Motor1);
+	DDX_Text(pDX, IDC_MOTOR2, m_str_Motor2);
+	DDX_Text(pDX, IDC_MOTOR3, m_str_Motor3);
+	DDX_Text(pDX, IDC_MOTOR4, m_str_Motor4);
+	DDX_Text(pDX, IDC_GYRO_X, m_str_Gyro_X);
+	DDX_Text(pDX, IDC_GYRO_Y, m_str_Gyro_Y);
+	DDX_Text(pDX, IDC_GYRO_Z, m_str_Gyro_Z);
+	DDX_Text(pDX, IDC_ACCEL_X, m_str_Accel_X);
+	DDX_Text(pDX, IDC_ACCEL_Y, m_str_Accel_Y);
+	DDX_Text(pDX, IDC_ACCEL_Z, m_str_Accel_Z);
+	DDX_Text(pDX, IDC_HIGH_KS10X, m_str_HIGH_KS10X);
+	DDX_Text(pDX, IDC_HIGH_MS5611, m_str_HIGH_MS5611);
+	DDX_Text(pDX, IDC_TEMP_MPU6050, m_str_Temp_MPU6050);
+	DDX_Text(pDX, IDC_TEMP_MS5611, m_str_Temp_MS5611);
+	DDX_Text(pDX, IDC_PRESS_MS5611, m_str_Press_MS5611);
+	DDX_Text(pDX, IDC_HIGH_ACCEL, m_str_HIGH_Accel);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -476,6 +514,7 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lPara
 		KillTimer(m_Timer_Update_Curve);
 		m_Timer_Update_Curve = 0;
 	}
+	InitQuadrotorState();
 	return 0;
 }
 
@@ -548,17 +587,47 @@ void CMFC_Exia_DebuggerDlg::SetCurveData()
 		{
 			case 1:
 			{
-				m_CurveData[Curve].fData = (float)m_State.Roll;
+				m_CurveData[Curve].fData = m_State.Roll;
 				break;
 			}
 			case 2:
 			{
-				m_CurveData[Curve].fData = (float)m_State.Pitch;
+				m_CurveData[Curve].fData = m_State.Pitch;
 				break;
 			}
 			case 3:
 			{
-				m_CurveData[Curve].fData = (float)m_State.Yaw;
+				m_CurveData[Curve].fData = m_State.Yaw;
+				break;
+			}
+			case 4:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Gyro_X / 16.4f;
+				break;
+			}
+			case 5:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Gyro_Y / 16.4f;
+				break;
+			}
+			case 6:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Gyro_Z / 16.4f;
+				break;
+			}
+			case 7:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Accel_X / 16384.0f;
+				break;
+			}
+			case 8:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Accel_Y / 16384.0f;
+				break;
+			}
+			case 9:
+			{
+				m_CurveData[Curve].fData = (float)m_State.Accel_Z / 16384.0f;
 				break;
 			}
 			default:
@@ -633,25 +702,25 @@ CString CMFC_Exia_DebuggerDlg::GetLastErrorMessage(const char* ErrorTip)
 								}					
 bool CMFC_Exia_DebuggerDlg::GetQuadrotorState()
 {
-	UINT8 u8CheckData = 0;
-	UINT16 u16CheckData = 0;
 	Quadrotor_State TempState;
 	while (TRUE)
 	{
-		CHECK_DATA(u8CheckData, 0x7F);
+		CHECK_DATA(TempState.DataHead1, DATA_HEAD1);
 
-		CHECK_DATA(u8CheckData, 0xFF);
+		CHECK_DATA(TempState.DataHead2, DATA_HEAD2);
 
-		CHECK_DATA(u16CheckData, sizeof(Quadrotor_State));
+		CHECK_DATA(TempState.DataSize, sizeof(Quadrotor_State));
 
-		if (m_Serial.GetRecData((PUINT8)&TempState, sizeof(Quadrotor_State)) < sizeof(Quadrotor_State))
+		UINT16 ReceiveDataSize = TempState.DataSize - sizeof(TempState.DataHead1) - sizeof(TempState.DataHead2) - sizeof(TempState.DataSize) - sizeof(TempState.DataCheckValue) - sizeof(TempState.DataEnd);
+
+		if (m_Serial.GetRecData((PUINT8)&TempState.DataSize + sizeof(TempState.DataSize), ReceiveDataSize) < ReceiveDataSize)
 		{
 			return FALSE;
 		}
 
-		CHECK_DATA(u16CheckData, 123);
+		CHECK_DATA(TempState.DataCheckValue, 123);
 
-		CHECK_DATA(u16CheckData, 0xFEFF);
+		CHECK_DATA(TempState.DataEnd, 0xFEFF);
 
 		m_State = TempState;
 		return TRUE;
@@ -679,7 +748,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 
 	if (m_State.Thro)
 	{
-		m_str_THRO.Format("%u", m_State.Thro);
+		m_str_THRO.Format("%d", (int)(( (float)m_State.Thro - 1100.0f ) /8.0f + 0.5f));
 	}
 	else
 	{
@@ -688,7 +757,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 
 	if (m_State.Rudd)
 	{
-		m_str_RUDD.Format("%u", m_State.Rudd);
+		m_str_RUDD.Format("%d", (int)(((float)m_State.Rudd - 1100.0f) / 8.0f + 0.5f) - 50);
 	}
 	else
 	{
@@ -697,7 +766,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 
 	if (m_State.Elev)
 	{
-		m_str_ELEV.Format("%u", m_State.Elev);
+		m_str_ELEV.Format("%d", (int)(((float)m_State.Elev - 1100.0f) / 8.0f + 0.5f) - 50);
 	}
 	else
 	{
@@ -706,7 +775,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 
 	if (m_State.Aile)
 	{
-		m_str_AILE.Format("%u", m_State.Aile);
+		m_str_AILE.Format("%d", (int)(((float)m_State.Aile - 1100.0f) / 8.0f + 0.5f) - 50);
 	}
 	else
 	{
@@ -724,13 +793,59 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	m_str_HMC5883L_X.Format("%d", m_State.HMC5883L_X);
 	m_str_HMC5883L_Y.Format("%d", m_State.HMC5883L_Y);
 	m_str_HMC5883L_Z.Format("%d", m_State.HMC5883L_Z);
-	m_str_HMC5883L_Angle.Format("%.1f", m_State.HMC5883L_Angle / 10.0f);
+	m_str_HMC5883L_Angle.Format("%.1f", m_State.HMC5883L_Angle);
 
-	m_str_Roll.Format("%.1f", m_State.Roll / 10.0f);
-	m_str_Pitch.Format("%.1f", m_State.Pitch / 10.0f);
-	m_str_Yaw.Format("%.1f", m_State.Yaw / 10.0f);
+	m_str_Roll.Format("%.1f", m_State.Roll);
+	m_str_Pitch.Format("%.1f", m_State.Pitch);
+	m_str_Yaw.Format("%.1f", m_State.Yaw);
 	
+	if (m_State.Motor1)
+	{
+		m_str_Motor1.Format("%d", (int)(((float)m_State.Motor1 - 1100.0f) / 8.0f + 0.5f));
+	}
+	else
+	{
+		m_str_Motor1 = "无信号";
+	}
+	if (m_State.Motor2)
+	{
+		m_str_Motor2.Format("%d", (int)(((float)m_State.Motor2 - 1100.0f) / 8.0f + 0.5f));
+	}
+	else
+	{
+		m_str_Motor2 = "无信号";
+	}
+	if (m_State.Motor3)
+	{
+		m_str_Motor3.Format("%d", (int)(((float)m_State.Motor3 - 1100.0f) / 8.0f + 0.5f));
+	}
+	else
+	{
+		m_str_Motor3 = "无信号";
+	}
+	if (m_State.Motor4)
+	{
+		m_str_Motor4.Format("%d", (int)(((float)m_State.Motor4 - 1100.0f) / 8.0f + 0.5f));
+	}
+	else
+	{
+		m_str_Motor4 = "无信号";
+	}
+	
+	m_str_Gyro_X.Format("%.1f", (float)m_State.Gyro_X / 16.4f);
+	m_str_Gyro_Y.Format("%.1f", (float)m_State.Gyro_Y / 16.4f);
+	m_str_Gyro_Z.Format("%.1f", (float)m_State.Gyro_Z / 16.4f);
 
+	m_str_Accel_X.Format("%.1f", (float)m_State.Accel_X / 16384.0f);
+	m_str_Accel_Y.Format("%.1f", (float)m_State.Accel_Y / 16384.0f);
+	m_str_Accel_Z.Format("%.1f", (float)m_State.Accel_Z / 16384.0f);
+
+	m_str_HIGH_KS10X.Format("%.3f", (float)m_State.KS10X_High / 1000.0f);
+	m_str_HIGH_MS5611.Format("%.3f", (float)m_State.MS5611_HIGH / 1000.0f);
+	m_str_Temp_MPU6050.Format("%.3f", (float)m_State.MPU6050_Temp / 340.0f + 36.53);
+	m_str_Temp_MS5611.Format("%.2f", (float)m_State.MS5611_Temp / 100.0f);
+	m_str_Press_MS5611.Format("%.3f", (float)m_State.MS5611_Press / 1000.0f);
+	//m_str_HIGH_Accel
 	UpdateData(FALSE);
 }
 
@@ -814,23 +929,81 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 	// TODO:  在此添加控件通知处理程序代码
 	CString RefreshStr;
 	INT_PTR RefreshTime;
-	m_CombocRefresh.GetWindowTextA(RefreshStr);
-	RefreshTime = atoi(RefreshStr);
-	RefreshTime = 1000 / RefreshTime;
+	switch (m_CombocRefresh.GetCurSel())
+	{
+		case 0:
+		{
+			RefreshTime = 20;	//1000ms/50Hz = 20ms
+			break;
+		}
+		case 1:
+		{
+			RefreshTime = 40;	//1000ms/25Hz = 40ms
+			break;
+		}
+		case 2:
+		{
+			RefreshTime = 100;	//1000ms/10Hz = 100ms
+			break;
+		}
+	}
 	if (RefreshTime != m_nRefreshTime)
 	{
 		m_nRefreshTime = RefreshTime;
 		//开启曲线更新定时器
-		if (m_Timer_Update_Curve)	//已经开启则先关闭
+		if (m_Timer_Update_Curve)	//已经开启则重新设置，没打开就不用打开，串口开启再开
 		{
 			KillTimer(m_Timer_Update_Curve);
 			m_Timer_Update_Curve = 0;
+			m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, m_nRefreshTime, NULL);
+			if (m_Timer_Update_Curve == 0)
+			{
+				//AfxMessageBox("数据更新定时器设置失败");
+				MessageBoxA(GetLastErrorMessage(), "曲线更新定时器设置失败", MB_ICONERROR | MB_OK);
+			}
 		}
-		m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, m_nRefreshTime, NULL);
-		if (m_Timer_Update_Curve == 0)
-		{
-			//AfxMessageBox("数据更新定时器设置失败");
-			MessageBoxA(GetLastErrorMessage(), "曲线更新定时器设置失败", MB_ICONERROR | MB_OK);
-		}
+
 	}
+}
+
+
+
+void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
+{
+	memset(&m_State, 0, sizeof(m_State));
+	m_str_THRO = "无信号";
+	m_str_RUDD = "无信号";
+	m_str_ELEV = "无信号";
+	m_str_AILE = "无信号";
+	m_str_BuffByte = "0 Bytes";
+	m_str_Accel_Sensor_X = "无信号";
+	m_str_Accel_Sensor_Y = "无信号";
+	m_str_Accel_Sensor_Z = "无信号";
+	m_str_Gyro_Sensor_X = "无信号";
+	m_str_Gyro_Sensor_Y = "无信号";
+	m_str_Gyro_Sensor_Z = "无信号";
+	m_str_HMC5883L_X = "无信号";
+	m_str_HMC5883L_Y = "无信号";
+	m_str_HMC5883L_Z = "无信号";
+	m_str_HMC5883L_Angle = "无信号";
+	m_str_Roll = "无信号";
+	m_str_Pitch = "无信号";
+	m_str_Yaw = "无信号";
+	m_str_Motor1 = "无信号";
+	m_str_Motor2 = "无信号";
+	m_str_Motor3 = "无信号";
+	m_str_Motor4 = "无信号";
+	m_str_Gyro_X = "无信号";
+	m_str_Gyro_Y = "无信号";
+	m_str_Gyro_Z = "无信号";
+	m_str_Accel_X = "无信号";
+	m_str_Accel_Y = "无信号";
+	m_str_Accel_Z = "无信号";
+
+	m_str_HIGH_KS10X = "无信号";
+	m_str_HIGH_MS5611 = "无信号";
+	m_str_Temp_MPU6050 = "无信号";
+	m_str_Temp_MS5611 = "无信号";
+	m_str_Press_MS5611 = "无信号";
+	m_str_HIGH_Accel = "无信号";
 }
