@@ -504,15 +504,21 @@ UINT CSerial::ReceiveData()
 
 	UINT8 ReceiveData[BUF_SIZE] = {0};
 	DWORD dwBytesRead = 0;
+	DWORD dwBytesReaded = 0;
 
 	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//创建CEvent对象
 	while (IsOpen())
 	{
 		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);	//更新ComStat
-		if (ComStat.cbInQue)	//如果串口inbuf中有接收到的字符就执行下面的操作
+		dwBytesRead = ComStat.cbInQue;
+		if (dwBytesRead)	//如果串口inbuf中有接收到的字符就执行下面的操作
 		{
-			dwBytesRead = 0;
-			if (!ReadFile(m_pSerialPort->h_Handle, ReceiveData, ComStat.cbInQue, &dwBytesRead, &overlapped))
+			if (dwBytesRead > BUF_SIZE)		//缓冲区数据大于缓存数据
+			{
+				dwBytesRead = BUF_SIZE;
+			}
+			dwBytesReaded = 0;
+			if (!ReadFile(m_pSerialPort->h_Handle, ReceiveData, dwBytesRead, &dwBytesReaded, &overlapped))
 			{
 				if (GetLastError() == ERROR_IO_PENDING) //GetLastError()函数返回ERROR_IO_PENDING,表明串口正在进行读操作 
 				{
@@ -527,9 +533,12 @@ UINT CSerial::ReceiveData()
 			{
 				BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
 			}
-			//PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+			if (ComStat.cbInQue > BUF_SIZE)	//串口缓冲区数据大于缓存数据，则有剩余数据没读，清空缓冲区
+			{
+				PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+			}
 			#if RECEIVE_TEST
-			printf("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesRead, m_SerialRecData.nByteToRead);
+			printf("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesReaded, m_SerialRecData.nByteToRead);
 			#endif
 		}
 		Sleep(10);		//一直轮询会加重CPU负担
