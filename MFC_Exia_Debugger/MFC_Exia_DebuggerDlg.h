@@ -142,4 +142,6 @@ public:
 	CString m_str_Temp_MS5611;
 	CString m_str_Press_MS5611;
 	CString m_str_HIGH_Accel;
+	float m_fRoll_G_Kp;
+	virtual void OnOK();
 };
