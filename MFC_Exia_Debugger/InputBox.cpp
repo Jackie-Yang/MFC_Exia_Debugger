@@ -11,11 +11,11 @@
 
 IMPLEMENT_DYNAMIC(CInputBox, CDialogEx)
 
-CInputBox::CInputBox(CString Title /*= "设定"*/, CString Tip /*= "请输入："*/, CString DefaultValue /*= "0"*/, CWnd* pParent /*=NULL*/)
+CInputBox::CInputBox(CString Title /*= _T("设定")*/, CString Tip /*= _T("请输入：")*/, CString DefaultValue /*= _T("0")*/, CWnd* pParent /*=NULL*/)
 	: CDialogEx(CInputBox::IDD, pParent)
-	, m_str_Input(_T(DefaultValue))
-	, m_str_Title(_T(Title))
-	, m_str_Tip(_T(Tip))
+	, m_str_Input(DefaultValue)
+	, m_str_Title(Title)
+	, m_str_Tip(Tip)
 {
 
 }
@@ -67,7 +67,7 @@ BOOL CInputBox::PreTranslateMessage(MSG* pMsg)
 			return CDialogEx::PreTranslateMessage(pMsg);
 		}
 		//只允许输入数字、小数点、退格、符号
-		if (pMsg->wParam != '.' && pMsg->wParam != '\b' && pMsg->wParam != '-' && (pMsg->wParam>'9' || pMsg->wParam<'0'))
+		if (pMsg->wParam != _T('.') && pMsg->wParam != _T('\b') && pMsg->wParam != _T('-') && (pMsg->wParam > _T('9') || pMsg->wParam < _T('0')))
 		{
 			return TRUE;
 		}
@@ -79,20 +79,20 @@ BOOL CInputBox::PreTranslateMessage(MSG* pMsg)
 		str.Delete(nSelStart, nSelEnd - nSelStart);		//删除选中的文本(因为选中文本会被输入的字符覆盖)
 
 		//只允许输入一个小数点
-		if (pMsg->wParam == '.')
+		if (pMsg->wParam == _T('.'))
 		{
 			int nPos = 0;
 			if (!nSelStart)	//第一个字符不能输入小数点
 			{
 				return TRUE;
 			}
-			nPos = str.Find('.'); // 查找.的位置
+			nPos = str.Find(_T('.')); // 查找.的位置
 			if (nPos >= 0)
 			{
 				return TRUE; // 如果存在. 返回，即不再允许.输入
 			}
 		}
-		else if (pMsg->wParam == '-')	//符号只能在第一个输入
+		else if (pMsg->wParam == _T('-'))	//符号只能在第一个输入
 		{
 			if (nSelStart)
 			{
@@ -113,17 +113,17 @@ void CInputBox::OnEnChangeInputboxEdit()
 	// TODO:  在此添加控件通知处理程序代码
 
 	CString str;
-	char data;
+	TCHAR data;
 	unsigned char DotCount = 0;
 	GetDlgItemText(IDC_INPUTBOX_EDIT, str);
 	for (int i = 0; i < str.GetLength(); i++)
 	{
 		data = str.GetAt(i);
-		if (data != '.' && data != '-' && (data>'9' || data<'0'))
+		if (data != _T('.') && data != _T('-') && (data > _T('9') || data < _T('0')))
 		{
 			SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);	//恢复旧的数据
 			m_Edit_Input.SetSel(0, -1);
-			MessageBoxA("输入不合法！", "错误", MB_ICONERROR | MB_OK);
+			MessageBox(_T("输入不合法！"), _T("错误"), MB_ICONERROR | MB_OK);
 			return;
 		}
 
@@ -134,24 +134,24 @@ void CInputBox::OnEnChangeInputboxEdit()
 			{
 				SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);	//恢复旧的数据
 				m_Edit_Input.SetSel(0, -1);
-				MessageBoxA("输入不合法！", "错误", MB_ICONERROR | MB_OK);
+				MessageBox(_T("输入不合法！"), _T("错误"), MB_ICONERROR | MB_OK);
 				return;
 			}
 			if (DotCount++)
 			{
 				SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);	//恢复旧的数据
 				m_Edit_Input.SetSel(0, -1);
-				MessageBoxA("输入不合法！", "错误", MB_ICONERROR | MB_OK);
+				MessageBox(_T("输入不合法！"), _T("错误"), MB_ICONERROR | MB_OK);
 				return;
 			}
 		}
-		else if (data == '-')	//符号只能在第一个输入
+		else if (data == _T('-'))	//符号只能在第一个输入
 		{
 			if (i)
 			{
 				SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);	//恢复旧的数据
 				m_Edit_Input.SetSel(0, -1);
-				MessageBoxA("输入不合法！", "错误", MB_ICONERROR | MB_OK);
+				MessageBox(_T("输入不合法！"), _T("错误"), MB_ICONERROR | MB_OK);
 				return;
 			}
 		}

@@ -68,17 +68,17 @@ bool CSerial::UpdateSerialList()
 	DWORD  MaxValueNameLength;
 	DWORD  MaxValueLength;
 	DWORD  dwValueNumber;
-	LPSTR  ValueName = NULL, Value = NULL;
+	LPTSTR  ValueName = NULL, Value = NULL;
 	SerialInfo stSerialInfo;
 	static SerialInfo stCurSerialInfo;
-	stCurSerialInfo.str_Name = "";
-	stCurSerialInfo.str_Port = "";
+	stCurSerialInfo.str_Name = _T("");
+	stCurSerialInfo.str_Port = _T("");
 	stCurSerialInfo.h_Handle = NULL;
 
 	CheckSerialState();	//检查当前连接的串口是否连接正常,若串口已失效会将其关闭
 
 	//Get Key Handle
-	Ret = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_QUERY_VALUE, &hKey);
+	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_QUERY_VALUE, &hKey);
 
 	if (ERROR_SUCCESS != Ret)
 	{
@@ -86,7 +86,7 @@ bool CSerial::UpdateSerialList()
 	}
 
 	//Get Value Num And Max Length
-	Ret = RegQueryInfoKeyA(hKey,
+	Ret = RegQueryInfoKey(hKey,
 		NULL,
 		NULL,
 		NULL,
@@ -117,16 +117,21 @@ bool CSerial::UpdateSerialList()
 		m_SerialList.RemoveAll();
 	}
 
-	MaxValueNameLength = MaxValueNameLength + 1;
+	#ifdef _UNICODE
+	MaxValueNameLength = MaxValueNameLength + 2;	//Unicode下结尾符应该算2
+	MaxValueLength = MaxValueLength + 2;
+	#else
+	MaxValueNameLength = MaxValueNameLength + 1;	//Unicode下结尾符应该算2
 	MaxValueLength = MaxValueLength + 1;
-
-	ValueName = (LPSTR)new char[MaxValueNameLength];
-	Value = (LPSTR)new char[MaxValueLength];
+	#endif
+	
+	ValueName = (LPTSTR)new TCHAR[MaxValueNameLength];
+	Value = (LPTSTR)new TCHAR[MaxValueLength];
 
 	for (DWORD i = 0; i < dwValueNumber; i++)
 	{
-		stSerialInfo.str_Name = "";
-		stSerialInfo.str_Port = "";
+		stSerialInfo.str_Name = _T("");
+		stSerialInfo.str_Port = _T("");
 		stSerialInfo.h_Handle = NULL;
 		//不能直接使用MaxValueNameLength，因为每次调用后会改变它的值
 		DWORD  ValueNameLength = MaxValueNameLength;
@@ -134,7 +139,7 @@ bool CSerial::UpdateSerialList()
 		memset(ValueName, 0, ValueNameLength);
 		memset(Value, 0, ValueLength);
 		
-		Ret = RegEnumValueA(hKey,
+		Ret = RegEnumValue(hKey,
 			i,
 			ValueName,
 			&ValueNameLength,
@@ -148,7 +153,7 @@ bool CSerial::UpdateSerialList()
 			continue;
 		}
 
-		Ret = RegQueryValueExA(hKey,
+		Ret = RegQueryValueEx(hKey,
 			ValueName,
 			NULL,
 			NULL,
@@ -231,20 +236,20 @@ p_SerialInfo CSerial::GetSerialInfo(INT_PTR nIndex)
 //sort回掉函数，如果不需要排序则返回true
 bool CSerial::Sort_Port(SerialInfo &Info1, SerialInfo &Info2)
 {
-	if (Info1.str_Port.length() == Info2.str_Port.length())
+	if (Info1.str_Port.GetLength() == Info2.str_Port.GetLength())
 	{
-		return strcmp(Info1.str_Port.c_str(), Info2.str_Port.c_str()) < 0;
+		return _tcscmp(Info1.str_Port, Info2.str_Port) < 0;
 	}
 	else
 	{
-		return Info1.str_Port.length() < Info2.str_Port.length();
+		return Info1.str_Port.GetLength() < Info2.str_Port.GetLength();
 	}
 	
 }
 
 bool CSerial::Sort_Name(SerialInfo &Info1, SerialInfo &Info2)
 {
-	return strcmp(Info1.str_Name.c_str(), Info2.str_Name.c_str()) < 0;
+	return _tcscmp(Info1.str_Name, Info2.str_Name) < 0;
 }
 
 
@@ -259,8 +264,8 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 		SetLastError(ERROR_FILE_NOT_FOUND);
 		return FALSE;
 	}
-	std::string PortName = "\\\\.\\" + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
-	m_pSerialPort->h_Handle = CreateFile(PortName.c_str(),//COM口  
+	CString PortName = _T("\\\\.\\") + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
+	m_pSerialPort->h_Handle = CreateFile(PortName,//COM口  
 		GENERIC_READ | GENERIC_WRITE, //允许读和写  
 		0, //独占方式  
 		NULL,
@@ -442,8 +447,8 @@ bool CSerial::CheckSerialState()
 {
 	if (m_pSerialPort)
 	{
-		std::string PortName = "\\\\.\\" + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
-		HANDLE hPort = CreateFile(PortName.c_str(),//COM口  
+		CString PortName = _T("\\\\.\\") + m_pSerialPort->str_Port;	//加上这个可以防止端口号大于10无法打开
+		HANDLE hPort = CreateFile(PortName,//COM口  
 			GENERIC_READ | GENERIC_WRITE, //允许读和写  
 			0, //独占方式  
 			NULL,
@@ -476,8 +481,8 @@ UINT CSerial::Send_Thread(void *args)		//测试发送功能，定时发送字符串
 	CSerial *pCSerial = (CSerial *)args;
 	while (pCSerial->IsOpen())
 	{
-		sprintf(SendData, "%d\n", Count);
-		pCSerial->SendData(SendData, strlen(SendData));
+		sprintf(SendData, "%u\n", Count);
+		pCSerial->SendData((UINT8 *)SendData, lstrlen(SendData));
 		Sleep(200);
 		if (++Count == 1000)
 		{
@@ -548,7 +553,7 @@ UINT CSerial::ReceiveData()
 }
 
 
-DWORD CSerial::SendData(const char *pData, DWORD nDataLength)
+DWORD CSerial::SendData(const UINT8 *pData, DWORD nDataLength)
 {
 	OVERLAPPED overlapped = { 0 };	//OVERLAPPED结构体用来设置I/O异步，具体可以参见MSDN
 	COMSTAT ComStat;				//这个结构体主要是用来获取端口信息的
@@ -585,13 +590,13 @@ bool CSerial::StartWatchingSerialList()
 {
 	LONG   Ret;
 	// Open a key.
-	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &m_hWatchingKey);
+	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_NOTIFY, &m_hWatchingKey);
 	if (Ret != ERROR_SUCCESS)
 	{
 		if (Ret == ERROR_FILE_NOT_FOUND)
 		{
 			//无串口，监视Device
-			Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP", 0, KEY_NOTIFY, &m_hWatchingKey);
+			Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP"), 0, KEY_NOTIFY, &m_hWatchingKey);
 			if (Ret != ERROR_SUCCESS)
 			{
 				goto FAIL_PROCESS;
@@ -734,7 +739,7 @@ bool CSerial::WatchingSerial()
 			if (m_bNoSerial)	//无串口，尝试监听串口
 			{
 				HKEY   TempKey;
-				Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_NOTIFY, &TempKey);
+				Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_NOTIFY, &TempKey);
 				if (Ret == ERROR_SUCCESS)
 				{
 					if (RegCloseKey(m_hWatchingKey) == ERROR_SUCCESS)		//有串口，开始监听串口

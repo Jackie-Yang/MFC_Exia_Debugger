@@ -21,8 +21,8 @@
 
 typedef struct __ST_SERIAL_INFO__
 {
-	std::string str_Name;
-	std::string str_Port;
+	CString str_Name;
+	CString str_Port;
 	HANDLE h_Handle;
 }SerialInfo, * p_SerialInfo;
 
@@ -52,7 +52,7 @@ public:
 	bool IsOpen();
 	bool CheckSerialState();
 	bool CloseSerial();
-	DWORD SendData(const char *pData, DWORD nDataLength);
+	DWORD SendData(const UINT8 *pData, DWORD nDataLength);
 
 	UINT32 GetRecBufByte();
 	UINT32 GetRecData(PUINT8 pData, UINT32 nSize);

@@ -146,47 +146,47 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_ComBoxGain[Curve].InsertString(0, "0.1");
-		m_ComBoxGain[Curve].InsertString(1, "0.2");
-		m_ComBoxGain[Curve].InsertString(2, "0.5");
-		m_ComBoxGain[Curve].InsertString(3, "1");
-		m_ComBoxGain[Curve].InsertString(4, "2");
-		m_ComBoxGain[Curve].InsertString(5, "5");
-		m_ComBoxGain[Curve].InsertString(6, "10");
-		m_ComBoxGain[Curve].InsertString(7, "20");
-		m_ComBoxGain[Curve].InsertString(8, "50");
-		m_ComBoxGain[Curve].InsertString(9, "100");
-		m_ComBoxGain[Curve].InsertString(10, "200");
-		m_ComBoxGain[Curve].InsertString(11, "500");
-		m_ComBoxGain[Curve].InsertString(12, "1000");
-		m_ComBoxGain[Curve].InsertString(13, "2000");
-		m_ComBoxGain[Curve].InsertString(14, "5000");
-		m_ComBoxGain[Curve].InsertString(15, "10000");
+		m_ComBoxGain[Curve].InsertString(0, _T("0.1"));
+		m_ComBoxGain[Curve].InsertString(1, _T("0.2"));
+		m_ComBoxGain[Curve].InsertString(2, _T("0.5"));
+		m_ComBoxGain[Curve].InsertString(3, _T("1"));
+		m_ComBoxGain[Curve].InsertString(4, _T("2"));
+		m_ComBoxGain[Curve].InsertString(5, _T("5"));
+		m_ComBoxGain[Curve].InsertString(6, _T("10"));
+		m_ComBoxGain[Curve].InsertString(7, _T("20"));
+		m_ComBoxGain[Curve].InsertString(8, _T("50"));
+		m_ComBoxGain[Curve].InsertString(9, _T("100"));
+		m_ComBoxGain[Curve].InsertString(10, _T("200"));
+		m_ComBoxGain[Curve].InsertString(11, _T("500"));
+		m_ComBoxGain[Curve].InsertString(12, _T("1000"));
+		m_ComBoxGain[Curve].InsertString(13, _T("2000"));
+		m_ComBoxGain[Curve].InsertString(14, _T("5000"));
+		m_ComBoxGain[Curve].InsertString(15, _T("10000"));
 		m_ComBoxGain[Curve].SetCurSel(3);
 		m_GainSelected[Curve] = 3;
 	}
 
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_ComBoxCurve[Curve].InsertString(0, "无信号");
-		m_ComBoxCurve[Curve].InsertString(1, "侧滚(Roll)");
-		m_ComBoxCurve[Curve].InsertString(2, "俯仰(Pitch)");
-		m_ComBoxCurve[Curve].InsertString(3, "偏摆(Yaw)");
-		m_ComBoxCurve[Curve].InsertString(4, "X轴角速度");
-		m_ComBoxCurve[Curve].InsertString(5, "Y轴角速度");
-		m_ComBoxCurve[Curve].InsertString(6, "Z轴角速度");
-		m_ComBoxCurve[Curve].InsertString(7, "X轴加速度");
-		m_ComBoxCurve[Curve].InsertString(8, "Y轴加速度");
-		m_ComBoxCurve[Curve].InsertString(9, "Z轴加速度");
+		m_ComBoxCurve[Curve].InsertString(0, _T("无信号"));
+		m_ComBoxCurve[Curve].InsertString(1, _T("侧滚(Roll)"));
+		m_ComBoxCurve[Curve].InsertString(2, _T("俯仰(Pitch)"));
+		m_ComBoxCurve[Curve].InsertString(3, _T("偏摆(Yaw)"));
+		m_ComBoxCurve[Curve].InsertString(4, _T("X轴角速度"));
+		m_ComBoxCurve[Curve].InsertString(5, _T("Y轴角速度"));
+		m_ComBoxCurve[Curve].InsertString(6, _T("Z轴角速度"));
+		m_ComBoxCurve[Curve].InsertString(7, _T("X轴加速度"));
+		m_ComBoxCurve[Curve].InsertString(8, _T("Y轴加速度"));
+		m_ComBoxCurve[Curve].InsertString(9, _T("Z轴加速度"));
 		m_ComBoxCurve[Curve].SetCurSel(0);
 		m_CurveSelected[Curve] = 0;
 	}
 
 	UpdateSelected();
 
-	m_CombocRefresh.InsertString(0, "刷新率：50Hz");
-	m_CombocRefresh.InsertString(1, "刷新率：25Hz");
-	m_CombocRefresh.InsertString(2, "刷新率：10Hz");
+	m_CombocRefresh.InsertString(0, _T("刷新率：50Hz"));
+	m_CombocRefresh.InsertString(1, _T("刷新率：25Hz"));
+	m_CombocRefresh.InsertString(2, _T("刷新率：10Hz"));
 	m_CombocRefresh.SetCurSel(0);
 	m_nRefreshTime = 20;	//1000/50Hz = 20
 
@@ -365,14 +365,14 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 	m_Combox_COM.ResetContent();
 	for (int i = 0; i < m_Serial.GetSerialNum(); i++)
 	{
-		CurSelStr = m_Serial.GetSerialInfo(i)->str_Port.c_str();
+		CurSelStr = m_Serial.GetSerialInfo(i)->str_Port;
 		if (m_Serial.GetSerialInfo(i)->h_Handle)
 		{
-			CurSelStr += " *";
+			CurSelStr += _T(" *");
 		}
 		m_Combox_COM.InsertString(i, CurSelStr);
 		m_Combox_COM.GetLBText(i, CurSelStr);
-		if (CurSelStr == LastSelStr || CurSelStr + " *" == LastSelStr || CurSelStr == LastSelStr + " *")
+		if (CurSelStr == LastSelStr || CurSelStr + _T(" *") == LastSelStr || CurSelStr == LastSelStr + _T(" *"))
 		{
 			m_Combox_COM.SetCurSel(i);
 			bMatchingSel = TRUE;
@@ -387,19 +387,19 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 	if (m_Serial.IsOpen() && pCurSerial)
 	{
 		CString Info;
-		Info.Format("已连接 %s (%s)", pCurSerial->str_Port.c_str(), pCurSerial->str_Name.c_str());
-		Info.Replace("\\Device\\", "");
-		m_Static_Status.SetWindowTextA(Info);
+		Info.Format(_T("已连接 %s (%s)"), pCurSerial->str_Port, pCurSerial->str_Name);
+		Info.Replace(_T("\\Device\\"), _T(""));
+		m_Static_Status.SetWindowText(Info);
 		m_Color_Status = RGB(0, 128, 0);
 		m_Static_Status.InvalidateRect(NULL);
-		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowTextA("关闭串口");
+		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowText(_T("关闭串口"));
 	}
 	else
 	{
-		m_Static_Status.SetWindowTextA("未连接");
+		m_Static_Status.SetWindowText(_T("未连接"));
 		m_Color_Status = RGB(255, 0, 0);
 		m_Static_Status.InvalidateRect(NULL);
-		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowTextA("打开串口");
+		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowText(_T("打开串口"));
 	}
 	return;
 }
@@ -413,7 +413,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 	{
 		if (!m_Serial.CloseSerial())
 		{
-			MessageBoxA(GetLastErrorMessage(), "串口关闭失败", MB_ICONERROR | MB_OK);
+			MessageBox(GetLastErrorMessage(), _T("串口关闭失败"), MB_ICONERROR | MB_OK);
 			//AfxMessageBox(GetLastErrorMessage("串口关闭失败："));
 		}
 	}
@@ -421,7 +421,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 	{
 		if (!m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200))
 		{
-			MessageBoxA(GetLastErrorMessage(), "串口打开失败", MB_ICONERROR | MB_OK);
+			MessageBox(GetLastErrorMessage(), _T("串口打开失败"), MB_ICONERROR | MB_OK);
 			//AfxMessageBox(GetLastErrorMessage("串口打开失败："));
 		}
 	}
@@ -467,7 +467,7 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 	if (m_Timer_Update_Data == 0)
 	{
 		//AfxMessageBox("数据更新定时器设置失败");
-		MessageBoxA(GetLastErrorMessage(), "数据更新定时器设置失败", MB_ICONERROR | MB_OK);
+		MessageBox(GetLastErrorMessage(), _T("数据更新定时器设置失败"), MB_ICONERROR | MB_OK);
 	}
 
 	//开启数据显示定时器
@@ -480,7 +480,7 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 	if (m_Timer_Show_Data == 0)
 	{
 		//AfxMessageBox("数据更新定时器设置失败");
-		MessageBoxA(GetLastErrorMessage(), "数据显示定时器设置失败", MB_ICONERROR | MB_OK);
+		MessageBox(GetLastErrorMessage(), _T("数据显示定时器设置失败"), MB_ICONERROR | MB_OK);
 	}
 
 	//开启曲线更新定时器
@@ -493,7 +493,7 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 	if (m_Timer_Update_Curve == 0)
 	{
 		//AfxMessageBox("数据更新定时器设置失败");
-		MessageBoxA(GetLastErrorMessage(), "曲线更新定时器设置失败", MB_ICONERROR | MB_OK);
+		MessageBox(GetLastErrorMessage(), _T("曲线更新定时器设置失败"), MB_ICONERROR | MB_OK);
 	}
 	return 0;
 }
@@ -586,7 +586,7 @@ void CMFC_Exia_DebuggerDlg::SetCurveData()
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
 		m_ComBoxGain[Curve].GetLBText(m_GainSelected[Curve], str);
-		m_CurveData[Curve].fGain = (float)atof(str);
+		m_CurveData[Curve].fGain = (float)_ttof(str);
 		switch (m_CurveSelected[Curve])
 		{
 			case 1:
@@ -657,23 +657,23 @@ void CMFC_Exia_DebuggerDlg::UpdateSelected()
 		{
 			m_ComBoxGain[Curve].GetLBText(m_GainSelected[Curve], GainStr);	//获取选中项字符串
 			m_ComBoxCurve[Curve].GetLBText(m_CurveSelected[Curve], CurveStr);
-			LabelStr[Curve].Format("%s(x%s)", CurveStr, GainStr);
+			LabelStr[Curve].Format(_T("%s(x%s)"), CurveStr, GainStr);
 		}
 		else
 		{
-			LabelStr[Curve] = "无信号";
+			LabelStr[Curve] = _T("无信号");
 		}
 	}
 	m_pCurveDLG->SetLabelStr(&LabelStr);
 }
 
 
-CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const char* ErrorTip)
+CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const TCHAR* ErrorTip)
 {
 	CString ErrorMessage = ErrorTip;
 	LPVOID lpMsgBuf = NULL;
 
-	FormatMessageA(
+	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |		//缓冲区由系统分配
 		FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -688,7 +688,7 @@ CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const char* ErrorT
 	return ErrorMessage;
 }
 
-CString CMFC_Exia_DebuggerDlg::GetLastErrorMessage(const char* ErrorTip)
+CString CMFC_Exia_DebuggerDlg::GetLastErrorMessage(const TCHAR* ErrorTip)
 {
 	return GetErrorMessage(GetLastError(),ErrorTip);
 }
@@ -747,108 +747,108 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 		m_Color_BuffByte = RGB(0, 0, 0);
 	}
 	//GetDlgItem(IDC_BUFF_BYTE)->InvalidateRect(NULL);
-	m_str_BuffByte.Format("%u Bytes", nBufByte);
+	m_str_BuffByte.Format(_T("%u Bytes"), nBufByte);
 
 
 	if (m_State.u16_Thro)
 	{
-		m_str_THRO.Format("%d", (int)(((float)m_State.u16_Thro - 1100.0f) / 8.0f + 0.5f));
+		m_str_THRO.Format(_T("%d"), (int)(((float)m_State.u16_Thro - 1100.0f) / 8.0f + 0.5f));
 	}
 	else
 	{
-		m_str_THRO = "无信号";
+		m_str_THRO = _T("无信号");
 	}
 
 	if (m_State.u16_Rudd)
 	{
-		m_str_RUDD.Format("%d", (int)(((float)m_State.u16_Rudd - 1100.0f) / 8.0f + 0.5f) - 50);
+		m_str_RUDD.Format(_T("%d"), (int)(((float)m_State.u16_Rudd - 1100.0f) / 8.0f + 0.5f) - 50);
 	}
 	else
 	{
-		m_str_RUDD = "无信号";
+		m_str_RUDD = _T("无信号");
 	}
 
 	if (m_State.u16_Elev)
 	{
-		m_str_ELEV.Format("%d", (int)(((float)m_State.u16_Elev - 1100.0f) / 8.0f + 0.5f) - 50);
+		m_str_ELEV.Format(_T("%d"), (int)(((float)m_State.u16_Elev - 1100.0f) / 8.0f + 0.5f) - 50);
 	}
 	else
 	{
-		m_str_ELEV = "无信号";
+		m_str_ELEV = _T("无信号");
 	}
 
 	if (m_State.u16_Aile)
 	{
-		m_str_AILE.Format("%d", (int)(((float)m_State.u16_Aile - 1100.0f) / 8.0f + 0.5f) - 50);
+		m_str_AILE.Format(_T("%d"), (int)(((float)m_State.u16_Aile - 1100.0f) / 8.0f + 0.5f) - 50);
 	}
 	else
 	{
-		m_str_AILE = "无信号";
+		m_str_AILE = _T("无信号");
 	}
 	
-	m_str_Accel_Sensor_X.Format("%d", m_State.s16_Accel_X);
-	m_str_Accel_Sensor_Y.Format("%d", m_State.s16_Accel_Y);
-	m_str_Accel_Sensor_Z.Format("%d", m_State.s16_Accel_Z);
+	m_str_Accel_Sensor_X.Format(_T("%d"), m_State.s16_Accel_X);
+	m_str_Accel_Sensor_Y.Format(_T("%d"), m_State.s16_Accel_Y);
+	m_str_Accel_Sensor_Z.Format(_T("%d"), m_State.s16_Accel_Z);
 
-	m_str_Gyro_Sensor_X.Format("%d", m_State.s16_Gyro_X);
-	m_str_Gyro_Sensor_Y.Format("%d", m_State.s16_Gyro_Y);
-	m_str_Gyro_Sensor_Z.Format("%d", m_State.s16_Gyro_Z);
+	m_str_Gyro_Sensor_X.Format(_T("%d"), m_State.s16_Gyro_X);
+	m_str_Gyro_Sensor_Y.Format(_T("%d"), m_State.s16_Gyro_Y);
+	m_str_Gyro_Sensor_Z.Format(_T("%d"), m_State.s16_Gyro_Z);
 
-	m_str_HMC5883L_X.Format("%d", m_State.s16_HMC5883L_X);
-	m_str_HMC5883L_Y.Format("%d", m_State.s16_HMC5883L_Y);
-	m_str_HMC5883L_Z.Format("%d", m_State.s16_HMC5883L_Z);
-	m_str_HMC5883L_Angle.Format("%.1f", m_State.f_HMC5883L_Angle);
+	m_str_HMC5883L_X.Format(_T("%d"), m_State.s16_HMC5883L_X);
+	m_str_HMC5883L_Y.Format(_T("%d"), m_State.s16_HMC5883L_Y);
+	m_str_HMC5883L_Z.Format(_T("%d"), m_State.s16_HMC5883L_Z);
+	m_str_HMC5883L_Angle.Format(_T("%.1f"), m_State.f_HMC5883L_Angle);
 
-	m_str_Roll.Format("%.1f", m_State.f_Roll);
-	m_str_Pitch.Format("%.1f", m_State.f_Pitch);
-	m_str_Yaw.Format("%.1f", m_State.f_Yaw);
+	m_str_Roll.Format(_T("%.1f"), m_State.f_Roll);
+	m_str_Pitch.Format(_T("%.1f"), m_State.f_Pitch);
+	m_str_Yaw.Format(_T("%.1f"), m_State.f_Yaw);
 	
 	if (m_State.u16_Motor1)
 	{
-		m_str_Motor1.Format("%d", (int)(((float)m_State.u16_Motor1 - 1100.0f) / 8.0f + 0.5f));
+		m_str_Motor1.Format(_T("%d"), (int)(((float)m_State.u16_Motor1 - 1100.0f) / 8.0f + 0.5f));
 	}
 	else
 	{
-		m_str_Motor1 = "无信号";
+		m_str_Motor1 = _T("无信号");
 	}
 	if (m_State.u16_Motor2)
 	{
-		m_str_Motor2.Format("%d", (int)(((float)m_State.u16_Motor2 - 1100.0f) / 8.0f + 0.5f));
+		m_str_Motor2.Format(_T("%d"), (int)(((float)m_State.u16_Motor2 - 1100.0f) / 8.0f + 0.5f));
 	}
 	else
 	{
-		m_str_Motor2 = "无信号";
+		m_str_Motor2 = _T("无信号");
 	}
 	if (m_State.u16_Motor3)
 	{
-		m_str_Motor3.Format("%d", (int)(((float)m_State.u16_Motor3 - 1100.0f) / 8.0f + 0.5f));
+		m_str_Motor3.Format(_T("%d"), (int)(((float)m_State.u16_Motor3 - 1100.0f) / 8.0f + 0.5f));
 	}
 	else
 	{
-		m_str_Motor3 = "无信号";
+		m_str_Motor3 = _T("无信号");
 	}
 	if (m_State.u16_Motor4)
 	{
-		m_str_Motor4.Format("%d", (int)(((float)m_State.u16_Motor4 - 1100.0f) / 8.0f + 0.5f));
+		m_str_Motor4.Format(_T("%d"), (int)(((float)m_State.u16_Motor4 - 1100.0f) / 8.0f + 0.5f));
 	}
 	else
 	{
-		m_str_Motor4 = "无信号";
+		m_str_Motor4 = _T("无信号");
 	}
 	
-	m_str_Gyro_X.Format("%.1f", (float)m_State.s16_Gyro_X / 16.4f);
-	m_str_Gyro_Y.Format("%.1f", (float)m_State.s16_Gyro_Y / 16.4f);
-	m_str_Gyro_Z.Format("%.1f", (float)m_State.s16_Gyro_Z / 16.4f);
+	m_str_Gyro_X.Format(_T("%.1f"), (float)m_State.s16_Gyro_X / 16.4f);
+	m_str_Gyro_Y.Format(_T("%.1f"), (float)m_State.s16_Gyro_Y / 16.4f);
+	m_str_Gyro_Z.Format(_T("%.1f"), (float)m_State.s16_Gyro_Z / 16.4f);
 
-	m_str_Accel_X.Format("%.1f", (float)m_State.s16_Accel_X / 16384.0f);
-	m_str_Accel_Y.Format("%.1f", (float)m_State.s16_Accel_Y / 16384.0f);
-	m_str_Accel_Z.Format("%.1f", (float)m_State.s16_Accel_Z / 16384.0f);
+	m_str_Accel_X.Format(_T("%.1f"), (float)m_State.s16_Accel_X / 16384.0f);
+	m_str_Accel_Y.Format(_T("%.1f"), (float)m_State.s16_Accel_Y / 16384.0f);
+	m_str_Accel_Z.Format(_T("%.1f"), (float)m_State.s16_Accel_Z / 16384.0f);
 
-	m_str_HIGH_KS10X.Format("%.3f", (float)m_State.u16_KS10X_High / 1000.0f);
-	m_str_HIGH_MS5611.Format("%.3f", (float)m_State.s32_MS5611_HIGH / 1000.0f);
-	m_str_Temp_MPU6050.Format("%.3f", (float)m_State.s16_MPU6050_Temp / 340.0f + 36.53);
-	m_str_Temp_MS5611.Format("%.2f", (float)m_State.s32_MS5611_Temp / 100.0f);
-	m_str_Press_MS5611.Format("%.3f", (float)m_State.s32_MS5611_Press / 1000.0f);
+	m_str_HIGH_KS10X.Format(_T("%.3f"), (float)m_State.u16_KS10X_High / 1000.0f);
+	m_str_HIGH_MS5611.Format(_T("%.3f"), (float)m_State.s32_MS5611_HIGH / 1000.0f);
+	m_str_Temp_MPU6050.Format(_T("%.3f"), (float)m_State.s16_MPU6050_Temp / 340.0f + 36.53);
+	m_str_Temp_MS5611.Format(_T("%.2f"), (float)m_State.s32_MS5611_Temp / 100.0f);
+	m_str_Press_MS5611.Format(_T("%.3f"), (float)m_State.s32_MS5611_Press / 1000.0f);
 	//m_str_HIGH_Accel
 	UpdateData(FALSE);
 }
@@ -862,7 +862,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve()
 	}
 	else
 	{
-		MessageBoxA("无法打开曲线监控窗口", "打开失败", MB_ICONERROR | MB_OK);
+		MessageBox(_T("无法打开曲线监控窗口"), _T("打开失败"), MB_ICONERROR | MB_OK);
 	}
 }
 
@@ -876,7 +876,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
 		if (!m_pCurveDLG->CurveEnhance(TRUE))
 		{
 			((CButton*)GetDlgItem(IDC_CURVE_ENHANCE))->SetCheck(FALSE);
-			MessageBoxA(_T("无法打开画质增强"), _T("打开失败"), MB_ICONERROR | MB_OK);
+			MessageBox(_T("无法打开画质增强"), _T("打开失败"), MB_ICONERROR | MB_OK);
 		}
 	}
 	else
@@ -894,16 +894,16 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 	// TODO:  在此添加控件通知处理程序代码
 	CTime CurTime; 
 	CurTime = CTime::GetCurrentTime();	//获取系统时间
-	CString stFilePath_save = CurTime.Format("ScreenShot %Y_%m_%d %H.%M.%S.bmp");
+	CString stFilePath_save = CurTime.Format(_T("ScreenShot %Y_%m_%d %H.%M.%S.bmp"));
 
-	int nDot_index = stFilePath_save.ReverseFind('.');	//获取后缀'.'位置
+	int nDot_index = stFilePath_save.ReverseFind(_T('.'));	//获取后缀'.'位置
 	////获取后缀名
 	CString szFileType = stFilePath_save.Right(stFilePath_save.GetLength() - nDot_index);
 	szFileType.MakeLower();	//统一后缀小写
 
 
 	// 设置过滤器，过滤出Bmp文件
-	CString szOpenFilter = "位图文件 (*.bmp;*.dib)|*.bmp;*.dib|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|GIF (*.gif)|*.gif||";
+	CString szOpenFilter = _T("位图文件 (*.bmp;*.dib)|*.bmp;*.dib|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|GIF (*.gif)|*.gif||");
 	// 构造保存文件对话框 
 	CFileDialog SaveDlgDst(FALSE, szFileType, stFilePath_save, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
 
@@ -963,7 +963,7 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 			if (m_Timer_Update_Curve == 0)
 			{
 				//AfxMessageBox("数据更新定时器设置失败");
-				MessageBoxA(GetLastErrorMessage(), "曲线更新定时器设置失败", MB_ICONERROR | MB_OK);
+				MessageBox(GetLastErrorMessage(), _T("曲线更新定时器设置失败"), MB_ICONERROR | MB_OK);
 			}
 		}
 
@@ -975,41 +975,41 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
 {
 	memset(&m_State, 0, sizeof(m_State));
-	m_str_THRO = "无信号";
-	m_str_RUDD = "无信号";
-	m_str_ELEV = "无信号";
-	m_str_AILE = "无信号";
-	m_str_BuffByte = "0 Bytes";
-	m_str_Accel_Sensor_X = "无信号";
-	m_str_Accel_Sensor_Y = "无信号";
-	m_str_Accel_Sensor_Z = "无信号";
-	m_str_Gyro_Sensor_X = "无信号";
-	m_str_Gyro_Sensor_Y = "无信号";
-	m_str_Gyro_Sensor_Z = "无信号";
-	m_str_HMC5883L_X = "无信号";
-	m_str_HMC5883L_Y = "无信号";
-	m_str_HMC5883L_Z = "无信号";
-	m_str_HMC5883L_Angle = "无信号";
-	m_str_Roll = "无信号";
-	m_str_Pitch = "无信号";
-	m_str_Yaw = "无信号";
-	m_str_Motor1 = "无信号";
-	m_str_Motor2 = "无信号";
-	m_str_Motor3 = "无信号";
-	m_str_Motor4 = "无信号";
-	m_str_Gyro_X = "无信号";
-	m_str_Gyro_Y = "无信号";
-	m_str_Gyro_Z = "无信号";
-	m_str_Accel_X = "无信号";
-	m_str_Accel_Y = "无信号";
-	m_str_Accel_Z = "无信号";
+	m_str_THRO = _T("无信号");
+	m_str_RUDD = _T("无信号");
+	m_str_ELEV = _T("无信号");
+	m_str_AILE = _T("无信号");
+	m_str_BuffByte = _T("0 Bytes");
+	m_str_Accel_Sensor_X = _T("无信号");
+	m_str_Accel_Sensor_Y = _T("无信号");
+	m_str_Accel_Sensor_Z = _T("无信号");
+	m_str_Gyro_Sensor_X = _T("无信号");
+	m_str_Gyro_Sensor_Y = _T("无信号");
+	m_str_Gyro_Sensor_Z = _T("无信号");
+	m_str_HMC5883L_X = _T("无信号");
+	m_str_HMC5883L_Y = _T("无信号");
+	m_str_HMC5883L_Z = _T("无信号");
+	m_str_HMC5883L_Angle = _T("无信号");
+	m_str_Roll = _T("无信号");
+	m_str_Pitch = _T("无信号");
+	m_str_Yaw = _T("无信号");
+	m_str_Motor1 = _T("无信号");
+	m_str_Motor2 = _T("无信号");
+	m_str_Motor3 = _T("无信号");
+	m_str_Motor4 = _T("无信号");
+	m_str_Gyro_X = _T("无信号");
+	m_str_Gyro_Y = _T("无信号");
+	m_str_Gyro_Z = _T("无信号");
+	m_str_Accel_X = _T("无信号");
+	m_str_Accel_Y = _T("无信号");
+	m_str_Accel_Z = _T("无信号");
 
-	m_str_HIGH_KS10X = "无信号";
-	m_str_HIGH_MS5611 = "无信号";
-	m_str_Temp_MPU6050 = "无信号";
-	m_str_Temp_MS5611 = "无信号";
-	m_str_Press_MS5611 = "无信号";
-	m_str_HIGH_Accel = "无信号";
+	m_str_HIGH_KS10X = _T("无信号");
+	m_str_HIGH_MS5611 = _T("无信号");
+	m_str_Temp_MPU6050 = _T("无信号");
+	m_str_Temp_MS5611 = _T("无信号");
+	m_str_Press_MS5611 = _T("无信号");
+	m_str_HIGH_Accel = _T("无信号");
 }
 
 
@@ -1034,11 +1034,11 @@ void CMFC_Exia_DebuggerDlg::OnOK()
 void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	CInputBox InputBox("油门设定","请输入油门设定值:","0");
+	CInputBox InputBox(_T("油门设定"), _T("请输入油门设定值:"), _T("0"));
 	if (IDOK == InputBox.DoModal())
 	{
 		int nInput;
-		nInput = atoi(InputBox.GetInput());
+		nInput = _ttoi(InputBox.GetInput());
 		if (nInput > 100)
 		{
 			nInput = 100;

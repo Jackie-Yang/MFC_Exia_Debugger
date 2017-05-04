@@ -9,7 +9,7 @@ class CInputBox : public CDialogEx
 	DECLARE_DYNAMIC(CInputBox)
 
 public:
-	CInputBox(CString Title = "设定", CString Tip = "请输入：", CString DefaultValue = "0", CWnd* pParent = NULL);   // 标准构造函数
+	CInputBox(CString Title = _T("设定"), CString Tip = _T("请输入："), CString DefaultValue = _T("0"), CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CInputBox();
 
 // 对话框数据

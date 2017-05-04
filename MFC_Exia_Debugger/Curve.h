@@ -56,10 +56,10 @@
 									}while(0)
 
 #define LABEL_STRING_INIT(CSTRING_ARRAY) do{ \
-										CSTRING_ARRAY[0] = "通道一";\
-										CSTRING_ARRAY[1] = "通道二";\
-										CSTRING_ARRAY[2] = "通道三";\
-										CSTRING_ARRAY[3] = "通道四"; \
+										CSTRING_ARRAY[0] = _T("通道一");\
+										CSTRING_ARRAY[1] = _T("通道二");\
+										CSTRING_ARRAY[2] = _T("通道三");\
+										CSTRING_ARRAY[3] = _T("通道四"); \
 											}while(0)
 
 typedef struct __CURVE_DATA__

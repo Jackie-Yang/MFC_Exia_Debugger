@@ -40,8 +40,8 @@ public:
 	COLORREF m_Color_Status;
 	COLORREF m_Color_BuffByte;
 	
-	CString GetErrorMessage(DWORD dwError, const char* ErrorTip = NULL);
-	CString GetLastErrorMessage(const char* ErrorTip = NULL);
+	CString GetErrorMessage(DWORD dwError, const TCHAR* ErrorTip = NULL);
+	CString GetLastErrorMessage(const TCHAR* ErrorTip = NULL);
 	void UpdateSerialState();
 	bool GetQuadrotorState();
 	void InitQuadrotorState();

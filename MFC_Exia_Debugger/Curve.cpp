@@ -230,7 +230,7 @@ bool CCurve::ScreenShot(CString strFilePath)
 	CPaintDC dc(this); // device context for painting
 
 	//获取文件后缀名
-	int nDot_index = strFilePath.ReverseFind('.');	//获取后缀'.'位置
+	int nDot_index = strFilePath.ReverseFind(_T('.'));	//获取后缀'.'位置
 	//获取后缀名
 	CString szFileType = strFilePath.Right(strFilePath.GetLength() - nDot_index);
 	szFileType.MakeLower();	//统一后缀小写
@@ -259,19 +259,19 @@ bool CCurve::ScreenShot(CString strFilePath)
 		imgTemp.Attach(MemBitmap.operator HBITMAP());
 
 		//选择默认文件类型
-		if (szFileType == ".bmp" || szFileType == ".dib")
+		if (szFileType == _T(".bmp") || szFileType == _T(".dib"))
 		{
 			Result = imgTemp.Save(strFilePath, Gdiplus::ImageFormatBMP);
 		}
-		else if (szFileType == ".png")
+		else if (szFileType == _T(".png"))
 		{
 			Result = imgTemp.Save(strFilePath, Gdiplus::ImageFormatPNG);
 		}
-		else if (szFileType == ".jpg" || szFileType == ".jpeg" || szFileType == ".jpe")
+		else if (szFileType == _T(".jpg") || szFileType == _T(".jpeg") || szFileType == _T(".jpe"))
 		{
 			Result = imgTemp.Save(strFilePath, Gdiplus::ImageFormatJPEG);
 		}
-		else if (szFileType == ".gif")
+		else if (szFileType == _T(".gif"))
 		{
 			Result = imgTemp.Save(strFilePath, Gdiplus::ImageFormatGIF);
 		}
@@ -653,7 +653,7 @@ void CCurve::DrawLabel(CDC *pDC)
 		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//选中画笔绘制,并保存以前的画笔
 		UINT OldTextAlign = pDC->SetTextAlign(TA_BOTTOM);	//设置文字对齐方式
 		CFont font;	//设置文字字体
-		font.CreateFontA(
+		font.CreateFont(
 			16,          //nHeight  指定逻辑单位的字符或者字符元高度
 			7,           //nWidth   指定逻辑单位的字体字符的平均宽度
 			0,           //nEscapement 指定每行文本输出时相对于设备x轴的角度，其单位为1/10度。
@@ -690,9 +690,9 @@ void CCurve::DrawLabel(CDC *pDC)
 		for (int Curve = 0, X = LabelSpace; Curve < CURVE_LINE; Curve++, X += LabelSpace, pDC->SelectObject(m_CPen_NormalCurve + Curve))
 		{
 			pDC->SetTextAlign(TA_BOTTOM);
-			pDC->TextOutA(X, Y - 1, m_LabelStr[Curve]);
+			pDC->TextOut(X, Y - 1, m_LabelStr[Curve]);
 			pDC->SetTextAlign(TA_TOP);
-			pDC->TextOutA(X, Y + 1, m_ValueStr[Curve]);
+			pDC->TextOut(X, Y + 1, m_ValueStr[Curve]);
 			pDC->MoveTo(X, Y);
 			X += StrSize[Curve].cx;
 			pDC->LineTo(X, Y);
@@ -752,7 +752,7 @@ void CCurve::ClearData()
 	m_nDataShowIndex = 0;
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)	//清空显示字串
 	{
-		m_ValueStr[Curve] = "";
+		m_ValueStr[Curve] = _T("");
 	}
 }
 
@@ -762,7 +762,7 @@ void CCurve::UpdateValueStr()
 	if (m_nDataCount)	//没有数据时没有数据可以显示
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_ValueStr[Curve].Format("%.2f", m_pDataBuf[Curve][m_nDataShowIndex].fData / m_pDataBuf[Curve][m_nDataShowIndex].fGain);	//显示增益之前的初始值
+		m_ValueStr[Curve].Format(_T("%.2f"), m_pDataBuf[Curve][m_nDataShowIndex].fData / m_pDataBuf[Curve][m_nDataShowIndex].fGain);	//显示增益之前的初始值
 	}
 }
 
