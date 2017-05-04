@@ -48,6 +48,9 @@
     <ClInclude Include="Quadrotor_State.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="InputBox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Exia_Debugger.cpp">
@@ -66,6 +69,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CurveDLG.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="InputBox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

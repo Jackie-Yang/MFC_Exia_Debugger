@@ -144,4 +144,7 @@ public:
 	CString m_str_HIGH_Accel;
 	float m_fRoll_G_Kp;
 	virtual void OnOK();
+	afx_msg void OnStnClickedStaticThro();
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnStnClickedStaticRudd();
 };

@@ -104,6 +104,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Curve.h" />
     <ClInclude Include="CurveDLG.h" />
+    <ClInclude Include="InputBox.h" />
     <ClInclude Include="MFC_Exia_Debugger.h" />
     <ClInclude Include="MFC_Exia_DebuggerDlg.h" />
     <ClInclude Include="Quadrotor_State.h" />
@@ -115,6 +116,7 @@
   <ItemGroup>
     <ClCompile Include="Curve.cpp" />
     <ClCompile Include="CurveDLG.cpp" />
+    <ClCompile Include="InputBox.cpp" />
     <ClCompile Include="MFC_Exia_Debugger.cpp" />
     <ClCompile Include="MFC_Exia_DebuggerDlg.cpp" />
     <ClCompile Include="Serial.cpp" />

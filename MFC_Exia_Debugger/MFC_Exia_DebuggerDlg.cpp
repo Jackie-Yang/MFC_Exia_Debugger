@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "MFC_Exia_Debugger.h"
 #include "MFC_Exia_DebuggerDlg.h"
+#include "InputBox.h"
 #include "afxdialogex.h"
 #include "Dbt.h"
 
@@ -290,6 +291,9 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_CURVE3_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
 	ON_CBN_SELCHANGE(IDC_CURVE4_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
 	ON_CBN_SELCHANGE(IDC_CURVE_REFRESH, &CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh)
+	ON_STN_CLICKED(IDC_STATIC_THRO, &CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro)
+	ON_WM_SETCURSOR()
+	ON_STN_CLICKED(IDC_STATIC_RUDD, &CMFC_Exia_DebuggerDlg::OnStnClickedStaticRudd)
 END_MESSAGE_MAP()
 
 
@@ -1014,14 +1018,61 @@ void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
 void CMFC_Exia_DebuggerDlg::OnOK()
 {
 	// TODO:  在此添加专用代码和/或调用基类
-	int nFocusID = GetFocus()->GetDlgCtrlID();
-	switch (nFocusID)
+	//int nFocusID = GetFocus()->GetDlgCtrlID();
+	//switch (nFocusID)
+	//{
+	//	default:
+	//	{
+	//		break;
+	//	}
+	//}
+
+	//CDialogEx::OnOK();
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CInputBox InputBox("油门设定","请输入油门设定值:","0");
+	if (IDOK == InputBox.DoModal())
 	{
+		int nInput;
+		nInput = atoi(InputBox.GetInput());
+		if (nInput > 100)
+		{
+			nInput = 100;
+		}
+	}
+}
+
+
+//设置鼠标移动到上方的光标
+BOOL CMFC_Exia_DebuggerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	int DlgCtrlID = pWnd->GetDlgCtrlID();
+	switch (DlgCtrlID)
+	{
+		case IDC_STATIC_THRO:
+		case IDC_STATIC_RUDD:
+		case IDC_STATIC_ELEV:
+		case IDC_STATIC_AILE:
+		{
+			SetCursor(LoadCursor(NULL, IDC_HAND));
+			return TRUE;
+		}
 		default:
 		{
 			break;
 		}
 	}
 
-	//CDialogEx::OnOK();
+	return CDialogEx::OnSetCursor(pWnd, nHitTest, message);
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnStnClickedStaticRudd()
+{
+	// TODO:  在此添加控件通知处理程序代码
 }
