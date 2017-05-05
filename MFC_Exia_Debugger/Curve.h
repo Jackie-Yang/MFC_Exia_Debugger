@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 // CCurve
@@ -6,23 +6,23 @@
 #include "Color.h"
 
 
-//ÉèÖÃ½¨Òé£º
-//LENGTH_DEFAULT,LENGTH_MAX,LENGTH_MINÓ¦¸ÃÎªGRID_STEPÕûÊı±¶
-//¶øÇÒ(LENGTH_MAX - LENGTH_MIN) / GRID_STEPÓ¦¸ÃÎªÕûÊı
-//²»Âú×ãÒÔÉÏ½¨Òé»á×Ô¶¯µ÷ÕûÊµ¼ÊĞ§¹û
-#define X_GRID_STEP			100		//XÖáÃ¿¸ñÊı¾İ³¤¶È,½¨ÒéÉèÖÃÎª100µÄ±¶Êı
-#define Y_GRID_STEP			200		//YÖáÃ¿¸ñÊı¾İ³¤¶È£¬½¨ÒéÉèÖÃÎª100µÄ±¶Êı
+//è®¾ç½®å»ºè®®ï¼š
+//LENGTH_DEFAULT,LENGTH_MAX,LENGTH_MINåº”è¯¥ä¸ºGRID_STEPæ•´æ•°å€
+//è€Œä¸”(LENGTH_MAX - LENGTH_MIN) / GRID_STEPåº”è¯¥ä¸ºæ•´æ•°
+//ä¸æ»¡è¶³ä»¥ä¸Šå»ºè®®ä¼šè‡ªåŠ¨è°ƒæ•´å®é™…æ•ˆæœ
+#define X_GRID_STEP			100		//Xè½´æ¯æ ¼æ•°æ®é•¿åº¦,å»ºè®®è®¾ç½®ä¸º100çš„å€æ•°
+#define Y_GRID_STEP			200		//Yè½´æ¯æ ¼æ•°æ®é•¿åº¦ï¼Œå»ºè®®è®¾ç½®ä¸º100çš„å€æ•°
 
-#define X_LENGTH_DEFAULT	800		//Ä¬ÈÏXÖá³¤¶È
-#define X_LENGTH_MAX		1000	//XÖá³¤¶È×î´óÖµ
-#define X_LENGTH_MIN		500		//XÖá³¤¶È×îĞ¡Öµ
+#define X_LENGTH_DEFAULT	800		//é»˜è®¤Xè½´é•¿åº¦
+#define X_LENGTH_MAX		1000	//Xè½´é•¿åº¦æœ€å¤§å€¼
+#define X_LENGTH_MIN		500		//Xè½´é•¿åº¦æœ€å°å€¼
 
-#define Y_LENGTH_DEFAULT	1000	//Ä¬ÈÏYÖáÕı°ëÖá³¤¶È£¨¸º°ëÖáÏàÍ¬£©
-#define Y_LENGTH_MAX		1000	//YÖáÕı°ëÖá³¤¶È×î´óÖµ
-#define Y_LENGTH_MIN		400		//YÖáÕı°ëÖá³¤¶È×îĞ¡Öµ
+#define Y_LENGTH_DEFAULT	1000	//é»˜è®¤Yè½´æ­£åŠè½´é•¿åº¦ï¼ˆè´ŸåŠè½´ç›¸åŒï¼‰
+#define Y_LENGTH_MAX		1000	//Yè½´æ­£åŠè½´é•¿åº¦æœ€å¤§å€¼
+#define Y_LENGTH_MIN		400		//Yè½´æ­£åŠè½´é•¿åº¦æœ€å°å€¼
 
 
-//Ä¬ÈÏ·ç¸ñ
+//é»˜è®¤é£æ ¼
 //Default Style
 
 #define STYLE_BG		CCurve::Black
@@ -30,17 +30,17 @@
 #define STYLE_AXIS		PS_SOLID, 1, CCurve::Magenta
 #define TEXT_COLOR		Cyan
 
-//Ìí¼ÓÇúÏßµÄ·½·¨£¬CURVE_LINEÉèÖÃ³ÉÏìÓ¦µÄÇúÏßÊıÄ¿£¬Ìí¼ÓÑÕÉ«ºÍ±êÇ©µÄºê¶¨Òå£¬½øĞĞAddDataÊ±´«ÈëµÄÊı×éÖ¸Õë´óĞ¡Ó¦¸ÃºÍÇúÏßÊıÄ¿Ò»ÖÂ£¬²»È»Ò²»á±¨´í
-//ÇúÏßÉè¶¨
+//æ·»åŠ æ›²çº¿çš„æ–¹æ³•ï¼ŒCURVE_LINEè®¾ç½®æˆå“åº”çš„æ›²çº¿æ•°ç›®ï¼Œæ·»åŠ é¢œè‰²å’Œæ ‡ç­¾çš„å®å®šä¹‰ï¼Œè¿›è¡ŒAddDataæ—¶ä¼ å…¥çš„æ•°ç»„æŒ‡é’ˆå¤§å°åº”è¯¥å’Œæ›²çº¿æ•°ç›®ä¸€è‡´ï¼Œä¸ç„¶ä¹Ÿä¼šæŠ¥é”™
+//æ›²çº¿è®¾å®š
 #define CURVE_LINE	4
-//ÇúÏßÉèÖÃµÄÑÕÉ«ĞèÒªÓëÇúÏß¶¨ÒåµÄÊıÁ¿Ò»ÖÂ
+//æ›²çº¿è®¾ç½®çš„é¢œè‰²éœ€è¦ä¸æ›²çº¿å®šä¹‰çš„æ•°é‡ä¸€è‡´
 #define COLOR_CURVE0	Red
 #define COLOR_CURVE1	RoyalBlue
 #define COLOR_CURVE2	Cyan
 #define COLOR_CURVE3	Yellow
 
-//ÇúÏß³õÊ¼»¯²ÎÊı
-//ÒòÎªGDI+µÄÑÕÉ«¶¨Òå²»Í¬£¬ËùÒÔÇúÏßÒªÓÃÁ½ÖÖ
+//æ›²çº¿åˆå§‹åŒ–å‚æ•°
+//å› ä¸ºGDI+çš„é¢œè‰²å®šä¹‰ä¸åŒï¼Œæ‰€ä»¥æ›²çº¿è¦ç”¨ä¸¤ç§
 #define GDI_CURVE_INIT(COLOR_ARRAY)	do{\
 										COLOR_ARRAY[0] = Gdiplus::Color::COLOR_CURVE0; \
 										COLOR_ARRAY[1] = Gdiplus::Color::COLOR_CURVE1; \
@@ -56,10 +56,10 @@
 									}while(0)
 
 #define LABEL_STRING_INIT(CSTRING_ARRAY) do{ \
-										CSTRING_ARRAY[0] = _T("Í¨µÀÒ»");\
-										CSTRING_ARRAY[1] = _T("Í¨µÀ¶ş");\
-										CSTRING_ARRAY[2] = _T("Í¨µÀÈı");\
-										CSTRING_ARRAY[3] = _T("Í¨µÀËÄ"); \
+										CSTRING_ARRAY[0] = _T("é€šé“ä¸€");\
+										CSTRING_ARRAY[1] = _T("é€šé“äºŒ");\
+										CSTRING_ARRAY[2] = _T("é€šé“ä¸‰");\
+										CSTRING_ARRAY[3] = _T("é€šé“å››"); \
 											}while(0)
 
 typedef struct __CURVE_DATA__
@@ -81,13 +81,13 @@ protected:
 
 private:
 
-	//ÆÕÍ¨»­±Ê»¨Ë¢
+	//æ™®é€šç”»ç¬”èŠ±åˆ·
 	CBrush m_CBrush_BG;
 	CPen m_CPen_Grid;
 	CPen m_CPen_Axis;
 	CPen m_CPen_NormalCurve[CURVE_LINE];
 
-	//ÓÃGDI»­ÇúÏßµÄÑÕÉ«
+	//ç”¨GDIç”»æ›²çº¿çš„é¢œè‰²
 	Gdiplus::Color m_GDI_CurveColor[CURVE_LINE];
 
 
@@ -108,12 +108,12 @@ private:
 	float m_PointStepY;
 
 	bool RegisterWindowClass();
-	void DrawAll(CDC * pDC);		//»æÖÆËùÓĞÔªËØ
-	void DrawBG(CDC *pDC);			//»æÖÆ±³¾°
-	void DrawGrid(CDC *pDC);		//»æÖÆÍø¸ñ
-	void DrawAxis(CDC *pDC);		//»æÖÆ×ø±ê
-	void DrawCurve(CDC *pDC);		//»æÖÆÇúÏß
-	void DrawLabel(CDC *pDC);		//»æÖÆ±êÇ©
+	void DrawAll(CDC * pDC);		//ç»˜åˆ¶æ‰€æœ‰å…ƒç´ 
+	void DrawBG(CDC *pDC);			//ç»˜åˆ¶èƒŒæ™¯
+	void DrawGrid(CDC *pDC);		//ç»˜åˆ¶ç½‘æ ¼
+	void DrawAxis(CDC *pDC);		//ç»˜åˆ¶åæ ‡
+	void DrawCurve(CDC *pDC);		//ç»˜åˆ¶æ›²çº¿
+	void DrawLabel(CDC *pDC);		//ç»˜åˆ¶æ ‡ç­¾
 
 	CurveData m_pDataBuf[CURVE_LINE][X_LENGTH_MAX];
 	unsigned int m_nDataIndex;
@@ -125,12 +125,12 @@ private:
 	int m_nOffset;
 	
 
-	//GDI+Ïà¹Ø
+	//GDI+ç›¸å…³
 	bool m_bEnhance;
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 
-	//ÉèÖÃ²ÎÊı
+	//è®¾ç½®å‚æ•°
 	void SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY);
 
 public:
@@ -151,149 +151,149 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 
-	//Ö÷ÒªÊÇÎªÁË¼æÈİGDI+ÖĞµÄÑÕÉ«Ãû×Ö
+	//ä¸»è¦æ˜¯ä¸ºäº†å…¼å®¹GDI+ä¸­çš„é¢œè‰²åå­—
 	enum
 	{
-		AliceBlue = RGB(240, 248, 255), // °®ÀöË¿À¶ 
-		AntiqueWhite = RGB(250, 235, 215), // ¹Å¶­°× 
-		Aqua = RGB(0, 255, 255), // Ë®É« 
-		Aquamarine = RGB(127, 255, 212), // ±¦Ê¯±ÌÂÌ 
-		Azure = RGB(240, 255, 255), // ÎµÀ¶É« 
-		Beige = RGB(245, 245, 220), // Ã×É«(»Ò×ØÉ«) 
-		Bisque = RGB(255, 228, 196), // ÌÕÅ÷»Æ 
-		Black = RGB(0, 0, 0), // ´¿ºÚ 
-		BlanchedAlmond = RGB(255, 235, 205), // ·¢°×µÄĞÓÈÊÉ« 
-		Blue = RGB(0, 0, 255), // ´¿À¶ 
-		BlueViolet = RGB(138, 43, 226), // À¶×ÏÂŞÀ¼ 
-		Brown = RGB(165, 42, 42), // ×ØÉ« 
-		BurlyWood = RGB(222, 184, 135), // Ó²Ä¾É« 
-		CadetBlue = RGB(95, 158, 160), // ¾ü·şÀ¶ 
-		Chartreuse = RGB(127, 255, 0), // ²éÌØ¾ÆÂÌ (»ÆÂÌÉ«) 
-		Chocolate = RGB(210, 105, 30), // ÇÉ¿ËÁ¦ 
-		Coral = RGB(255, 127, 80), // Éºº÷ 
-		CornflowerBlue = RGB(100, 149, 237), // Ê¸³µ¾ÕÀ¶ 
-		Cornsilk = RGB(255, 248, 220), // ÓñÃ×Ë¿É« 
-		Crimson = RGB(220, 20, 60), // ĞÉºì (Éîºì) 
-		Cyan = RGB(0, 255, 255), // ÇàÉ« 
-		DarkBlue = RGB(0, 0, 139), // °µÀ¶É« 
-		DarkCyan = RGB(0, 139, 139), // °µÇàÉ« 
-		DarkGoldenrod = RGB(184, 134, 11), // °µ½ğ¾Õ»Æ 
-		DarkGray = RGB(169, 169, 169), // Éî»ÒÉ« 
-		DarkGreen = RGB(0, 100, 0), // °µÂÌÉ« 
-		DarkKhaki = RGB(189, 183, 107), // Éî¿¨ß´²¼ 
-		DarkMagenta = RGB(139, 0, 139), // ÉîÑóºì 
-		DarkOliveGreen = RGB(85, 107, 47), // °µéÏé­ÂÌ 
-		DarkOrange = RGB(255, 140, 0), // Éî³ÈÉ« 
-		DarkOrchid = RGB(153, 50, 204), // °µÀ¼»¨×Ï 
-		DarkRed = RGB(139, 0, 0), // ÉîºìÉ« 
-		DarkSalmon = RGB(233, 150, 122), // ÉîÏÊÈâ(öÙÓã)É« 
-		DarkSeaGreen = RGB(143, 188, 143), // °µº£ÑóÂÌ 
-		DarkSlateBlue = RGB(72, 61, 139), // °µ°åÑÒÀ¶ 
-		DarkSlateGray = RGB(47, 79, 79), // °µÊ¯°å»Ò 
-		DarkTurquoise = RGB(0, 206, 209), // °µÂÌ±¦Ê¯ 
-		DarkViolet = RGB(148, 0, 211), // °µ×ÏÂŞÀ¼ 
-		DeepPink = RGB(255, 20, 147), // Éî·Ûºì 
-		DeepSkyBlue = RGB(0, 191, 255), // ÉîÌìÀ¶ 
-		DimGray = RGB(105, 105, 105), // °µµ­µÄ»ÒÉ« 
-		DodgerBlue = RGB(30, 144, 255), // µÀÆæÀ¶ 
-		Firebrick = RGB(178, 34, 34), // ÄÍ»ğ×© 
-		FloralWhite = RGB(255, 250, 240), // »¨µÄ°×É« 
-		ForestGreen = RGB(34, 139, 34), // É­ÁÖÂÌ 
-		Fuchsia = RGB(255, 0, 255), // µÆÁıº£ÌÄ(×ÏºìÉ«) 
-		Gainsboro = RGB(220, 220, 220), // ¸ıË¹²©ÂŞ»ÒÉ« 
-		GhostWhite = RGB(248, 248, 255), // ÓÄÁé°× 
-		Gold = RGB(255, 215, 0), // ½ğÉ« 
-		Goldenrod = RGB(218, 165, 32), // ½ğ¾Õ»Æ 
-		Gray = RGB(186, 183, 186), // »ÒÉ«(*) 
-		Green = RGB(0, 128, 0), // ´¿ÂÌ 
-		GreenYellow = RGB(173, 255, 47), // ÂÌ»ÆÉ« 
-		Honeydew = RGB(240, 255, 240), // ÃÛ¹ÏÉ« 
-		HotPink = RGB(255, 105, 180), // ÈÈÇéµÄ·Ûºì 
-		IndianRed = RGB(205, 92, 92), // Ó¡¶Èºì 
-		Indigo = RGB(75, 0, 130), // µåÇà (×ÏÀ¼É«) 
-		Ivory = RGB(255, 255, 240), // ÏóÑÀ 
-		Khaki = RGB(240, 230, 140), // ¿¨ß´²¼ 
-		Lavender = RGB(230, 230, 250), // Ñ¬ÒÂ²İµ­×Ï 
-		LavenderBlush = RGB(255, 240, 245), // µ­×Ïºì 
-		LawnGreen = RGB(124, 252, 0), // ²İÆºÂÌ 
-		LemonChiffon = RGB(255, 250, 205), // ÄûÃÊ³ñ 
-		LightBlue = RGB(173, 216, 230), // ÁÁÀ¶ 
-		LightCoral = RGB(240, 128, 128), // µ­Éºº÷É« 
-		LightCyan = RGB(224, 255, 255), // µ­ÇàÉ« 
-		LightGoldenrodYellow = RGB(250, 250, 210), // ÁÁ¾Õ»Æ 
-		LightGray = RGB(144, 238, 144), // µ­ÂÌÉ« 
-		LightGreen = RGB(211, 211, 211), // Ç³»ÒÉ« 
-		LightPink = RGB(255, 182, 193), // Ç³·Ûºì 
-		LightSalmon = RGB(255, 160, 122), // Ç³öÙÓãÈâÉ« 
-		LightSeaGreen = RGB(32, 178, 170), // Ç³º£ÑóÂÌ 
-		LightSkyBlue = RGB(135, 206, 250), // ÁÁÌìÀ¶É« 
-		LightSlateGray = RGB(119, 136, 153), // ÁÁÊ¯°å»Ò 
-		LightSteelBlue = RGB(176, 196, 222), // ÁÁ¸ÖÀ¶ 
-		LightYellow = RGB(255, 255, 224), // Ç³»ÆÉ« 
-		Lime = RGB(0, 255, 0), // ÉÁ¹âÂÌ 
-		LimeGreen = RGB(50, 205, 50), // ÉÁ¹âÉîÂÌ 
-		Linen = RGB(250, 240, 230), // ÑÇÂé²¼ 
-		Magenta = RGB(255, 0, 255), // Ñóºì (Æ·ºì Ãµ¹åºì) 
-		Maroon = RGB(128, 0, 0), // ÀõÉ« 
-		MediumAquamarine = RGB(102, 205, 170), // ÖĞ±¦Ê¯±ÌÂÌ 
-		MediumBlue = RGB(0, 0, 205), // ÖĞÀ¶É« 
-		MediumOrchid = RGB(186, 85, 211), // ÖĞÀ¼»¨×Ï 
-		MediumPurple = RGB(147, 112, 219), // ÖĞ×ÏÉ« 
-		MediumSeaGreen = RGB(60, 179, 113), // ÖĞº£ÑóÂÌ 
-		MediumSlateBlue = RGB(123, 104, 238), // ÖĞ°åÑÒÀ¶ 
-		MediumSpringGreen = RGB(0, 250, 154), // ÖĞ´ºÂÌÉ« 
-		MediumTurquoise = RGB(72, 209, 204), // ÖĞÂÌ±¦Ê¯ 
-		MediumVioletRed = RGB(199, 21, 133), // ÖĞ×ÏÂŞÀ¼ºì 
-		MidnightBlue = RGB(25, 25, 112), // ÎçÒ¹À¶ 
-		MintCream = RGB(245, 255, 250), // ±¡ºÉÄÌÓÍ 
-		MistyRose = RGB(255, 228, 225), // ±¡ÎíÃµ¹å 
-		Moccasin = RGB(255, 228, 181), // Â¹Æ¤Ñ¥ 
-		NavajoWhite = RGB(255, 222, 173), // ÍÁÖø°× 
-		Navy = RGB(0, 0, 128), // º£¾üÀ¶ 
-		OldLace = RGB(253, 245, 230), // ¾ÉÀÙË¿ 
-		Olive = RGB(128, 128, 0), // éÏé­ 
-		OliveDrab = RGB(107, 142, 35), // éÏé­ºÖÉ« 
-		Orange = RGB(255, 165, 0), // ³ÈÉ« 
-		OrangeRed = RGB(255, 69, 0), // ³ÈºìÉ« 
-		Orchid = RGB(218, 112, 214), // À¼»¨×Ï 
-		PaleGoldenrod = RGB(238, 232, 170), // »Ò¾Õ»Æ 
-		PaleGreen = RGB(152, 251, 152), // ÈõÂÌÉ« 
-		PaleTurquoise = RGB(175, 238, 238), // ÈõÂÌ±¦Ê¯ 
-		PaleVioletRed = RGB(219, 112, 147), // Èõ×ÏÂŞÀ¼ºì 
-		PapayaWhip = RGB(255, 239, 213), // ·¬Ä¾¹Ï 
-		PeachPuff = RGB(255, 218, 185), // ÌÒÈâÉ« 
-		Peru = RGB(205, 133, 63), // ÃØÂ³ 
-		Pink = RGB(255, 192, 203), // ·Ûºì 
-		Plum = RGB(221, 160, 221), // Àî×Ó×Ï 
-		PowderBlue = RGB(176, 224, 230), // »ğÒ©Çà 
-		Purple = RGB(128, 0, 128), // ×ÏÉ« 
-		Red = RGB(255, 0, 0), // ´¿ºì 
-		RosyBrown = RGB(188, 143, 143), // Ãµ¹å×ØÉ« 
-		RoyalBlue = RGB(65, 105, 225), // »Ê¼ÒÀ¶ (±¦À¶) 
-		SaddleBrown = RGB(139, 69, 19), // Âí°°×ØÉ« 
-		Salmon = RGB(250, 128, 114), // ÏÊÈâ(öÙÓã)É« 
-		SandyBrown = RGB(244, 164, 96), // É³×ØÉ« 
-		SeaGreen = RGB(46, 139, 87), // º£ÑóÂÌ 
-		SeaShell = RGB(255, 245, 238), // º£±´¿Ç 
-		Sienna = RGB(160, 82, 45), // »ÆÍÁô÷É« 
-		Silver = RGB(192, 192, 192), // Òø»ÒÉ« 
-		SkyBlue = RGB(135, 206, 235), // ÌìÀ¶É« 
-		SlateBlue = RGB(106, 90, 205), // °åÑÒÀ¶ 
-		SlateGray = RGB(112, 128, 144), // Ê¯°å»Ò 
-		Snow = RGB(255, 250, 250), // Ñ© 
-		SpringGreen = RGB(0, 255, 127), // ´ºÂÌÉ« 
-		SteelBlue = RGB(70, 130, 180), // ¸ÖÀ¶ (ÌúÇà) 
-		Tan = RGB(210, 180, 140), // ²èÉ« 
-		Teal = RGB(0, 128, 128), // Ë®Ñ¼É« 
-		Thistle = RGB(216, 191, 216), // ¼» 
-		Tomato = RGB(255, 99, 71), // ·¬ÇÑºì 
-		Turquoise = RGB(64, 224, 208), // ÂÌ±¦Ê¯ 
-		Violet = RGB(238, 130, 238), // ×ÏÂŞÀ¼ 
-		Wheat = RGB(245, 222, 179), // Ğ¡ÂóÉ« 
-		White = RGB(255, 255, 255), // ´¿°× 
-		WhiteSmoke = RGB(245, 245, 245), // °×ÑÌ 
-		Yellow = RGB(255, 255, 0), // ´¿»Æ 
-		YellowGreen = RGB(154, 205, 50) // »ÆÂÌÉ« 
+		AliceBlue = RGB(240, 248, 255), // çˆ±ä¸½ä¸è“ 
+		AntiqueWhite = RGB(250, 235, 215), // å¤è‘£ç™½ 
+		Aqua = RGB(0, 255, 255), // æ°´è‰² 
+		Aquamarine = RGB(127, 255, 212), // å®çŸ³ç¢§ç»¿ 
+		Azure = RGB(240, 255, 255), // è”šè“è‰² 
+		Beige = RGB(245, 245, 220), // ç±³è‰²(ç°æ£•è‰²) 
+		Bisque = RGB(255, 228, 196), // é™¶å¯é»„ 
+		Black = RGB(0, 0, 0), // çº¯é»‘ 
+		BlanchedAlmond = RGB(255, 235, 205), // å‘ç™½çš„æä»è‰² 
+		Blue = RGB(0, 0, 255), // çº¯è“ 
+		BlueViolet = RGB(138, 43, 226), // è“ç´«ç½—å…° 
+		Brown = RGB(165, 42, 42), // æ£•è‰² 
+		BurlyWood = RGB(222, 184, 135), // ç¡¬æœ¨è‰² 
+		CadetBlue = RGB(95, 158, 160), // å†›æœè“ 
+		Chartreuse = RGB(127, 255, 0), // æŸ¥ç‰¹é…’ç»¿ (é»„ç»¿è‰²) 
+		Chocolate = RGB(210, 105, 30), // å·§å…‹åŠ› 
+		Coral = RGB(255, 127, 80), // çŠç‘š 
+		CornflowerBlue = RGB(100, 149, 237), // çŸ¢è½¦èŠè“ 
+		Cornsilk = RGB(255, 248, 220), // ç‰ç±³ä¸è‰² 
+		Crimson = RGB(220, 20, 60), // çŒ©çº¢ (æ·±çº¢) 
+		Cyan = RGB(0, 255, 255), // é’è‰² 
+		DarkBlue = RGB(0, 0, 139), // æš—è“è‰² 
+		DarkCyan = RGB(0, 139, 139), // æš—é’è‰² 
+		DarkGoldenrod = RGB(184, 134, 11), // æš—é‡‘èŠé»„ 
+		DarkGray = RGB(169, 169, 169), // æ·±ç°è‰² 
+		DarkGreen = RGB(0, 100, 0), // æš—ç»¿è‰² 
+		DarkKhaki = RGB(189, 183, 107), // æ·±å¡å½å¸ƒ 
+		DarkMagenta = RGB(139, 0, 139), // æ·±æ´‹çº¢ 
+		DarkOliveGreen = RGB(85, 107, 47), // æš—æ©„æ¦„ç»¿ 
+		DarkOrange = RGB(255, 140, 0), // æ·±æ©™è‰² 
+		DarkOrchid = RGB(153, 50, 204), // æš—å…°èŠ±ç´« 
+		DarkRed = RGB(139, 0, 0), // æ·±çº¢è‰² 
+		DarkSalmon = RGB(233, 150, 122), // æ·±é²œè‚‰(é²‘é±¼)è‰² 
+		DarkSeaGreen = RGB(143, 188, 143), // æš—æµ·æ´‹ç»¿ 
+		DarkSlateBlue = RGB(72, 61, 139), // æš—æ¿å²©è“ 
+		DarkSlateGray = RGB(47, 79, 79), // æš—çŸ³æ¿ç° 
+		DarkTurquoise = RGB(0, 206, 209), // æš—ç»¿å®çŸ³ 
+		DarkViolet = RGB(148, 0, 211), // æš—ç´«ç½—å…° 
+		DeepPink = RGB(255, 20, 147), // æ·±ç²‰çº¢ 
+		DeepSkyBlue = RGB(0, 191, 255), // æ·±å¤©è“ 
+		DimGray = RGB(105, 105, 105), // æš—æ·¡çš„ç°è‰² 
+		DodgerBlue = RGB(30, 144, 255), // é“å¥‡è“ 
+		Firebrick = RGB(178, 34, 34), // è€ç«ç – 
+		FloralWhite = RGB(255, 250, 240), // èŠ±çš„ç™½è‰² 
+		ForestGreen = RGB(34, 139, 34), // æ£®æ—ç»¿ 
+		Fuchsia = RGB(255, 0, 255), // ç¯ç¬¼æµ·æ£ (ç´«çº¢è‰²) 
+		Gainsboro = RGB(220, 220, 220), // åºšæ–¯åšç½—ç°è‰² 
+		GhostWhite = RGB(248, 248, 255), // å¹½çµç™½ 
+		Gold = RGB(255, 215, 0), // é‡‘è‰² 
+		Goldenrod = RGB(218, 165, 32), // é‡‘èŠé»„ 
+		Gray = RGB(186, 183, 186), // ç°è‰²(*) 
+		Green = RGB(0, 128, 0), // çº¯ç»¿ 
+		GreenYellow = RGB(173, 255, 47), // ç»¿é»„è‰² 
+		Honeydew = RGB(240, 255, 240), // èœœç“œè‰² 
+		HotPink = RGB(255, 105, 180), // çƒ­æƒ…çš„ç²‰çº¢ 
+		IndianRed = RGB(205, 92, 92), // å°åº¦çº¢ 
+		Indigo = RGB(75, 0, 130), // é›é’ (ç´«å…°è‰²) 
+		Ivory = RGB(255, 255, 240), // è±¡ç‰™ 
+		Khaki = RGB(240, 230, 140), // å¡å½å¸ƒ 
+		Lavender = RGB(230, 230, 250), // ç†è¡£è‰æ·¡ç´« 
+		LavenderBlush = RGB(255, 240, 245), // æ·¡ç´«çº¢ 
+		LawnGreen = RGB(124, 252, 0), // è‰åªç»¿ 
+		LemonChiffon = RGB(255, 250, 205), // æŸ æª¬ç»¸ 
+		LightBlue = RGB(173, 216, 230), // äº®è“ 
+		LightCoral = RGB(240, 128, 128), // æ·¡çŠç‘šè‰² 
+		LightCyan = RGB(224, 255, 255), // æ·¡é’è‰² 
+		LightGoldenrodYellow = RGB(250, 250, 210), // äº®èŠé»„ 
+		LightGray = RGB(144, 238, 144), // æ·¡ç»¿è‰² 
+		LightGreen = RGB(211, 211, 211), // æµ…ç°è‰² 
+		LightPink = RGB(255, 182, 193), // æµ…ç²‰çº¢ 
+		LightSalmon = RGB(255, 160, 122), // æµ…é²‘é±¼è‚‰è‰² 
+		LightSeaGreen = RGB(32, 178, 170), // æµ…æµ·æ´‹ç»¿ 
+		LightSkyBlue = RGB(135, 206, 250), // äº®å¤©è“è‰² 
+		LightSlateGray = RGB(119, 136, 153), // äº®çŸ³æ¿ç° 
+		LightSteelBlue = RGB(176, 196, 222), // äº®é’¢è“ 
+		LightYellow = RGB(255, 255, 224), // æµ…é»„è‰² 
+		Lime = RGB(0, 255, 0), // é—ªå…‰ç»¿ 
+		LimeGreen = RGB(50, 205, 50), // é—ªå…‰æ·±ç»¿ 
+		Linen = RGB(250, 240, 230), // äºšéº»å¸ƒ 
+		Magenta = RGB(255, 0, 255), // æ´‹çº¢ (å“çº¢ ç«ç‘°çº¢) 
+		Maroon = RGB(128, 0, 0), // æ —è‰² 
+		MediumAquamarine = RGB(102, 205, 170), // ä¸­å®çŸ³ç¢§ç»¿ 
+		MediumBlue = RGB(0, 0, 205), // ä¸­è“è‰² 
+		MediumOrchid = RGB(186, 85, 211), // ä¸­å…°èŠ±ç´« 
+		MediumPurple = RGB(147, 112, 219), // ä¸­ç´«è‰² 
+		MediumSeaGreen = RGB(60, 179, 113), // ä¸­æµ·æ´‹ç»¿ 
+		MediumSlateBlue = RGB(123, 104, 238), // ä¸­æ¿å²©è“ 
+		MediumSpringGreen = RGB(0, 250, 154), // ä¸­æ˜¥ç»¿è‰² 
+		MediumTurquoise = RGB(72, 209, 204), // ä¸­ç»¿å®çŸ³ 
+		MediumVioletRed = RGB(199, 21, 133), // ä¸­ç´«ç½—å…°çº¢ 
+		MidnightBlue = RGB(25, 25, 112), // åˆå¤œè“ 
+		MintCream = RGB(245, 255, 250), // è–„è·å¥¶æ²¹ 
+		MistyRose = RGB(255, 228, 225), // è–„é›¾ç«ç‘° 
+		Moccasin = RGB(255, 228, 181), // é¹¿çš®é´ 
+		NavajoWhite = RGB(255, 222, 173), // åœŸè‘—ç™½ 
+		Navy = RGB(0, 0, 128), // æµ·å†›è“ 
+		OldLace = RGB(253, 245, 230), // æ—§è•¾ä¸ 
+		Olive = RGB(128, 128, 0), // æ©„æ¦„ 
+		OliveDrab = RGB(107, 142, 35), // æ©„æ¦„è¤è‰² 
+		Orange = RGB(255, 165, 0), // æ©™è‰² 
+		OrangeRed = RGB(255, 69, 0), // æ©™çº¢è‰² 
+		Orchid = RGB(218, 112, 214), // å…°èŠ±ç´« 
+		PaleGoldenrod = RGB(238, 232, 170), // ç°èŠé»„ 
+		PaleGreen = RGB(152, 251, 152), // å¼±ç»¿è‰² 
+		PaleTurquoise = RGB(175, 238, 238), // å¼±ç»¿å®çŸ³ 
+		PaleVioletRed = RGB(219, 112, 147), // å¼±ç´«ç½—å…°çº¢ 
+		PapayaWhip = RGB(255, 239, 213), // ç•ªæœ¨ç“œ 
+		PeachPuff = RGB(255, 218, 185), // æ¡ƒè‚‰è‰² 
+		Peru = RGB(205, 133, 63), // ç§˜é² 
+		Pink = RGB(255, 192, 203), // ç²‰çº¢ 
+		Plum = RGB(221, 160, 221), // æå­ç´« 
+		PowderBlue = RGB(176, 224, 230), // ç«è¯é’ 
+		Purple = RGB(128, 0, 128), // ç´«è‰² 
+		Red = RGB(255, 0, 0), // çº¯çº¢ 
+		RosyBrown = RGB(188, 143, 143), // ç«ç‘°æ£•è‰² 
+		RoyalBlue = RGB(65, 105, 225), // çš‡å®¶è“ (å®è“) 
+		SaddleBrown = RGB(139, 69, 19), // é©¬éæ£•è‰² 
+		Salmon = RGB(250, 128, 114), // é²œè‚‰(é²‘é±¼)è‰² 
+		SandyBrown = RGB(244, 164, 96), // æ²™æ£•è‰² 
+		SeaGreen = RGB(46, 139, 87), // æµ·æ´‹ç»¿ 
+		SeaShell = RGB(255, 245, 238), // æµ·è´å£³ 
+		Sienna = RGB(160, 82, 45), // é»„åœŸèµ­è‰² 
+		Silver = RGB(192, 192, 192), // é“¶ç°è‰² 
+		SkyBlue = RGB(135, 206, 235), // å¤©è“è‰² 
+		SlateBlue = RGB(106, 90, 205), // æ¿å²©è“ 
+		SlateGray = RGB(112, 128, 144), // çŸ³æ¿ç° 
+		Snow = RGB(255, 250, 250), // é›ª 
+		SpringGreen = RGB(0, 255, 127), // æ˜¥ç»¿è‰² 
+		SteelBlue = RGB(70, 130, 180), // é’¢è“ (é“é’) 
+		Tan = RGB(210, 180, 140), // èŒ¶è‰² 
+		Teal = RGB(0, 128, 128), // æ°´é¸­è‰² 
+		Thistle = RGB(216, 191, 216), // è“Ÿ 
+		Tomato = RGB(255, 99, 71), // ç•ªèŒ„çº¢ 
+		Turquoise = RGB(64, 224, 208), // ç»¿å®çŸ³ 
+		Violet = RGB(238, 130, 238), // ç´«ç½—å…° 
+		Wheat = RGB(245, 222, 179), // å°éº¦è‰² 
+		White = RGB(255, 255, 255), // çº¯ç™½ 
+		WhiteSmoke = RGB(245, 245, 245), // ç™½çƒŸ 
+		Yellow = RGB(255, 255, 0), // çº¯é»„ 
+		YellowGreen = RGB(154, 205, 50) // é»„ç»¿è‰² 
 	};
 
 	

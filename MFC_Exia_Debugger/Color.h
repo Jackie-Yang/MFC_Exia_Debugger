@@ -1,141 +1,141 @@
-#pragma once  
-#define LIGHTPINK               RGB(255, 182, 193)      // Ç³·Ûºì  
-#define PINK                    RGB(255, 192, 203)      // ·Ûºì  
-#define CRIMSON                 RGB(220,  20,  60)      // ĞÉºì (Éîºì)  
-#define LAVENDERBLUSH           RGB(255, 240, 245)      // µ­×Ïºì  
-#define PALEVIOLETRED           RGB(219, 112, 147)      // Èõ×ÏÂŞÀ¼ºì  
-#define HOTPINK                 RGB(255, 105, 180)      // ÈÈÇéµÄ·Ûºì  
-#define DEEPPINK                RGB(255,  20, 147)      // Éî·Ûºì  
-#define MEDIUMVIOLETRED         RGB(199,  21, 133)      // ÖĞ×ÏÂŞÀ¼ºì  
-#define ORCHID                  RGB(218, 112, 214)      // À¼»¨×Ï  
-#define THISTLE                 RGB(216, 191, 216)      // ¼»  
-#define PLUM                    RGB(221, 160, 221)      // Àî×Ó×Ï  
-#define VIOLET                  RGB(238, 130, 238)      // ×ÏÂŞÀ¼  
-#define MAGENTA                 RGB(255,   0, 255)      // Ñóºì (Æ·ºì Ãµ¹åºì)  
-#define FUCHSIA                 RGB(255,   0, 255)      // µÆÁıº£ÌÄ(×ÏºìÉ«)  
-#define DARKMAGENTA             RGB(139,   0, 139)      // ÉîÑóºì  
-#define PURPLE                  RGB(128,   0, 128)      // ×ÏÉ«  
-#define MEDIUMORCHID            RGB(186,  85, 211)      // ÖĞÀ¼»¨×Ï  
-#define DARKVIOLET              RGB(148,   0, 211)      // °µ×ÏÂŞÀ¼  
-#define DARKORCHID              RGB(153,  50, 204)      // °µÀ¼»¨×Ï  
-#define INDIGO                  RGB( 75,   0, 130)      // µåÇà (×ÏÀ¼É«)  
-#define BLUEVIOLET              RGB(138,  43, 226)      // À¶×ÏÂŞÀ¼  
-#define MEDIUMPURPLE            RGB(147, 112, 219)      // ÖĞ×ÏÉ«  
-#define MEDIUMSLATEBLUE         RGB(123, 104, 238)      // ÖĞ°åÑÒÀ¶  
-#define SLATEBLUE               RGB(106,  90, 205)      // °åÑÒÀ¶  
-#define DARKSLATEBLUE           RGB( 72,  61, 139)      // °µ°åÑÒÀ¶  
-#define LAVENDER                RGB(230, 230, 250)      // Ñ¬ÒÂ²İµ­×Ï  
-#define GHOSTWHITE              RGB(248, 248, 255)      // ÓÄÁé°×  
-#define BLUE                    RGB(  0,   0, 255)      // ´¿À¶  
-#define MEDIUMBLUE              RGB(  0,   0, 205)      // ÖĞÀ¶É«  
-#define MIDNIGHTBLUE            RGB( 25,  25, 112)      // ÎçÒ¹À¶  
-#define DARKBLUE                RGB(  0,   0, 139)      // °µÀ¶É«  
-#define NAVY                    RGB(  0,   0, 128)      // º£¾üÀ¶  
-#define ROYALBLUE               RGB( 65, 105, 225)      // »Ê¼ÒÀ¶ (±¦À¶)  
-#define CORNFLOWERBLUE          RGB(100, 149, 237)      // Ê¸³µ¾ÕÀ¶  
-#define LIGHTSTEELBLUE          RGB(176, 196, 222)      // ÁÁ¸ÖÀ¶  
-#define LIGHTSLATEGRAY          RGB(119, 136, 153)      // ÁÁÊ¯°å»Ò  
-#define SLATEGRAY               RGB(112, 128, 144)      // Ê¯°å»Ò  
-#define DODGERBLUE              RGB( 30, 144, 255)      // µÀÆæÀ¶  
-#define ALICEBLUE               RGB(240, 248, 255)      // °®ÀöË¿À¶  
-#define STEELBLUE               RGB( 70, 130, 180)      // ¸ÖÀ¶ (ÌúÇà)  
-#define LIGHTSKYBLUE            RGB(135, 206, 250)      // ÁÁÌìÀ¶É«  
-#define SKYBLUE                 RGB(135, 206, 235)      // ÌìÀ¶É«  
-#define DEEPSKYBLUE             RGB(  0, 191, 255)      // ÉîÌìÀ¶  
-#define LIGHTBLUE               RGB(173, 216, 230)      // ÁÁÀ¶  
-#define POWDERBLUE              RGB(176, 224, 230)      // »ğÒ©Çà  
-#define CADETBLUE               RGB( 95, 158, 160)      // ¾ü·şÀ¶  
-#define AZURE                   RGB(240, 255, 255)      // ÎµÀ¶É«  
-#define LIGHTCYAN               RGB(224, 255, 255)      // µ­ÇàÉ«  
-#define PALETURQUOISE           RGB(175, 238, 238)      // ÈõÂÌ±¦Ê¯  
-#define CYAN                    RGB(  0, 255, 255)      // ÇàÉ«  
-#define AQUA                    RGB(  0, 255, 255)      // Ë®É«  
-#define DARKTURQUOISE           RGB(  0, 206, 209)      // °µÂÌ±¦Ê¯  
-#define DARKSLATEGRAY           RGB( 47,  79,  79)      // °µÊ¯°å»Ò  
-#define DARKCYAN                RGB(  0, 139, 139)      // °µÇàÉ«  
-#define TEAL                    RGB(  0, 128, 128)      // Ë®Ñ¼É«  
-#define MEDIUMTURQUOISE         RGB( 72, 209, 204)      // ÖĞÂÌ±¦Ê¯  
-#define LIGHTSEAGREEN           RGB( 32, 178, 170)      // Ç³º£ÑóÂÌ  
-#define TURQUOISE               RGB( 64, 224, 208)      // ÂÌ±¦Ê¯  
-#define AQUAMARINE              RGB(127, 255, 212)      // ±¦Ê¯±ÌÂÌ  
-#define MEDIUMAQUAMARINE        RGB(102, 205, 170)      // ÖĞ±¦Ê¯±ÌÂÌ  
-#define MEDIUMSPRINGGREEN       RGB(  0, 250, 154)      // ÖĞ´ºÂÌÉ«  
-#define MINTCREAM               RGB(245, 255, 250)      // ±¡ºÉÄÌÓÍ  
-#define SPRINGGREEN             RGB(  0, 255, 127)      // ´ºÂÌÉ«  
-#define MEDIUMSEAGREEN          RGB( 60, 179, 113)      // ÖĞº£ÑóÂÌ  
-#define SEAGREEN                RGB( 46, 139,  87)      // º£ÑóÂÌ  
-#define HONEYDEW                RGB(240, 255, 240)      // ÃÛ¹ÏÉ«  
-#define LIGHTGREEN              RGB(144, 238, 144)      // µ­ÂÌÉ«  
-#define PALEGREEN               RGB(152, 251, 152)      // ÈõÂÌÉ«  
-#define DARKSEAGREEN            RGB(143, 188, 143)      // °µº£ÑóÂÌ  
-#define LIMEGREEN               RGB( 50, 205,  50)      // ÉÁ¹âÉîÂÌ  
-#define LIME                    RGB(  0, 255,   0)      // ÉÁ¹âÂÌ  
-#define FORESTGREEN             RGB( 34, 139,  34)      // É­ÁÖÂÌ  
-#define GREEN                   RGB(  0, 128,   0)      // ´¿ÂÌ  
-#define DARKGREEN               RGB(  0, 100,   0)      // °µÂÌÉ«  
-#define CHARTREUSE              RGB(127, 255,   0)      // ²éÌØ¾ÆÂÌ (»ÆÂÌÉ«)  
-#define LAWNGREEN               RGB(124, 252,   0)      // ²İÆºÂÌ  
-#define GREENYELLOW             RGB(173, 255,  47)      // ÂÌ»ÆÉ«  
-#define DARKOLIVEGREEN          RGB( 85, 107,  47)      // °µéÏé­ÂÌ  
-#define YELLOWGREEN             RGB(154, 205,  50)      // »ÆÂÌÉ«  
-#define OLIVEDRAB               RGB(107, 142,  35)      // éÏé­ºÖÉ«  
-#define BEIGE                   RGB(245, 245, 220)      // Ã×É«(»Ò×ØÉ«)  
-#define LIGHTGOLDENRODYELLOW    RGB(250, 250, 210)      // ÁÁ¾Õ»Æ  
-#define IVORY                   RGB(255, 255, 240)      // ÏóÑÀ  
-#define LIGHTYELLOW             RGB(255, 255, 224)      // Ç³»ÆÉ«  
-#define YELLOW                  RGB(255, 255,   0)      // ´¿»Æ  
-#define OLIVE                   RGB(128, 128,   0)      // éÏé­  
-#define DARKKHAKI               RGB(189, 183, 107)      // Éî¿¨ß´²¼  
-#define LEMONCHIFFON            RGB(255, 250, 205)      // ÄûÃÊ³ñ  
-#define PALEGOLDENROD           RGB(238, 232, 170)      // »Ò¾Õ»Æ  
-#define KHAKI                   RGB(240, 230, 140)      // ¿¨ß´²¼  
-#define GOLD                    RGB(255, 215,   0)      // ½ğÉ«  
-#define CORNSILK                RGB(255, 248, 220)      // ÓñÃ×Ë¿É«  
-#define GOLDENROD               RGB(218, 165,  32)      // ½ğ¾Õ»Æ  
-#define DARKGOLDENROD           RGB(184, 134,  11)      // °µ½ğ¾Õ»Æ  
-#define FLORALWHITE             RGB(255, 250, 240)      // »¨µÄ°×É«  
-#define OLDLACE                 RGB(253, 245, 230)      // ¾ÉÀÙË¿  
-#define WHEAT                   RGB(245, 222, 179)      // Ğ¡ÂóÉ«  
-#define MOCCASIN                RGB(255, 228, 181)      // Â¹Æ¤Ñ¥  
-#define ORANGE                  RGB(255, 165,   0)      // ³ÈÉ«  
-#define PAPAYAWHIP              RGB(255, 239, 213)      // ·¬Ä¾¹Ï  
-#define BLANCHEDALMOND          RGB(255, 235, 205)      // ·¢°×µÄĞÓÈÊÉ«  
-#define NAVAJOWHITE             RGB(255, 222, 173)      // ÍÁÖø°×  
-#define ANTIQUEWHITE            RGB(250, 235, 215)      // ¹Å¶­°×  
-#define TAN                     RGB(210, 180, 140)      // ²èÉ«  
-#define BURLYWOOD               RGB(222, 184, 135)      // Ó²Ä¾É«  
-#define BISQUE                  RGB(255, 228, 196)      // ÌÕÅ÷»Æ  
-#define DARKORANGE              RGB(255, 140,   0)      // Éî³ÈÉ«  
-#define LINEN                   RGB(250, 240, 230)      // ÑÇÂé²¼  
-#define PERU                    RGB(205, 133,  63)      // ÃØÂ³  
-#define PEACHPUFF               RGB(255, 218, 185)      // ÌÒÈâÉ«  
-#define SANDYBROWN              RGB(244, 164,  96)      // É³×ØÉ«  
-#define CHOCOLATE               RGB(210, 105,  30)      // ÇÉ¿ËÁ¦  
-#define SADDLEBROWN             RGB(139,  69,  19)      // Âí°°×ØÉ«  
-#define SEASHELL                RGB(255, 245, 238)      // º£±´¿Ç  
-#define SIENNA                  RGB(160,  82,  45)      // »ÆÍÁô÷É«  
-#define LIGHTSALMON             RGB(255, 160, 122)      // Ç³öÙÓãÈâÉ«  
-#define CORAL                   RGB(255, 127,  80)      // Éºº÷  
-#define ORANGERED               RGB(255,  69,   0)      // ³ÈºìÉ«  
-#define DARKSALMON              RGB(233, 150, 122)      // ÉîÏÊÈâ(öÙÓã)É«  
-#define TOMATO                  RGB(255,  99,  71)      // ·¬ÇÑºì  
-#define MISTYROSE               RGB(255, 228, 225)      // ±¡ÎíÃµ¹å  
-#define SALMON                  RGB(250, 128, 114)      // ÏÊÈâ(öÙÓã)É«  
-#define SNOW                    RGB(255, 250, 250)      // Ñ©  
-#define LIGHTCORAL              RGB(240, 128, 128)      // µ­Éºº÷É«  
-#define ROSYBROWN               RGB(188, 143, 143)      // Ãµ¹å×ØÉ«  
-#define INDIANRED               RGB(205,  92,  92)      // Ó¡¶Èºì  
-#define RED                     RGB(255,   0,   0)      // ´¿ºì  
-#define BROWN                   RGB(165,  42,  42)      // ×ØÉ«  
-#define FIREBRICK               RGB(178,  34,  34)      // ÄÍ»ğ×©  
-#define DARKRED                 RGB(139,   0,   0)      // ÉîºìÉ«  
-#define MAROON                  RGB(128,   0,   0)      // ÀõÉ«  
-#define WHITE                   RGB(255, 255, 255)      // ´¿°×  
-#define WHITESMOKE              RGB(245, 245, 245)      // °×ÑÌ  
-#define GAINSBORO               RGB(220, 220, 220)      // ¸ıË¹²©ÂŞ»ÒÉ«  
-#define LIGHTGREY               RGB(211, 211, 211)      // Ç³»ÒÉ«  
-#define SILVER                  RGB(192, 192, 192)      // Òø»ÒÉ«  
-#define DARKGRAY                RGB(169, 169, 169)      // Éî»ÒÉ«  
-#define GRAY                    RGB(186, 183, 186)      // »ÒÉ«(*)  
-#define DIMGRAY                 RGB(105, 105, 105)      // °µµ­µÄ»ÒÉ«  
-#define BLACK                   RGB(  0,   0,   0)      // ´¿ºÚ  
+ï»¿#pragma once  
+#define LIGHTPINK               RGB(255, 182, 193)      // æµ…ç²‰çº¢  
+#define PINK                    RGB(255, 192, 203)      // ç²‰çº¢  
+#define CRIMSON                 RGB(220,  20,  60)      // çŒ©çº¢ (æ·±çº¢)  
+#define LAVENDERBLUSH           RGB(255, 240, 245)      // æ·¡ç´«çº¢  
+#define PALEVIOLETRED           RGB(219, 112, 147)      // å¼±ç´«ç½—å…°çº¢  
+#define HOTPINK                 RGB(255, 105, 180)      // çƒ­æƒ…çš„ç²‰çº¢  
+#define DEEPPINK                RGB(255,  20, 147)      // æ·±ç²‰çº¢  
+#define MEDIUMVIOLETRED         RGB(199,  21, 133)      // ä¸­ç´«ç½—å…°çº¢  
+#define ORCHID                  RGB(218, 112, 214)      // å…°èŠ±ç´«  
+#define THISTLE                 RGB(216, 191, 216)      // è“Ÿ  
+#define PLUM                    RGB(221, 160, 221)      // æå­ç´«  
+#define VIOLET                  RGB(238, 130, 238)      // ç´«ç½—å…°  
+#define MAGENTA                 RGB(255,   0, 255)      // æ´‹çº¢ (å“çº¢ ç«ç‘°çº¢)  
+#define FUCHSIA                 RGB(255,   0, 255)      // ç¯ç¬¼æµ·æ£ (ç´«çº¢è‰²)  
+#define DARKMAGENTA             RGB(139,   0, 139)      // æ·±æ´‹çº¢  
+#define PURPLE                  RGB(128,   0, 128)      // ç´«è‰²  
+#define MEDIUMORCHID            RGB(186,  85, 211)      // ä¸­å…°èŠ±ç´«  
+#define DARKVIOLET              RGB(148,   0, 211)      // æš—ç´«ç½—å…°  
+#define DARKORCHID              RGB(153,  50, 204)      // æš—å…°èŠ±ç´«  
+#define INDIGO                  RGB( 75,   0, 130)      // é›é’ (ç´«å…°è‰²)  
+#define BLUEVIOLET              RGB(138,  43, 226)      // è“ç´«ç½—å…°  
+#define MEDIUMPURPLE            RGB(147, 112, 219)      // ä¸­ç´«è‰²  
+#define MEDIUMSLATEBLUE         RGB(123, 104, 238)      // ä¸­æ¿å²©è“  
+#define SLATEBLUE               RGB(106,  90, 205)      // æ¿å²©è“  
+#define DARKSLATEBLUE           RGB( 72,  61, 139)      // æš—æ¿å²©è“  
+#define LAVENDER                RGB(230, 230, 250)      // ç†è¡£è‰æ·¡ç´«  
+#define GHOSTWHITE              RGB(248, 248, 255)      // å¹½çµç™½  
+#define BLUE                    RGB(  0,   0, 255)      // çº¯è“  
+#define MEDIUMBLUE              RGB(  0,   0, 205)      // ä¸­è“è‰²  
+#define MIDNIGHTBLUE            RGB( 25,  25, 112)      // åˆå¤œè“  
+#define DARKBLUE                RGB(  0,   0, 139)      // æš—è“è‰²  
+#define NAVY                    RGB(  0,   0, 128)      // æµ·å†›è“  
+#define ROYALBLUE               RGB( 65, 105, 225)      // çš‡å®¶è“ (å®è“)  
+#define CORNFLOWERBLUE          RGB(100, 149, 237)      // çŸ¢è½¦èŠè“  
+#define LIGHTSTEELBLUE          RGB(176, 196, 222)      // äº®é’¢è“  
+#define LIGHTSLATEGRAY          RGB(119, 136, 153)      // äº®çŸ³æ¿ç°  
+#define SLATEGRAY               RGB(112, 128, 144)      // çŸ³æ¿ç°  
+#define DODGERBLUE              RGB( 30, 144, 255)      // é“å¥‡è“  
+#define ALICEBLUE               RGB(240, 248, 255)      // çˆ±ä¸½ä¸è“  
+#define STEELBLUE               RGB( 70, 130, 180)      // é’¢è“ (é“é’)  
+#define LIGHTSKYBLUE            RGB(135, 206, 250)      // äº®å¤©è“è‰²  
+#define SKYBLUE                 RGB(135, 206, 235)      // å¤©è“è‰²  
+#define DEEPSKYBLUE             RGB(  0, 191, 255)      // æ·±å¤©è“  
+#define LIGHTBLUE               RGB(173, 216, 230)      // äº®è“  
+#define POWDERBLUE              RGB(176, 224, 230)      // ç«è¯é’  
+#define CADETBLUE               RGB( 95, 158, 160)      // å†›æœè“  
+#define AZURE                   RGB(240, 255, 255)      // è”šè“è‰²  
+#define LIGHTCYAN               RGB(224, 255, 255)      // æ·¡é’è‰²  
+#define PALETURQUOISE           RGB(175, 238, 238)      // å¼±ç»¿å®çŸ³  
+#define CYAN                    RGB(  0, 255, 255)      // é’è‰²  
+#define AQUA                    RGB(  0, 255, 255)      // æ°´è‰²  
+#define DARKTURQUOISE           RGB(  0, 206, 209)      // æš—ç»¿å®çŸ³  
+#define DARKSLATEGRAY           RGB( 47,  79,  79)      // æš—çŸ³æ¿ç°  
+#define DARKCYAN                RGB(  0, 139, 139)      // æš—é’è‰²  
+#define TEAL                    RGB(  0, 128, 128)      // æ°´é¸­è‰²  
+#define MEDIUMTURQUOISE         RGB( 72, 209, 204)      // ä¸­ç»¿å®çŸ³  
+#define LIGHTSEAGREEN           RGB( 32, 178, 170)      // æµ…æµ·æ´‹ç»¿  
+#define TURQUOISE               RGB( 64, 224, 208)      // ç»¿å®çŸ³  
+#define AQUAMARINE              RGB(127, 255, 212)      // å®çŸ³ç¢§ç»¿  
+#define MEDIUMAQUAMARINE        RGB(102, 205, 170)      // ä¸­å®çŸ³ç¢§ç»¿  
+#define MEDIUMSPRINGGREEN       RGB(  0, 250, 154)      // ä¸­æ˜¥ç»¿è‰²  
+#define MINTCREAM               RGB(245, 255, 250)      // è–„è·å¥¶æ²¹  
+#define SPRINGGREEN             RGB(  0, 255, 127)      // æ˜¥ç»¿è‰²  
+#define MEDIUMSEAGREEN          RGB( 60, 179, 113)      // ä¸­æµ·æ´‹ç»¿  
+#define SEAGREEN                RGB( 46, 139,  87)      // æµ·æ´‹ç»¿  
+#define HONEYDEW                RGB(240, 255, 240)      // èœœç“œè‰²  
+#define LIGHTGREEN              RGB(144, 238, 144)      // æ·¡ç»¿è‰²  
+#define PALEGREEN               RGB(152, 251, 152)      // å¼±ç»¿è‰²  
+#define DARKSEAGREEN            RGB(143, 188, 143)      // æš—æµ·æ´‹ç»¿  
+#define LIMEGREEN               RGB( 50, 205,  50)      // é—ªå…‰æ·±ç»¿  
+#define LIME                    RGB(  0, 255,   0)      // é—ªå…‰ç»¿  
+#define FORESTGREEN             RGB( 34, 139,  34)      // æ£®æ—ç»¿  
+#define GREEN                   RGB(  0, 128,   0)      // çº¯ç»¿  
+#define DARKGREEN               RGB(  0, 100,   0)      // æš—ç»¿è‰²  
+#define CHARTREUSE              RGB(127, 255,   0)      // æŸ¥ç‰¹é…’ç»¿ (é»„ç»¿è‰²)  
+#define LAWNGREEN               RGB(124, 252,   0)      // è‰åªç»¿  
+#define GREENYELLOW             RGB(173, 255,  47)      // ç»¿é»„è‰²  
+#define DARKOLIVEGREEN          RGB( 85, 107,  47)      // æš—æ©„æ¦„ç»¿  
+#define YELLOWGREEN             RGB(154, 205,  50)      // é»„ç»¿è‰²  
+#define OLIVEDRAB               RGB(107, 142,  35)      // æ©„æ¦„è¤è‰²  
+#define BEIGE                   RGB(245, 245, 220)      // ç±³è‰²(ç°æ£•è‰²)  
+#define LIGHTGOLDENRODYELLOW    RGB(250, 250, 210)      // äº®èŠé»„  
+#define IVORY                   RGB(255, 255, 240)      // è±¡ç‰™  
+#define LIGHTYELLOW             RGB(255, 255, 224)      // æµ…é»„è‰²  
+#define YELLOW                  RGB(255, 255,   0)      // çº¯é»„  
+#define OLIVE                   RGB(128, 128,   0)      // æ©„æ¦„  
+#define DARKKHAKI               RGB(189, 183, 107)      // æ·±å¡å½å¸ƒ  
+#define LEMONCHIFFON            RGB(255, 250, 205)      // æŸ æª¬ç»¸  
+#define PALEGOLDENROD           RGB(238, 232, 170)      // ç°èŠé»„  
+#define KHAKI                   RGB(240, 230, 140)      // å¡å½å¸ƒ  
+#define GOLD                    RGB(255, 215,   0)      // é‡‘è‰²  
+#define CORNSILK                RGB(255, 248, 220)      // ç‰ç±³ä¸è‰²  
+#define GOLDENROD               RGB(218, 165,  32)      // é‡‘èŠé»„  
+#define DARKGOLDENROD           RGB(184, 134,  11)      // æš—é‡‘èŠé»„  
+#define FLORALWHITE             RGB(255, 250, 240)      // èŠ±çš„ç™½è‰²  
+#define OLDLACE                 RGB(253, 245, 230)      // æ—§è•¾ä¸  
+#define WHEAT                   RGB(245, 222, 179)      // å°éº¦è‰²  
+#define MOCCASIN                RGB(255, 228, 181)      // é¹¿çš®é´  
+#define ORANGE                  RGB(255, 165,   0)      // æ©™è‰²  
+#define PAPAYAWHIP              RGB(255, 239, 213)      // ç•ªæœ¨ç“œ  
+#define BLANCHEDALMOND          RGB(255, 235, 205)      // å‘ç™½çš„æä»è‰²  
+#define NAVAJOWHITE             RGB(255, 222, 173)      // åœŸè‘—ç™½  
+#define ANTIQUEWHITE            RGB(250, 235, 215)      // å¤è‘£ç™½  
+#define TAN                     RGB(210, 180, 140)      // èŒ¶è‰²  
+#define BURLYWOOD               RGB(222, 184, 135)      // ç¡¬æœ¨è‰²  
+#define BISQUE                  RGB(255, 228, 196)      // é™¶å¯é»„  
+#define DARKORANGE              RGB(255, 140,   0)      // æ·±æ©™è‰²  
+#define LINEN                   RGB(250, 240, 230)      // äºšéº»å¸ƒ  
+#define PERU                    RGB(205, 133,  63)      // ç§˜é²  
+#define PEACHPUFF               RGB(255, 218, 185)      // æ¡ƒè‚‰è‰²  
+#define SANDYBROWN              RGB(244, 164,  96)      // æ²™æ£•è‰²  
+#define CHOCOLATE               RGB(210, 105,  30)      // å·§å…‹åŠ›  
+#define SADDLEBROWN             RGB(139,  69,  19)      // é©¬éæ£•è‰²  
+#define SEASHELL                RGB(255, 245, 238)      // æµ·è´å£³  
+#define SIENNA                  RGB(160,  82,  45)      // é»„åœŸèµ­è‰²  
+#define LIGHTSALMON             RGB(255, 160, 122)      // æµ…é²‘é±¼è‚‰è‰²  
+#define CORAL                   RGB(255, 127,  80)      // çŠç‘š  
+#define ORANGERED               RGB(255,  69,   0)      // æ©™çº¢è‰²  
+#define DARKSALMON              RGB(233, 150, 122)      // æ·±é²œè‚‰(é²‘é±¼)è‰²  
+#define TOMATO                  RGB(255,  99,  71)      // ç•ªèŒ„çº¢  
+#define MISTYROSE               RGB(255, 228, 225)      // è–„é›¾ç«ç‘°  
+#define SALMON                  RGB(250, 128, 114)      // é²œè‚‰(é²‘é±¼)è‰²  
+#define SNOW                    RGB(255, 250, 250)      // é›ª  
+#define LIGHTCORAL              RGB(240, 128, 128)      // æ·¡çŠç‘šè‰²  
+#define ROSYBROWN               RGB(188, 143, 143)      // ç«ç‘°æ£•è‰²  
+#define INDIANRED               RGB(205,  92,  92)      // å°åº¦çº¢  
+#define RED                     RGB(255,   0,   0)      // çº¯çº¢  
+#define BROWN                   RGB(165,  42,  42)      // æ£•è‰²  
+#define FIREBRICK               RGB(178,  34,  34)      // è€ç«ç –  
+#define DARKRED                 RGB(139,   0,   0)      // æ·±çº¢è‰²  
+#define MAROON                  RGB(128,   0,   0)      // æ —è‰²  
+#define WHITE                   RGB(255, 255, 255)      // çº¯ç™½  
+#define WHITESMOKE              RGB(245, 245, 245)      // ç™½çƒŸ  
+#define GAINSBORO               RGB(220, 220, 220)      // åºšæ–¯åšç½—ç°è‰²  
+#define LIGHTGREY               RGB(211, 211, 211)      // æµ…ç°è‰²  
+#define SILVER                  RGB(192, 192, 192)      // é“¶ç°è‰²  
+#define DARKGRAY                RGB(169, 169, 169)      // æ·±ç°è‰²  
+#define GRAY                    RGB(186, 183, 186)      // ç°è‰²(*)  
+#define DIMGRAY                 RGB(105, 105, 105)      // æš—æ·¡çš„ç°è‰²  
+#define BLACK                   RGB(  0,   0,   0)      // çº¯é»‘  

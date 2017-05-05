@@ -1,4 +1,4 @@
-// CurveDLG.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// CurveDLG.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// CurveDLG ¶Ô»°¿ò
+// CurveDLG å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CurveDLG, CDialogEx)
 
@@ -36,33 +36,33 @@ BEGIN_MESSAGE_MAP(CurveDLG, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CurveDLG ÏûÏ¢´¦Àí³ÌĞò
+// CurveDLG æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CurveDLG::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚  å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	//»ñÈ¡´°¿ÚµÄ³õÊ¼´óĞ¡
+	//è·å–çª—å£çš„åˆå§‹å¤§å°
 	CRect rect;
 	GetWindowRect(&rect);
-	//½«³õÊ¼ÖµÉèÎª×îĞ¡Öµ
+	//å°†åˆå§‹å€¼è®¾ä¸ºæœ€å°å€¼
 	m_ptMinTrackSize.x = (LONG)rect.Width();
 	m_ptMinTrackSize.y = (LONG)rect.Height();
 
-	GetClientRect(&m_CurClientRect);	//µ±Ç°¿Í»§Çø´óĞ¡
+	GetClientRect(&m_CurClientRect);	//å½“å‰å®¢æˆ·åŒºå¤§å°
 
 	m_Curve.Init(10000, 0.8f, 0.8f);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£:  OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸:  OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
@@ -70,9 +70,9 @@ void CurveDLG::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
 
-	// TODO:  ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
-	//µÚÒ»´Î´´½¨Ê±µ÷ÓÃOnSize£¬µ«ÕâÊ±´°¿Ú»¹Ã»ÓĞÉú³É£¬²»ÄÜµ÷ÓÃ
-	if (m_Curve && nType != SIZE_MINIMIZED)	//×îĞ¡»¯Ê±²»ĞèÒª¸Ä±ä¿Ø¼ş´óĞ¡
+	// TODO:  åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
+	//ç¬¬ä¸€æ¬¡åˆ›å»ºæ—¶è°ƒç”¨OnSizeï¼Œä½†è¿™æ—¶çª—å£è¿˜æ²¡æœ‰ç”Ÿæˆï¼Œä¸èƒ½è°ƒç”¨
+	if (m_Curve && nType != SIZE_MINIMIZED)	//æœ€å°åŒ–æ—¶ä¸éœ€è¦æ”¹å˜æ§ä»¶å¤§å°
 	{
 		CRect rect;
 		GetClientRect(&rect);
@@ -85,18 +85,18 @@ void CurveDLG::OnSize(UINT nType, int cx, int cy)
 	
 }
 
-//Ëø¶¨´°¿Ú×îĞ¡´óĞ¡
+//é”å®šçª—å£æœ€å°å¤§å°
 void CurveDLG::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	lpMMI->ptMinTrackSize = m_ptMinTrackSize;
 	CDialogEx::OnGetMinMaxInfo(lpMMI);
 }
 
-//´°¿Ú´Ó×îĞ¡»¯»¹Ô­Ê±¸üĞÂÇúÏß(×îĞ¡»¯Ê±²»»æÍ¼)
+//çª—å£ä»æœ€å°åŒ–è¿˜åŸæ—¶æ›´æ–°æ›²çº¿(æœ€å°åŒ–æ—¶ä¸ç»˜å›¾)
 BOOL CurveDLG::OnQueryOpen()
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	m_Curve.Update();
 	return CDialogEx::OnQueryOpen();
 }
@@ -104,7 +104,7 @@ BOOL CurveDLG::OnQueryOpen()
 
 void CurveDLG::UpdateCurve()
 {
-	if (IsWindowVisible() && !IsIconic())	//ÔÚ×îĞ¡»¯Ê±²»½øĞĞ»æÍ¼
+	if (IsWindowVisible() && !IsIconic())	//åœ¨æœ€å°åŒ–æ—¶ä¸è¿›è¡Œç»˜å›¾
 	{
 		m_Curve.Update();
 	}
@@ -113,7 +113,7 @@ void CurveDLG::UpdateCurve()
 void CurveDLG::SetLabelStr(CString(*pStr)[CURVE_LINE])
 {
 	m_Curve.SetLabelStr(pStr);
-	if (IsWindowVisible() && !IsIconic())	//ÔÚ×îĞ¡»¯Ê±²»½øĞĞ»æÍ¼
+	if (IsWindowVisible() && !IsIconic())	//åœ¨æœ€å°åŒ–æ—¶ä¸è¿›è¡Œç»˜å›¾
 	{
 		m_Curve.Update();
 	}
@@ -122,7 +122,7 @@ void CurveDLG::SetLabelStr(CString(*pStr)[CURVE_LINE])
 void CurveDLG::UpdateValueStr()
 {
 	m_Curve.UpdateValueStr();
-	if (IsWindowVisible() && !IsIconic())	//ÔÚ×îĞ¡»¯Ê±²»½øĞĞ»æÍ¼
+	if (IsWindowVisible() && !IsIconic())	//åœ¨æœ€å°åŒ–æ—¶ä¸è¿›è¡Œç»˜å›¾
 	{
 		m_Curve.Update();
 	}
@@ -130,7 +130,7 @@ void CurveDLG::UpdateValueStr()
 
 void CurveDLG::PostNcDestroy()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	// TODO:  åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 	CDialogEx::PostNcDestroy();
 	delete this;
 }
@@ -140,8 +140,8 @@ void CurveDLG::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CDialogEx::OnShowWindow(bShow, nStatus);
 
-	// TODO:  ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
-	m_Curve.SetFocus();		//ÉèÖÃÇúÏß¿Ø¼şÎª½¹µã£¬·ñÔòÎŞ·¨²¶»ñÊó±ê¹ö¶¯ĞÅÏ¢
+	// TODO:  åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
+	m_Curve.SetFocus();		//è®¾ç½®æ›²çº¿æ§ä»¶ä¸ºç„¦ç‚¹ï¼Œå¦åˆ™æ— æ³•æ•è·é¼ æ ‡æ»šåŠ¨ä¿¡æ¯
 }
 
 bool CurveDLG::CurveEnhance(bool bOpen)

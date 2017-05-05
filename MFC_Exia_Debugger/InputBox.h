@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
 
-// CInputBox ¶Ô»°¿ò
+// CInputBox å¯¹è¯æ¡†
 
 class CInputBox : public CDialogEx
 {
 	DECLARE_DYNAMIC(CInputBox)
 
 public:
-	CInputBox(CString Title = _T("Éè¶¨"), CString Tip = _T("ÇëÊäÈë£º"), CString DefaultValue = _T("0"), CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CInputBox(CString Title = _T("è®¾å®š"), CString Tip = _T("è¯·è¾“å…¥ï¼š"), CString DefaultValue = _T("0"), CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CInputBox();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_INPUTBOX };
 
 private:
@@ -23,7 +23,7 @@ private:
 	AFX_INLINE BOOL CInputBox::ShowBalloonTip(CEdit * pEdit, _In_z_ LPCWSTR lpszTitle, _In_z_ LPCWSTR lpszText, _In_ INT ttiIcon);
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

@@ -1,30 +1,30 @@
-#pragma once
+ï»¿#pragma once
 #include "Curve.h"
 
-// CurveDLG ¶Ô»°¿ò
+// CurveDLG å¯¹è¯æ¡†
 
 class CurveDLG : public CDialogEx
 {
 	DECLARE_DYNAMIC(CurveDLG)
 
 public:
-	CurveDLG(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CurveDLG(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CurveDLG();
 
 	CCurve m_Curve;
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_MFC_EXIA_CURVE_DIALOG };
 
 protected:
 	HICON m_hIcon;
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 
 private:
-	POINT				m_ptMinTrackSize;		//´°¿ÚµÄ×îĞ¡´óĞ¡
-	CRect				m_CurClientRect;		//´°¿ÚµÄµ±Ç°´óĞ¡
+	POINT				m_ptMinTrackSize;		//çª—å£çš„æœ€å°å¤§å°
+	CRect				m_CurClientRect;		//çª—å£çš„å½“å‰å¤§å°
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);

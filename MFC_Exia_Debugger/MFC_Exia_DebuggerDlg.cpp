@@ -1,5 +1,5 @@
-
-// MFC_Exia_DebuggerDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿
+// MFC_Exia_DebuggerDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -14,20 +14,20 @@
 #endif
 
 
-// ÓÃÓÚÓ¦ÓÃ³ÌĞò¡°¹ØÓÚ¡±²Ëµ¥ÏîµÄ CAboutDlg ¶Ô»°¿ò
+// ç”¨äºåº”ç”¨ç¨‹åºâ€œå…³äºâ€èœå•é¡¹çš„ CAboutDlg å¯¹è¯æ¡†
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_ABOUTBOX };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -45,46 +45,46 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMFC_Exia_DebuggerDlg ¶Ô»°¿ò
+// CMFC_Exia_DebuggerDlg å¯¹è¯æ¡†
 
 
 
 CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFC_Exia_DebuggerDlg::IDD, pParent)
-	, m_str_THRO(_T("ÎŞĞÅºÅ"))
-	, m_str_RUDD(_T("ÎŞĞÅºÅ"))
-	, m_str_ELEV(_T("ÎŞĞÅºÅ"))
-	, m_str_AILE(_T("ÎŞĞÅºÅ"))
+	, m_str_THRO(_T("æ— ä¿¡å·"))
+	, m_str_RUDD(_T("æ— ä¿¡å·"))
+	, m_str_ELEV(_T("æ— ä¿¡å·"))
+	, m_str_AILE(_T("æ— ä¿¡å·"))
 	, m_str_BuffByte(_T("0 Bytes"))
-	, m_str_Accel_Sensor_X(_T("ÎŞĞÅºÅ"))
-	, m_str_Accel_Sensor_Y(_T("ÎŞĞÅºÅ"))
-	, m_str_Accel_Sensor_Z(_T("ÎŞĞÅºÅ"))
-	, m_str_Gyro_Sensor_X(_T("ÎŞĞÅºÅ"))
-	, m_str_Gyro_Sensor_Y(_T("ÎŞĞÅºÅ"))
-	, m_str_Gyro_Sensor_Z(_T("ÎŞĞÅºÅ"))
-	, m_str_HMC5883L_X(_T("ÎŞĞÅºÅ"))
-	, m_str_HMC5883L_Y(_T("ÎŞĞÅºÅ"))
-	, m_str_HMC5883L_Z(_T("ÎŞĞÅºÅ"))
-	, m_str_HMC5883L_Angle(_T("ÎŞĞÅºÅ"))
-	, m_str_Roll(_T("ÎŞĞÅºÅ"))
-	, m_str_Pitch(_T("ÎŞĞÅºÅ"))
-	, m_str_Yaw(_T("ÎŞĞÅºÅ"))
-	, m_str_Motor1(_T("ÎŞĞÅºÅ"))
-	, m_str_Motor2(_T("ÎŞĞÅºÅ"))
-	, m_str_Motor3(_T("ÎŞĞÅºÅ"))
-	, m_str_Motor4(_T("ÎŞĞÅºÅ"))
-	, m_str_Gyro_X(_T("ÎŞĞÅºÅ"))
-	, m_str_Gyro_Y(_T("ÎŞĞÅºÅ"))
-	, m_str_Gyro_Z(_T("ÎŞĞÅºÅ"))
-	, m_str_Accel_X(_T("ÎŞĞÅºÅ"))
-	, m_str_Accel_Y(_T("ÎŞĞÅºÅ"))
-	, m_str_Accel_Z(_T("ÎŞĞÅºÅ"))
-	, m_str_HIGH_KS10X(_T("ÎŞĞÅºÅ"))
-	, m_str_HIGH_MS5611(_T("ÎŞĞÅºÅ"))
-	, m_str_Temp_MPU6050(_T("ÎŞĞÅºÅ"))
-	, m_str_Temp_MS5611(_T("ÎŞĞÅºÅ"))
-	, m_str_Press_MS5611(_T("ÎŞĞÅºÅ"))
-	, m_str_HIGH_Accel(_T("ÎŞĞÅºÅ"))
+	, m_str_Accel_Sensor_X(_T("æ— ä¿¡å·"))
+	, m_str_Accel_Sensor_Y(_T("æ— ä¿¡å·"))
+	, m_str_Accel_Sensor_Z(_T("æ— ä¿¡å·"))
+	, m_str_Gyro_Sensor_X(_T("æ— ä¿¡å·"))
+	, m_str_Gyro_Sensor_Y(_T("æ— ä¿¡å·"))
+	, m_str_Gyro_Sensor_Z(_T("æ— ä¿¡å·"))
+	, m_str_HMC5883L_X(_T("æ— ä¿¡å·"))
+	, m_str_HMC5883L_Y(_T("æ— ä¿¡å·"))
+	, m_str_HMC5883L_Z(_T("æ— ä¿¡å·"))
+	, m_str_HMC5883L_Angle(_T("æ— ä¿¡å·"))
+	, m_str_Roll(_T("æ— ä¿¡å·"))
+	, m_str_Pitch(_T("æ— ä¿¡å·"))
+	, m_str_Yaw(_T("æ— ä¿¡å·"))
+	, m_str_Motor1(_T("æ— ä¿¡å·"))
+	, m_str_Motor2(_T("æ— ä¿¡å·"))
+	, m_str_Motor3(_T("æ— ä¿¡å·"))
+	, m_str_Motor4(_T("æ— ä¿¡å·"))
+	, m_str_Gyro_X(_T("æ— ä¿¡å·"))
+	, m_str_Gyro_Y(_T("æ— ä¿¡å·"))
+	, m_str_Gyro_Z(_T("æ— ä¿¡å·"))
+	, m_str_Accel_X(_T("æ— ä¿¡å·"))
+	, m_str_Accel_Y(_T("æ— ä¿¡å·"))
+	, m_str_Accel_Z(_T("æ— ä¿¡å·"))
+	, m_str_HIGH_KS10X(_T("æ— ä¿¡å·"))
+	, m_str_HIGH_MS5611(_T("æ— ä¿¡å·"))
+	, m_str_Temp_MPU6050(_T("æ— ä¿¡å·"))
+	, m_str_Temp_MS5611(_T("æ— ä¿¡å·"))
+	, m_str_Press_MS5611(_T("æ— ä¿¡å·"))
+	, m_str_HIGH_Accel(_T("æ— ä¿¡å·"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_RED);
 	m_Color_Status = RGB(255, 0, 0);
@@ -97,7 +97,7 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	m_pCurveDLG = new CurveDLG();
 	if (m_pCurveDLG)
 	{
-		m_pCurveDLG->Create(IDD_MFC_EXIA_CURVE_DIALOG); //´´½¨Ò»¸ö·ÇÄ£Ì¬¶Ô»°¿ò 
+		m_pCurveDLG->Create(IDD_MFC_EXIA_CURVE_DIALOG); //åˆ›å»ºä¸€ä¸ªéæ¨¡æ€å¯¹è¯æ¡† 
 	}
 }
 
@@ -114,9 +114,9 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ½«¡°¹ØÓÚ...¡±²Ëµ¥ÏîÌí¼Óµ½ÏµÍ³²Ëµ¥ÖĞ¡£
+	// å°†â€œå…³äº...â€èœå•é¡¹æ·»åŠ åˆ°ç³»ç»Ÿèœå•ä¸­ã€‚
 
-	// IDM_ABOUTBOX ±ØĞëÔÚÏµÍ³ÃüÁî·¶Î§ÄÚ¡£
+	// IDM_ABOUTBOX å¿…é¡»åœ¨ç³»ç»Ÿå‘½ä»¤èŒƒå›´å†…ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -134,12 +134,12 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 		}
 	}
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚  å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–ä»£ç 
 
 	m_Serial.Init(this);
 
@@ -168,37 +168,37 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_ComBoxCurve[Curve].InsertString(0, _T("ÎŞĞÅºÅ"));
-		m_ComBoxCurve[Curve].InsertString(1, _T("²à¹ö(Roll)"));
-		m_ComBoxCurve[Curve].InsertString(2, _T("¸©Ñö(Pitch)"));
-		m_ComBoxCurve[Curve].InsertString(3, _T("Æ«°Ú(Yaw)"));
-		m_ComBoxCurve[Curve].InsertString(4, _T("XÖá½ÇËÙ¶È"));
-		m_ComBoxCurve[Curve].InsertString(5, _T("YÖá½ÇËÙ¶È"));
-		m_ComBoxCurve[Curve].InsertString(6, _T("ZÖá½ÇËÙ¶È"));
-		m_ComBoxCurve[Curve].InsertString(7, _T("XÖá¼ÓËÙ¶È"));
-		m_ComBoxCurve[Curve].InsertString(8, _T("YÖá¼ÓËÙ¶È"));
-		m_ComBoxCurve[Curve].InsertString(9, _T("ZÖá¼ÓËÙ¶È"));
+		m_ComBoxCurve[Curve].InsertString(0, _T("æ— ä¿¡å·"));
+		m_ComBoxCurve[Curve].InsertString(1, _T("ä¾§æ»š(Roll)"));
+		m_ComBoxCurve[Curve].InsertString(2, _T("ä¿¯ä»°(Pitch)"));
+		m_ComBoxCurve[Curve].InsertString(3, _T("åæ‘†(Yaw)"));
+		m_ComBoxCurve[Curve].InsertString(4, _T("Xè½´è§’é€Ÿåº¦"));
+		m_ComBoxCurve[Curve].InsertString(5, _T("Yè½´è§’é€Ÿåº¦"));
+		m_ComBoxCurve[Curve].InsertString(6, _T("Zè½´è§’é€Ÿåº¦"));
+		m_ComBoxCurve[Curve].InsertString(7, _T("Xè½´åŠ é€Ÿåº¦"));
+		m_ComBoxCurve[Curve].InsertString(8, _T("Yè½´åŠ é€Ÿåº¦"));
+		m_ComBoxCurve[Curve].InsertString(9, _T("Zè½´åŠ é€Ÿåº¦"));
 		m_ComBoxCurve[Curve].SetCurSel(0);
 		m_CurveSelected[Curve] = 0;
 	}
 
 	UpdateSelected();
 
-	m_CombocRefresh.InsertString(0, _T("Ë¢ĞÂÂÊ£º50Hz"));
-	m_CombocRefresh.InsertString(1, _T("Ë¢ĞÂÂÊ£º25Hz"));
-	m_CombocRefresh.InsertString(2, _T("Ë¢ĞÂÂÊ£º10Hz"));
+	m_CombocRefresh.InsertString(0, _T("åˆ·æ–°ç‡ï¼š50Hz"));
+	m_CombocRefresh.InsertString(1, _T("åˆ·æ–°ç‡ï¼š25Hz"));
+	m_CombocRefresh.InsertString(2, _T("åˆ·æ–°ç‡ï¼š10Hz"));
 	m_CombocRefresh.SetCurSel(0);
 	m_nRefreshTime = 20;	//1000/50Hz = 20
 
 
-	return TRUE;  // ³ı·Ç½«½¹µãÉèÖÃµ½¿Ø¼ş£¬·ñÔò·µ»Ø TRUE
+	return TRUE;  // é™¤éå°†ç„¦ç‚¹è®¾ç½®åˆ°æ§ä»¶ï¼Œå¦åˆ™è¿”å› TRUE
 }
 
 void CMFC_Exia_DebuggerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	// TODO:  ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
-	//¹Ø±Õ¶¨Ê±Æ÷,ÔÚÎö¹¹ÖĞ¹Ø±Õ¶¨Ê±Æ÷»á±ÀÀ££¬ÒòÎªÎö¹¹µÄÊ±ºò´°¿ÚÒÑ¾­Ïú»Ù
+	// TODO:  åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
+	//å…³é—­å®šæ—¶å™¨,åœ¨ææ„ä¸­å…³é—­å®šæ—¶å™¨ä¼šå´©æºƒï¼Œå› ä¸ºææ„çš„æ—¶å€™çª—å£å·²ç»é”€æ¯
 	if (m_Timer_Update_Data)
 	{
 		KillTimer(m_Timer_Update_Data);
@@ -312,19 +312,19 @@ void CMFC_Exia_DebuggerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îĞ¡»¯°´Å¥£¬ÔòĞèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£  ¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ĞÍµÄ MFC Ó¦ÓÃ³ÌĞò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€‚  å¯¹äºä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡å‹çš„ MFC åº”ç”¨ç¨‹åºï¼Œ
+//  è¿™å°†ç”±æ¡†æ¶è‡ªåŠ¨å®Œæˆã€‚
 
 void CMFC_Exia_DebuggerDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØĞÎÖĞ¾ÓÖĞ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -332,7 +332,7 @@ void CMFC_Exia_DebuggerDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -341,18 +341,18 @@ void CMFC_Exia_DebuggerDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îĞ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊıÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€‚
 HCURSOR CMFC_Exia_DebuggerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
-//UI¸üĞÂ´®¿Ú×´Ì¬
+//UIæ›´æ–°ä¸²å£çŠ¶æ€
 void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 {
-//¸üĞÂÁĞ±í
+//æ›´æ–°åˆ—è¡¨
 	CString LastSelStr;
 	CString CurSelStr;
 	bool bMatchingSel = FALSE;
@@ -382,24 +382,24 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 	{
 		m_Combox_COM.SetCurSel(0);
 	}
-//¸üĞÂ×´Ì¬
+//æ›´æ–°çŠ¶æ€
 	p_SerialInfo pCurSerial = m_Serial.GetCurSerial();
 	if (m_Serial.IsOpen() && pCurSerial)
 	{
 		CString Info;
-		Info.Format(_T("ÒÑÁ¬½Ó %s (%s)"), pCurSerial->str_Port, pCurSerial->str_Name);
+		Info.Format(_T("å·²è¿æ¥ %s (%s)"), pCurSerial->str_Port, pCurSerial->str_Name);
 		Info.Replace(_T("\\Device\\"), _T(""));
 		m_Static_Status.SetWindowText(Info);
 		m_Color_Status = RGB(0, 128, 0);
 		m_Static_Status.InvalidateRect(NULL);
-		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowText(_T("¹Ø±Õ´®¿Ú"));
+		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowText(_T("å…³é—­ä¸²å£"));
 	}
 	else
 	{
-		m_Static_Status.SetWindowText(_T("Î´Á¬½Ó"));
+		m_Static_Status.SetWindowText(_T("æœªè¿æ¥"));
 		m_Color_Status = RGB(255, 0, 0);
 		m_Static_Status.InvalidateRect(NULL);
-		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowText(_T("´ò¿ª´®¿Ú"));
+		GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetWindowText(_T("æ‰“å¼€ä¸²å£"));
 	}
 	return;
 }
@@ -408,27 +408,27 @@ void CMFC_Exia_DebuggerDlg::UpdateSerialState()
 
 void CMFC_Exia_DebuggerDlg::OnBnClickedOpenCloseBtn()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (m_Serial.IsOpen())
 	{
 		if (!m_Serial.CloseSerial())
 		{
-			MessageBox(GetLastErrorMessage(), _T("´®¿Ú¹Ø±ÕÊ§°Ü"), MB_ICONERROR | MB_OK);
-			//AfxMessageBox(GetLastErrorMessage("´®¿Ú¹Ø±ÕÊ§°Ü£º"));
+			MessageBox(GetLastErrorMessage(), _T("ä¸²å£å…³é—­å¤±è´¥"), MB_ICONERROR | MB_OK);
+			//AfxMessageBox(GetLastErrorMessage("ä¸²å£å…³é—­å¤±è´¥ï¼š"));
 		}
 	}
 	else
 	{
 		if (!m_Serial.OpenSerial(m_Serial.GetSerialInfo(m_Combox_COM.GetCurSel()), CBR_115200))
 		{
-			MessageBox(GetLastErrorMessage(), _T("´®¿Ú´ò¿ªÊ§°Ü"), MB_ICONERROR | MB_OK);
-			//AfxMessageBox(GetLastErrorMessage("´®¿Ú´ò¿ªÊ§°Ü£º"));
+			MessageBox(GetLastErrorMessage(), _T("ä¸²å£æ‰“å¼€å¤±è´¥"), MB_ICONERROR | MB_OK);
+			//AfxMessageBox(GetLastErrorMessage("ä¸²å£æ‰“å¼€å¤±è´¥ï¼š"));
 		}
 	}
 }
 
 
-//ÊÕµ½Éè±¸¸üĞÂÏûÏ¢£¬Ë¢ĞÂ´®¿ÚÁĞ±í
+//æ”¶åˆ°è®¾å¤‡æ›´æ–°æ¶ˆæ¯ï¼Œåˆ·æ–°ä¸²å£åˆ—è¡¨
 BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
 	switch (nEventType)
@@ -446,19 +446,19 @@ BOOL CMFC_Exia_DebuggerDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 	return TRUE;
 }
 
-//Ë¢ĞÂ´®¿ÚÁĞ±íÍê³É£¬UIË¢ĞÂ´®¿Ú×´Ì¬
+//åˆ·æ–°ä¸²å£åˆ—è¡¨å®Œæˆï¼ŒUIåˆ·æ–°ä¸²å£çŠ¶æ€
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialUpdateList(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
 	return 0;
 }
 
-//´®¿Ú´ò¿ª³É¹¦£¬UIË¢ĞÂ´®¿Ú×´Ì¬
+//ä¸²å£æ‰“å¼€æˆåŠŸï¼ŒUIåˆ·æ–°ä¸²å£çŠ¶æ€
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
-	//¿ªÆôÊı¾İ¸üĞÂ¶¨Ê±Æ÷
-	if (m_Timer_Update_Data)	//ÒÑ¾­¿ªÆôÔòÏÈ¹Ø±Õ
+	//å¼€å¯æ•°æ®æ›´æ–°å®šæ—¶å™¨
+	if (m_Timer_Update_Data)	//å·²ç»å¼€å¯åˆ™å…ˆå…³é—­
 	{
 		KillTimer(m_Timer_Update_Data);
 		m_Timer_Update_Data = 0;
@@ -466,12 +466,12 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 	m_Timer_Update_Data = SetTimer(ID_TIMER_UPDATE_DATA, 20, NULL);
 	if (m_Timer_Update_Data == 0)
 	{
-		//AfxMessageBox("Êı¾İ¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü");
-		MessageBox(GetLastErrorMessage(), _T("Êı¾İ¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü"), MB_ICONERROR | MB_OK);
+		//AfxMessageBox("æ•°æ®æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥");
+		MessageBox(GetLastErrorMessage(), _T("æ•°æ®æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥"), MB_ICONERROR | MB_OK);
 	}
 
-	//¿ªÆôÊı¾İÏÔÊ¾¶¨Ê±Æ÷
-	if (m_Timer_Show_Data)	//ÒÑ¾­¿ªÆôÔòÏÈ¹Ø±Õ
+	//å¼€å¯æ•°æ®æ˜¾ç¤ºå®šæ—¶å™¨
+	if (m_Timer_Show_Data)	//å·²ç»å¼€å¯åˆ™å…ˆå…³é—­
 	{
 		KillTimer(m_Timer_Show_Data);
 		m_Timer_Show_Data = 0;
@@ -479,12 +479,12 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 	m_Timer_Show_Data = SetTimer(ID_TIMER_SHOW_DATA, 500, NULL);
 	if (m_Timer_Show_Data == 0)
 	{
-		//AfxMessageBox("Êı¾İ¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü");
-		MessageBox(GetLastErrorMessage(), _T("Êı¾İÏÔÊ¾¶¨Ê±Æ÷ÉèÖÃÊ§°Ü"), MB_ICONERROR | MB_OK);
+		//AfxMessageBox("æ•°æ®æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥");
+		MessageBox(GetLastErrorMessage(), _T("æ•°æ®æ˜¾ç¤ºå®šæ—¶å™¨è®¾ç½®å¤±è´¥"), MB_ICONERROR | MB_OK);
 	}
 
-	//¿ªÆôÇúÏß¸üĞÂ¶¨Ê±Æ÷
-	if (m_Timer_Update_Curve)	//ÒÑ¾­¿ªÆôÔòÏÈ¹Ø±Õ
+	//å¼€å¯æ›²çº¿æ›´æ–°å®šæ—¶å™¨
+	if (m_Timer_Update_Curve)	//å·²ç»å¼€å¯åˆ™å…ˆå…³é—­
 	{
 		KillTimer(m_Timer_Update_Curve);
 		m_Timer_Update_Curve = 0;
@@ -492,17 +492,17 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialOpen(WPARAM wParam, LPARAM lParam
 	m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, m_nRefreshTime, NULL);
 	if (m_Timer_Update_Curve == 0)
 	{
-		//AfxMessageBox("Êı¾İ¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü");
-		MessageBox(GetLastErrorMessage(), _T("ÇúÏß¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü"), MB_ICONERROR | MB_OK);
+		//AfxMessageBox("æ•°æ®æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥");
+		MessageBox(GetLastErrorMessage(), _T("æ›²çº¿æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥"), MB_ICONERROR | MB_OK);
 	}
 	return 0;
 }
 
-//´®¿Ú¹Ø±Õ³É¹¦
+//ä¸²å£å…³é—­æˆåŠŸ
 afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lParam)
 {
 	UpdateSerialState();
-	//¹Ø±Õ¶¨Ê±Æ÷
+	//å…³é—­å®šæ—¶å™¨
 	if (m_Timer_Update_Data)
 	{
 		KillTimer(m_Timer_Update_Data);
@@ -523,12 +523,12 @@ afx_msg LRESULT CMFC_Exia_DebuggerDlg::OnSerialClose(WPARAM wParam, LPARAM lPara
 }
 
 
-//ĞŞ¸Ä×ÖÌåÑÕÉ«
+//ä¿®æ”¹å­—ä½“é¢œè‰²
 HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-	// TODO:  ÔÚ´Ë¸ü¸Ä DC µÄÈÎºÎÌØĞÔ
+	// TODO:  åœ¨æ­¤æ›´æ”¹ DC çš„ä»»ä½•ç‰¹æ€§
 
 	if (pWnd->GetDlgCtrlID() == IDC_STATIC_STATUS)
 	{
@@ -540,27 +540,27 @@ HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		pDC->SetTextColor(m_Color_BuffByte);
 	}
 
-	// TODO:  Èç¹ûÄ¬ÈÏµÄ²»ÊÇËùĞè»­±Ê£¬Ôò·µ»ØÁíÒ»¸ö»­±Ê
+	// TODO:  å¦‚æœé»˜è®¤çš„ä¸æ˜¯æ‰€éœ€ç”»ç¬”ï¼Œåˆ™è¿”å›å¦ä¸€ä¸ªç”»ç¬”
 	return hbr;
 }
 
 
 
-//¶¨Ê±Æ÷´¦Àí
+//å®šæ—¶å™¨å¤„ç†
 void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 
-	//´Ó´®¿Ú¸üĞÂÊı¾İ
+	//ä»ä¸²å£æ›´æ–°æ•°æ®
 	if (nIDEvent == m_Timer_Update_Data)
 	{
 		bool result = FALSE;
-		result = GetQuadrotorState();	//»ñÈ¡Êı¾İ
-		m_Serial.ClearRecData();	//Çå¿Õ»º³åÇø
+		result = GetQuadrotorState();	//è·å–æ•°æ®
+		m_Serial.ClearRecData();	//æ¸…ç©ºç¼“å†²åŒº
 
-		if (result && m_pCurveDLG)	//»ñÈ¡³É¹¦ÔòÌí¼Óµ½ÇúÏßÖĞ
+		if (result && m_pCurveDLG)	//è·å–æˆåŠŸåˆ™æ·»åŠ åˆ°æ›²çº¿ä¸­
 		{
-			SetCurveData();	//¸ù¾İÇúÏßÑ¡ÏîÉèÖÃÇúÏßÊı¾İ
+			SetCurveData();	//æ ¹æ®æ›²çº¿é€‰é¡¹è®¾ç½®æ›²çº¿æ•°æ®
 			m_pCurveDLG->m_Curve.AddData(&m_CurveData);
 		}
 	}
@@ -569,7 +569,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 		ShowQuadrotorState();
 		m_pCurveDLG->UpdateValueStr();
 	}
-	else if (nIDEvent == m_Timer_Update_Curve)	//Ë¢ĞÂÇúÏß
+	else if (nIDEvent == m_Timer_Update_Curve)	//åˆ·æ–°æ›²çº¿
 	{
 		if (m_pCurveDLG)
 		m_pCurveDLG->UpdateCurve();
@@ -579,7 +579,7 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-//¸ù¾İÇúÏßÑ¡ÏîÉèÖÃÇúÏßÊı¾İ
+//æ ¹æ®æ›²çº¿é€‰é¡¹è®¾ç½®æ›²çº¿æ•°æ®
 void CMFC_Exia_DebuggerDlg::SetCurveData()
 {
 	CString str;
@@ -651,17 +651,17 @@ void CMFC_Exia_DebuggerDlg::UpdateSelected()
 	CString LabelStr[CURVE_LINE];
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_GainSelected[Curve] = m_ComBoxGain[Curve].GetCurSel();		//¸üĞÂÑ¡ÖĞÏî
+		m_GainSelected[Curve] = m_ComBoxGain[Curve].GetCurSel();		//æ›´æ–°é€‰ä¸­é¡¹
 		m_CurveSelected[Curve] = m_ComBoxCurve[Curve].GetCurSel();
 		if (m_CurveSelected[Curve])
 		{
-			m_ComBoxGain[Curve].GetLBText(m_GainSelected[Curve], GainStr);	//»ñÈ¡Ñ¡ÖĞÏî×Ö·û´®
+			m_ComBoxGain[Curve].GetLBText(m_GainSelected[Curve], GainStr);	//è·å–é€‰ä¸­é¡¹å­—ç¬¦ä¸²
 			m_ComBoxCurve[Curve].GetLBText(m_CurveSelected[Curve], CurveStr);
 			LabelStr[Curve].Format(_T("%s(x%s)"), CurveStr, GainStr);
 		}
 		else
 		{
-			LabelStr[Curve] = _T("ÎŞĞÅºÅ");
+			LabelStr[Curve] = _T("æ— ä¿¡å·");
 		}
 	}
 	m_pCurveDLG->SetLabelStr(&LabelStr);
@@ -674,17 +674,17 @@ CString CMFC_Exia_DebuggerDlg::GetErrorMessage(DWORD dwError, const TCHAR* Error
 	LPVOID lpMsgBuf = NULL;
 
 	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |		//»º³åÇøÓÉÏµÍ³·ÖÅä
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |		//ç¼“å†²åŒºç”±ç³»ç»Ÿåˆ†é…
 		FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL,
 		dwError,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),	//ÓïÑÔÉèÖÃÎª±¾µØÄ¬ÈÏ
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),	//è¯­è¨€è®¾ç½®ä¸ºæœ¬åœ°é»˜è®¤
 		(LPTSTR)&lpMsgBuf,
-		0,		//»º³åÇøÓÉÏµÍ³·ÖÅä,²»ĞèÒªÖ¸¶¨´óĞ¡
+		0,		//ç¼“å†²åŒºç”±ç³»ç»Ÿåˆ†é…,ä¸éœ€è¦æŒ‡å®šå¤§å°
 		NULL);
 	ErrorMessage += (LPTSTR)lpMsgBuf;
-	LocalFree(lpMsgBuf);	//ÊÍ·ÅÏµÍ³·ÖÅäµÄÄÚ´æ
+	LocalFree(lpMsgBuf);	//é‡Šæ”¾ç³»ç»Ÿåˆ†é…çš„å†…å­˜
 	return ErrorMessage;
 }
 
@@ -734,7 +734,7 @@ bool CMFC_Exia_DebuggerDlg::GetQuadrotorState()
 }
 
 
-//½«»ñÈ¡µ½µÄÊı¾İÏÔÊ¾µ½¿Ø¼ş
+//å°†è·å–åˆ°çš„æ•°æ®æ˜¾ç¤ºåˆ°æ§ä»¶
 void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 {
 	UINT nBufByte = m_Serial.GetRecBufByte();
@@ -756,7 +756,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_THRO = _T("ÎŞĞÅºÅ");
+		m_str_THRO = _T("æ— ä¿¡å·");
 	}
 
 	if (m_State.u16_Rudd)
@@ -765,7 +765,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_RUDD = _T("ÎŞĞÅºÅ");
+		m_str_RUDD = _T("æ— ä¿¡å·");
 	}
 
 	if (m_State.u16_Elev)
@@ -774,7 +774,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_ELEV = _T("ÎŞĞÅºÅ");
+		m_str_ELEV = _T("æ— ä¿¡å·");
 	}
 
 	if (m_State.u16_Aile)
@@ -783,7 +783,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_AILE = _T("ÎŞĞÅºÅ");
+		m_str_AILE = _T("æ— ä¿¡å·");
 	}
 	
 	m_str_Accel_Sensor_X.Format(_T("%d"), m_State.s16_Accel_X);
@@ -809,7 +809,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_Motor1 = _T("ÎŞĞÅºÅ");
+		m_str_Motor1 = _T("æ— ä¿¡å·");
 	}
 	if (m_State.u16_Motor2)
 	{
@@ -817,7 +817,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_Motor2 = _T("ÎŞĞÅºÅ");
+		m_str_Motor2 = _T("æ— ä¿¡å·");
 	}
 	if (m_State.u16_Motor3)
 	{
@@ -825,7 +825,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_Motor3 = _T("ÎŞĞÅºÅ");
+		m_str_Motor3 = _T("æ— ä¿¡å·");
 	}
 	if (m_State.u16_Motor4)
 	{
@@ -833,7 +833,7 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	}
 	else
 	{
-		m_str_Motor4 = _T("ÎŞĞÅºÅ");
+		m_str_Motor4 = _T("æ— ä¿¡å·");
 	}
 	
 	m_str_Gyro_X.Format(_T("%.1f"), (float)m_State.s16_Gyro_X / 16.4f);
@@ -855,28 +855,28 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 
 void CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (m_pCurveDLG)
 	{
 		m_pCurveDLG->ShowWindow(SW_SHOW);
 	}
 	else
 	{
-		MessageBox(_T("ÎŞ·¨´ò¿ªÇúÏß¼à¿Ø´°¿Ú"), _T("´ò¿ªÊ§°Ü"), MB_ICONERROR | MB_OK);
+		MessageBox(_T("æ— æ³•æ‰“å¼€æ›²çº¿ç›‘æ§çª—å£"), _T("æ‰“å¼€å¤±è´¥"), MB_ICONERROR | MB_OK);
 	}
 }
 
 
-//ÉèÖÃÍ¼ÏñÔöÇ¿
+//è®¾ç½®å›¾åƒå¢å¼º
 void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (((CButton*)GetDlgItem(IDC_CURVE_ENHANCE))->GetCheck())
 	{
 		if (!m_pCurveDLG->CurveEnhance(TRUE))
 		{
 			((CButton*)GetDlgItem(IDC_CURVE_ENHANCE))->SetCheck(FALSE);
-			MessageBox(_T("ÎŞ·¨´ò¿ª»­ÖÊÔöÇ¿"), _T("´ò¿ªÊ§°Ü"), MB_ICONERROR | MB_OK);
+			MessageBox(_T("æ— æ³•æ‰“å¼€ç”»è´¨å¢å¼º"), _T("æ‰“å¼€å¤±è´¥"), MB_ICONERROR | MB_OK);
 		}
 	}
 	else
@@ -888,23 +888,23 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedCurveEnhance()
 
 
 
-//ÇúÏß½ØÍ¼
+//æ›²çº¿æˆªå›¾
 void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CTime CurTime; 
-	CurTime = CTime::GetCurrentTime();	//»ñÈ¡ÏµÍ³Ê±¼ä
+	CurTime = CTime::GetCurrentTime();	//è·å–ç³»ç»Ÿæ—¶é—´
 	CString stFilePath_save = CurTime.Format(_T("ScreenShot %Y_%m_%d %H.%M.%S.bmp"));
 
-	int nDot_index = stFilePath_save.ReverseFind(_T('.'));	//»ñÈ¡ºó×º'.'Î»ÖÃ
-	////»ñÈ¡ºó×ºÃû
+	int nDot_index = stFilePath_save.ReverseFind(_T('.'));	//è·å–åç¼€'.'ä½ç½®
+	////è·å–åç¼€å
 	CString szFileType = stFilePath_save.Right(stFilePath_save.GetLength() - nDot_index);
-	szFileType.MakeLower();	//Í³Ò»ºó×ºĞ¡Ğ´
+	szFileType.MakeLower();	//ç»Ÿä¸€åç¼€å°å†™
 
 
-	// ÉèÖÃ¹ıÂËÆ÷£¬¹ıÂË³öBmpÎÄ¼ş
-	CString szOpenFilter = _T("Î»Í¼ÎÄ¼ş (*.bmp;*.dib)|*.bmp;*.dib|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|GIF (*.gif)|*.gif||");
-	// ¹¹Ôì±£´æÎÄ¼ş¶Ô»°¿ò 
+	// è®¾ç½®è¿‡æ»¤å™¨ï¼Œè¿‡æ»¤å‡ºBmpæ–‡ä»¶
+	CString szOpenFilter = _T("ä½å›¾æ–‡ä»¶ (*.bmp;*.dib)|*.bmp;*.dib|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|GIF (*.gif)|*.gif||");
+	// æ„é€ ä¿å­˜æ–‡ä»¶å¯¹è¯æ¡† 
 	CFileDialog SaveDlgDst(FALSE, szFileType, stFilePath_save, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
 
 	if (SaveDlgDst.DoModal() == IDOK)
@@ -913,7 +913,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 
 		if (!m_pCurveDLG->m_Curve.ScreenShot(stFilePath_save))
 		{
-			AfxMessageBox(_T("ÎÄ¼ş±£´æÊ§°Ü,Çë¼ì²éÎÄ¼şÃû¼°ºó×ºÃû"), MB_ICONINFORMATION);
+			AfxMessageBox(_T("æ–‡ä»¶ä¿å­˜å¤±è´¥,è¯·æ£€æŸ¥æ–‡ä»¶ååŠåç¼€å"), MB_ICONINFORMATION);
 		}
 
 	}
@@ -923,14 +923,14 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 
 void CMFC_Exia_DebuggerDlg::OnBnClickedButtonClearCurve()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	m_pCurveDLG->m_Curve.ClearData();
 }
 
 
 void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CString RefreshStr;
 	INT_PTR RefreshTime;
 	switch (m_CombocRefresh.GetCurSel())
@@ -954,16 +954,16 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 	if (RefreshTime != m_nRefreshTime)
 	{
 		m_nRefreshTime = RefreshTime;
-		//¿ªÆôÇúÏß¸üĞÂ¶¨Ê±Æ÷
-		if (m_Timer_Update_Curve)	//ÒÑ¾­¿ªÆôÔòÖØĞÂÉèÖÃ£¬Ã»´ò¿ª¾Í²»ÓÃ´ò¿ª£¬´®¿Ú¿ªÆôÔÙ¿ª
+		//å¼€å¯æ›²çº¿æ›´æ–°å®šæ—¶å™¨
+		if (m_Timer_Update_Curve)	//å·²ç»å¼€å¯åˆ™é‡æ–°è®¾ç½®ï¼Œæ²¡æ‰“å¼€å°±ä¸ç”¨æ‰“å¼€ï¼Œä¸²å£å¼€å¯å†å¼€
 		{
 			KillTimer(m_Timer_Update_Curve);
 			m_Timer_Update_Curve = 0;
 			m_Timer_Update_Curve = SetTimer(ID_TIMER_UPDATE_CURVE, m_nRefreshTime, NULL);
 			if (m_Timer_Update_Curve == 0)
 			{
-				//AfxMessageBox("Êı¾İ¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü");
-				MessageBox(GetLastErrorMessage(), _T("ÇúÏß¸üĞÂ¶¨Ê±Æ÷ÉèÖÃÊ§°Ü"), MB_ICONERROR | MB_OK);
+				//AfxMessageBox("æ•°æ®æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥");
+				MessageBox(GetLastErrorMessage(), _T("æ›²çº¿æ›´æ–°å®šæ—¶å™¨è®¾ç½®å¤±è´¥"), MB_ICONERROR | MB_OK);
 			}
 		}
 
@@ -975,41 +975,41 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
 {
 	memset(&m_State, 0, sizeof(m_State));
-	m_str_THRO = _T("ÎŞĞÅºÅ");
-	m_str_RUDD = _T("ÎŞĞÅºÅ");
-	m_str_ELEV = _T("ÎŞĞÅºÅ");
-	m_str_AILE = _T("ÎŞĞÅºÅ");
+	m_str_THRO = _T("æ— ä¿¡å·");
+	m_str_RUDD = _T("æ— ä¿¡å·");
+	m_str_ELEV = _T("æ— ä¿¡å·");
+	m_str_AILE = _T("æ— ä¿¡å·");
 	m_str_BuffByte = _T("0 Bytes");
-	m_str_Accel_Sensor_X = _T("ÎŞĞÅºÅ");
-	m_str_Accel_Sensor_Y = _T("ÎŞĞÅºÅ");
-	m_str_Accel_Sensor_Z = _T("ÎŞĞÅºÅ");
-	m_str_Gyro_Sensor_X = _T("ÎŞĞÅºÅ");
-	m_str_Gyro_Sensor_Y = _T("ÎŞĞÅºÅ");
-	m_str_Gyro_Sensor_Z = _T("ÎŞĞÅºÅ");
-	m_str_HMC5883L_X = _T("ÎŞĞÅºÅ");
-	m_str_HMC5883L_Y = _T("ÎŞĞÅºÅ");
-	m_str_HMC5883L_Z = _T("ÎŞĞÅºÅ");
-	m_str_HMC5883L_Angle = _T("ÎŞĞÅºÅ");
-	m_str_Roll = _T("ÎŞĞÅºÅ");
-	m_str_Pitch = _T("ÎŞĞÅºÅ");
-	m_str_Yaw = _T("ÎŞĞÅºÅ");
-	m_str_Motor1 = _T("ÎŞĞÅºÅ");
-	m_str_Motor2 = _T("ÎŞĞÅºÅ");
-	m_str_Motor3 = _T("ÎŞĞÅºÅ");
-	m_str_Motor4 = _T("ÎŞĞÅºÅ");
-	m_str_Gyro_X = _T("ÎŞĞÅºÅ");
-	m_str_Gyro_Y = _T("ÎŞĞÅºÅ");
-	m_str_Gyro_Z = _T("ÎŞĞÅºÅ");
-	m_str_Accel_X = _T("ÎŞĞÅºÅ");
-	m_str_Accel_Y = _T("ÎŞĞÅºÅ");
-	m_str_Accel_Z = _T("ÎŞĞÅºÅ");
+	m_str_Accel_Sensor_X = _T("æ— ä¿¡å·");
+	m_str_Accel_Sensor_Y = _T("æ— ä¿¡å·");
+	m_str_Accel_Sensor_Z = _T("æ— ä¿¡å·");
+	m_str_Gyro_Sensor_X = _T("æ— ä¿¡å·");
+	m_str_Gyro_Sensor_Y = _T("æ— ä¿¡å·");
+	m_str_Gyro_Sensor_Z = _T("æ— ä¿¡å·");
+	m_str_HMC5883L_X = _T("æ— ä¿¡å·");
+	m_str_HMC5883L_Y = _T("æ— ä¿¡å·");
+	m_str_HMC5883L_Z = _T("æ— ä¿¡å·");
+	m_str_HMC5883L_Angle = _T("æ— ä¿¡å·");
+	m_str_Roll = _T("æ— ä¿¡å·");
+	m_str_Pitch = _T("æ— ä¿¡å·");
+	m_str_Yaw = _T("æ— ä¿¡å·");
+	m_str_Motor1 = _T("æ— ä¿¡å·");
+	m_str_Motor2 = _T("æ— ä¿¡å·");
+	m_str_Motor3 = _T("æ— ä¿¡å·");
+	m_str_Motor4 = _T("æ— ä¿¡å·");
+	m_str_Gyro_X = _T("æ— ä¿¡å·");
+	m_str_Gyro_Y = _T("æ— ä¿¡å·");
+	m_str_Gyro_Z = _T("æ— ä¿¡å·");
+	m_str_Accel_X = _T("æ— ä¿¡å·");
+	m_str_Accel_Y = _T("æ— ä¿¡å·");
+	m_str_Accel_Z = _T("æ— ä¿¡å·");
 
-	m_str_HIGH_KS10X = _T("ÎŞĞÅºÅ");
-	m_str_HIGH_MS5611 = _T("ÎŞĞÅºÅ");
-	m_str_Temp_MPU6050 = _T("ÎŞĞÅºÅ");
-	m_str_Temp_MS5611 = _T("ÎŞĞÅºÅ");
-	m_str_Press_MS5611 = _T("ÎŞĞÅºÅ");
-	m_str_HIGH_Accel = _T("ÎŞĞÅºÅ");
+	m_str_HIGH_KS10X = _T("æ— ä¿¡å·");
+	m_str_HIGH_MS5611 = _T("æ— ä¿¡å·");
+	m_str_Temp_MPU6050 = _T("æ— ä¿¡å·");
+	m_str_Temp_MS5611 = _T("æ— ä¿¡å·");
+	m_str_Press_MS5611 = _T("æ— ä¿¡å·");
+	m_str_HIGH_Accel = _T("æ— ä¿¡å·");
 }
 
 
@@ -1017,7 +1017,7 @@ void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
 
 void CMFC_Exia_DebuggerDlg::OnOK()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	// TODO:  åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 	//int nFocusID = GetFocus()->GetDlgCtrlID();
 	//switch (nFocusID)
 	//{
@@ -1033,8 +1033,8 @@ void CMFC_Exia_DebuggerDlg::OnOK()
 
 void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	CInputBox InputBox(_T("ÓÍÃÅÉè¶¨"), _T("ÇëÊäÈëÓÍÃÅÉè¶¨Öµ:"), _T("0"));
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	CInputBox InputBox(_T("æ²¹é—¨è®¾å®š"), _T("è¯·è¾“å…¥æ²¹é—¨è®¾å®šå€¼:"), _T("0"));
 	if (IDOK == InputBox.DoModal())
 	{
 		int nInput;
@@ -1051,10 +1051,10 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
 }
 
 
-//ÉèÖÃÊó±êÒÆ¶¯µ½ÉÏ·½µÄ¹â±ê
+//è®¾ç½®é¼ æ ‡ç§»åŠ¨åˆ°ä¸Šæ–¹çš„å…‰æ ‡
 BOOL CMFC_Exia_DebuggerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	int DlgCtrlID = pWnd->GetDlgCtrlID();
 	switch (DlgCtrlID)
 	{
@@ -1078,5 +1078,5 @@ BOOL CMFC_Exia_DebuggerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 
 void CMFC_Exia_DebuggerDlg::OnStnClickedStaticRudd()
 {
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }

@@ -1,4 +1,4 @@
-// InputBox.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// InputBox.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,11 +7,11 @@
 #include "afxdialogex.h"
 
 
-// CInputBox ¶Ô»°¿ò
+// CInputBox å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CInputBox, CDialogEx)
 
-CInputBox::CInputBox(CString Title /*= _T("Éè¶¨")*/, CString Tip /*= _T("ÇëÊäÈë£º")*/, CString DefaultValue /*= _T("0")*/, CWnd* pParent /*=NULL*/)
+CInputBox::CInputBox(CString Title /*= _T("è®¾å®š")*/, CString Tip /*= _T("è¯·è¾“å…¥ï¼š")*/, CString DefaultValue /*= _T("0")*/, CWnd* pParent /*=NULL*/)
 	: CDialogEx(CInputBox::IDD, pParent)
 	, m_str_Input(DefaultValue)
 	, m_str_Title(Title)
@@ -37,36 +37,36 @@ BEGIN_MESSAGE_MAP(CInputBox, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CInputBox ÏûÏ¢´¦Àí³ÌĞò
+// CInputBox æ¶ˆæ¯å¤„ç†ç¨‹åº
 
-//³õÊ¼»¯
+//åˆå§‹åŒ–
 BOOL CInputBox::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	SetWindowText(m_str_Title);
 	SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);
-	m_Edit_Input.SetFocus();					//ÉèÖÃ½¹µã
-	m_Edit_Input.SetSel(0, -1);		//È«Ñ¡ÎÄ×Ö
+	m_Edit_Input.SetFocus();					//è®¾ç½®ç„¦ç‚¹
+	m_Edit_Input.SetSel(0, -1);		//å…¨é€‰æ–‡å­—
 	return FALSE;
 
 	//return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£:  OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸:  OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
-//ÏŞÖÆÊäÈë×Ö·û
+//é™åˆ¶è¾“å…¥å­—ç¬¦
 BOOL CInputBox::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO:  ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	// TODO:  åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 
 	if (pMsg->message == WM_CHAR && pMsg->hwnd == m_Edit_Input.m_hWnd)
 	{
-		if (::GetKeyState(VK_CONTROL) & 0x80)	//°´ÏÂCtrlÊ±²»ÊôÓÚ×Ö·ûÊäÈë
+		if (::GetKeyState(VK_CONTROL) & 0x80)	//æŒ‰ä¸‹Ctrlæ—¶ä¸å±äºå­—ç¬¦è¾“å…¥
 		{
 			return CDialogEx::PreTranslateMessage(pMsg);
 		}
-		//Ö»ÔÊĞíÊäÈëÊı×Ö¡¢Ğ¡Êıµã¡¢ÍË¸ñ¡¢·ûºÅ
+		//åªå…è®¸è¾“å…¥æ•°å­—ã€å°æ•°ç‚¹ã€é€€æ ¼ã€ç¬¦å·
 		if (pMsg->wParam != _T('.') && pMsg->wParam != _T('\b') && pMsg->wParam != _T('-') && (pMsg->wParam > _T('9') || pMsg->wParam < _T('0')))
 		{
 			goto INPUT_ERROR;
@@ -74,29 +74,29 @@ BOOL CInputBox::PreTranslateMessage(MSG* pMsg)
 
 		CString str;
 		int nSelStart = 0, nSelEnd = 0;
-		m_Edit_Input.GetSel(nSelStart, nSelEnd);	//»ñÈ¡Ñ¡ÖĞÎÄ±¾
-		GetDlgItemText(IDC_INPUTBOX_EDIT, str);			// »ñÈ¡editÖĞÎÄ±¾
-		str.Delete(nSelStart, nSelEnd - nSelStart);		//É¾³ıÑ¡ÖĞµÄÎÄ±¾(ÒòÎªÑ¡ÖĞÎÄ±¾»á±»ÊäÈëµÄ×Ö·û¸²¸Ç)
+		m_Edit_Input.GetSel(nSelStart, nSelEnd);	//è·å–é€‰ä¸­æ–‡æœ¬
+		GetDlgItemText(IDC_INPUTBOX_EDIT, str);			// è·å–editä¸­æ–‡æœ¬
+		str.Delete(nSelStart, nSelEnd - nSelStart);		//åˆ é™¤é€‰ä¸­çš„æ–‡æœ¬(å› ä¸ºé€‰ä¸­æ–‡æœ¬ä¼šè¢«è¾“å…¥çš„å­—ç¬¦è¦†ç›–)
 
-		//Ö»ÔÊĞíÊäÈëÒ»¸öĞ¡Êıµã
+		//åªå…è®¸è¾“å…¥ä¸€ä¸ªå°æ•°ç‚¹
 		if (pMsg->wParam == _T('.'))
 		{
 			int nPos = 0;
-			if (!nSelStart)	//µÚÒ»¸ö×Ö·û²»ÄÜÊäÈëĞ¡Êıµã
+			if (!nSelStart)	//ç¬¬ä¸€ä¸ªå­—ç¬¦ä¸èƒ½è¾“å…¥å°æ•°ç‚¹
 			{
 				goto INPUT_ERROR;
 			}
 			if (nSelStart == 1 && str.GetAt(0) == _T('-'))
 			{
-				goto INPUT_ERROR;	//µÚÒ»¸ö×Ö·ûÎª"-"µÚ¶ş¸ö×Ö·û²»ÄÜÊäÈëĞ¡Êıµã
+				goto INPUT_ERROR;	//ç¬¬ä¸€ä¸ªå­—ç¬¦ä¸º"-"ç¬¬äºŒä¸ªå­—ç¬¦ä¸èƒ½è¾“å…¥å°æ•°ç‚¹
 			}
-			nPos = str.Find(_T('.')); // ²éÕÒ.µÄÎ»ÖÃ
+			nPos = str.Find(_T('.')); // æŸ¥æ‰¾.çš„ä½ç½®
 			if (nPos >= 0)
 			{
-				goto INPUT_ERROR; // Èç¹û´æÔÚ. ·µ»Ø£¬¼´²»ÔÙÔÊĞí.ÊäÈë
+				goto INPUT_ERROR; // å¦‚æœå­˜åœ¨. è¿”å›ï¼Œå³ä¸å†å…è®¸.è¾“å…¥
 			}
 		}
-		else if (pMsg->wParam == _T('-'))	//·ûºÅÖ»ÄÜÔÚµÚÒ»¸öÊäÈë
+		else if (pMsg->wParam == _T('-'))	//ç¬¦å·åªèƒ½åœ¨ç¬¬ä¸€ä¸ªè¾“å…¥
 		{
 			if (nSelStart)
 			{
@@ -107,18 +107,18 @@ BOOL CInputBox::PreTranslateMessage(MSG* pMsg)
 	return CDialogEx::PreTranslateMessage(pMsg);
 
 INPUT_ERROR:
-	ShowBalloonTip(&m_Edit_Input, L"´íÎó", L"ÊäÈë²»ºÏ·¨£¡", TTI_ERROR);
+	ShowBalloonTip(&m_Edit_Input, L"é”™è¯¯", L"è¾“å…¥ä¸åˆæ³•ï¼", TTI_ERROR);
 	return TRUE;
 }
 
-//ÉÏÃæÆÁ±ÎÁË¼üÅÌµÄ²»ºÏ·¨ÊäÈë£¬ÕâÀïÖ÷ÒªÊÇÅĞ¶ÏÕ³ÌùµÄ²»ºÏ·¨
+//ä¸Šé¢å±è”½äº†é”®ç›˜çš„ä¸åˆæ³•è¾“å…¥ï¼Œè¿™é‡Œä¸»è¦æ˜¯åˆ¤æ–­ç²˜è´´çš„ä¸åˆæ³•
 void CInputBox::OnEnChangeInputboxEdit()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬Ëü½«²»
-	// ·¢ËÍ´ËÍ¨Öª£¬³ı·ÇÖØĞ´ CDialogEx::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œå®ƒå°†ä¸
+	// å‘é€æ­¤é€šçŸ¥ï¼Œé™¤éé‡å†™ CDialogEx::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 
 	CString str;
 	TCHAR data;
@@ -132,10 +132,10 @@ void CInputBox::OnEnChangeInputboxEdit()
 			goto INPUT_ERROR;
 		}
 
-		//Ö»ÔÊĞíÊäÈëÒ»¸öĞ¡Êıµã
+		//åªå…è®¸è¾“å…¥ä¸€ä¸ªå°æ•°ç‚¹
 		if (data == '.')
 		{
-			if (!i)	//µÚÒ»¸ö×Ö·û²»ÄÜÊäÈëĞ¡Êıµã
+			if (!i)	//ç¬¬ä¸€ä¸ªå­—ç¬¦ä¸èƒ½è¾“å…¥å°æ•°ç‚¹
 			{
 				goto INPUT_ERROR;
 			}
@@ -148,7 +148,7 @@ void CInputBox::OnEnChangeInputboxEdit()
 				goto INPUT_ERROR;
 			}
 		}
-		else if (data == _T('-'))	//·ûºÅÖ»ÄÜÔÚµÚÒ»¸öÊäÈë
+		else if (data == _T('-'))	//ç¬¦å·åªèƒ½åœ¨ç¬¬ä¸€ä¸ªè¾“å…¥
 		{
 			if (i)
 			{
@@ -156,13 +156,13 @@ void CInputBox::OnEnChangeInputboxEdit()
 			}
 		}
 	}
-	m_str_Input = str;	//ÊäÈëºÏ·¨²Å±£´æµ±Ç°×Ö·û´®
+	m_str_Input = str;	//è¾“å…¥åˆæ³•æ‰ä¿å­˜å½“å‰å­—ç¬¦ä¸²
 	return;
 INPUT_ERROR:
-	SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);	//»Ö¸´¾ÉµÄÊı¾İ
+	SetDlgItemText(IDC_INPUTBOX_EDIT, m_str_Input);	//æ¢å¤æ—§çš„æ•°æ®
 	m_Edit_Input.SetSel(0, -1);
-	ShowBalloonTip(&m_Edit_Input, L"´íÎó", L"ÊäÈë²»ºÏ·¨£¡", TTI_ERROR);
-	//MessageBox(_T("ÊäÈë²»ºÏ·¨£¡"), _T("´íÎó"), MB_ICONERROR | MB_OK);
+	ShowBalloonTip(&m_Edit_Input, L"é”™è¯¯", L"è¾“å…¥ä¸åˆæ³•ï¼", TTI_ERROR);
+	//MessageBox(_T("è¾“å…¥ä¸åˆæ³•ï¼"), _T("é”™è¯¯"), MB_ICONERROR | MB_OK);
 }
 
 CString CInputBox::GetInput()
@@ -170,7 +170,7 @@ CString CInputBox::GetInput()
 	return m_str_Input;
 }
 
-//ÏÔÊ¾ÆøÅİ£¬´«Èë×Ö´®ĞèÒª×¨³ÌUnicodeµÄ£¬ÔÚ×Ö·û´®Ç°¼ÓÉÏL¼´¿É
+//æ˜¾ç¤ºæ°”æ³¡ï¼Œä¼ å…¥å­—ä¸²éœ€è¦ä¸“ç¨‹Unicodeçš„ï¼Œåœ¨å­—ç¬¦ä¸²å‰åŠ ä¸ŠLå³å¯
 AFX_INLINE BOOL CInputBox::ShowBalloonTip(CEdit * pEdit, _In_z_ LPCWSTR lpszTitle, _In_z_ LPCWSTR lpszText, _In_ INT ttiIcon)
 {
 	ASSERT(pEdit != NULL);

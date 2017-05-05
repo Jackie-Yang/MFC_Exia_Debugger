@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Serial.h"
 #include <algorithm>
 
@@ -17,7 +17,7 @@ CSerial::CSerial()
 	m_pOwner = NULL;
 	m_pSerialPort = NULL;
 
-	//ÓÃÓÚ´®¿Ú×¢²á±í¼àÊÓÏß³Ì
+	//ç”¨äºŽä¸²å£æ³¨å†Œè¡¨ç›‘è§†çº¿ç¨‹
 	m_hWatchingEvent = NULL;
 	m_hWatchingKey = NULL;
 	m_hWatchingMutex = NULL;
@@ -47,7 +47,7 @@ bool CSerial::Init(CWnd* pOwner)
 {
 	m_pOwner = pOwner;
 
-	//²âÊÔÊý¾Ý½ÓÊÕ£¬´ò¿ªÖÕ¶Ë
+	//æµ‹è¯•æ•°æ®æŽ¥æ”¶ï¼Œæ‰“å¼€ç»ˆç«¯
 #if RECEIVE_TEST
 	AllocConsole();
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -75,7 +75,7 @@ bool CSerial::UpdateSerialList()
 	stCurSerialInfo.str_Port = _T("");
 	stCurSerialInfo.h_Handle = NULL;
 
-	CheckSerialState();	//¼ì²éµ±Ç°Á¬½ÓµÄ´®¿ÚÊÇ·ñÁ¬½ÓÕý³£,Èô´®¿ÚÒÑÊ§Ð§»á½«Æä¹Ø±Õ
+	CheckSerialState();	//æ£€æŸ¥å½“å‰è¿žæŽ¥çš„ä¸²å£æ˜¯å¦è¿žæŽ¥æ­£å¸¸,è‹¥ä¸²å£å·²å¤±æ•ˆä¼šå°†å…¶å…³é—­
 
 	//Get Key Handle
 	Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_QUERY_VALUE, &hKey);
@@ -105,23 +105,23 @@ bool CSerial::UpdateSerialList()
 		return FALSE;
 	}
 
-	if (IsOpen())	//°Ñµ±Ç°¹¤×÷µÄSerialInfoÖ¸ÕëÇÐ»»µ½ÁÙÊ±½á¹¹Ìå£¬ÒòÎªÔÚ²Ù×÷CArrayµÄÊ±ºò»áÖØÐÂ·ÖÅäÄÚ´æ¸Ä±äÆäÖ¸Õë
+	if (IsOpen())	//æŠŠå½“å‰å·¥ä½œçš„SerialInfoæŒ‡é’ˆåˆ‡æ¢åˆ°ä¸´æ—¶ç»“æž„ä½“ï¼Œå› ä¸ºåœ¨æ“ä½œCArrayçš„æ—¶å€™ä¼šé‡æ–°åˆ†é…å†…å­˜æ”¹å˜å…¶æŒ‡é’ˆ
 	{
 		stCurSerialInfo = *m_pSerialPort;
 		m_pSerialPort = &stCurSerialInfo;
 	}
 
-//¿ªÊ¼¸üÐÂm_SerialList
+//å¼€å§‹æ›´æ–°m_SerialList
 	if (m_SerialList.GetSize() > 0)
 	{
 		m_SerialList.RemoveAll();
 	}
 
 	#ifdef _UNICODE
-	MaxValueNameLength = MaxValueNameLength + 2;	//UnicodeÏÂ½áÎ²·ûÓ¦¸ÃËã2
+	MaxValueNameLength = MaxValueNameLength + 2;	//Unicodeä¸‹ç»“å°¾ç¬¦åº”è¯¥ç®—2
 	MaxValueLength = MaxValueLength + 2;
 	#else
-	MaxValueNameLength = MaxValueNameLength + 1;	//UnicodeÏÂ½áÎ²·ûÓ¦¸ÃËã2
+	MaxValueNameLength = MaxValueNameLength + 1;	//Unicodeä¸‹ç»“å°¾ç¬¦åº”è¯¥ç®—2
 	MaxValueLength = MaxValueLength + 1;
 	#endif
 	
@@ -133,7 +133,7 @@ bool CSerial::UpdateSerialList()
 		stSerialInfo.str_Name = _T("");
 		stSerialInfo.str_Port = _T("");
 		stSerialInfo.h_Handle = NULL;
-		//²»ÄÜÖ±½ÓÊ¹ÓÃMaxValueNameLength£¬ÒòÎªÃ¿´Îµ÷ÓÃºó»á¸Ä±äËüµÄÖµ
+		//ä¸èƒ½ç›´æŽ¥ä½¿ç”¨MaxValueNameLengthï¼Œå› ä¸ºæ¯æ¬¡è°ƒç”¨åŽä¼šæ”¹å˜å®ƒçš„å€¼
 		DWORD  ValueNameLength = MaxValueNameLength;
 		DWORD  ValueLength = MaxValueLength;
 		memset(ValueName, 0, ValueNameLength);
@@ -177,9 +177,9 @@ bool CSerial::UpdateSerialList()
 	{
 		std::sort(m_SerialList.GetData(), m_SerialList.GetData() + m_SerialList.GetSize(), Sort_Port);
 	}
-//m_SerialList¸üÐÂÍê±Ï
+//m_SerialListæ›´æ–°å®Œæ¯•
 
-	if (IsOpen())	//Èç¹û´®¿Ú´ò¿ª£¬½«Handle´æÈëList
+	if (IsOpen())	//å¦‚æžœä¸²å£æ‰“å¼€ï¼Œå°†Handleå­˜å…¥List
 	{
 		p_SerialInfo pSerialInfo = NULL;
 		int i;
@@ -195,7 +195,7 @@ bool CSerial::UpdateSerialList()
 		}
 		if (i == GetSerialNum())
 		{
-			CloseSerial();	//´®¿ÚÕý³£´ò¿ª£¬×¢²á±íÈ´ÕÒ²»µ½ÏìÓ¦µÄ´®¿Ú£¬ÕâÖÖÇé¿öÓ¦¸Ã²»»á³öÏÖ£¬±£ÏÕÆð¼ûÓ¦¸Ã¹Øµô¸Ã´®¿Ú
+			CloseSerial();	//ä¸²å£æ­£å¸¸æ‰“å¼€ï¼Œæ³¨å†Œè¡¨å´æ‰¾ä¸åˆ°å“åº”çš„ä¸²å£ï¼Œè¿™ç§æƒ…å†µåº”è¯¥ä¸ä¼šå‡ºçŽ°ï¼Œä¿é™©èµ·è§åº”è¯¥å…³æŽ‰è¯¥ä¸²å£
 		}
 	}
 
@@ -205,7 +205,7 @@ bool CSerial::UpdateSerialList()
 	
 	RegCloseKey(hKey);
 
-	//´®¿Ú¸üÐÂ³É¹¦£¬·¢ËÍÏûÏ¢
+	//ä¸²å£æ›´æ–°æˆåŠŸï¼Œå‘é€æ¶ˆæ¯
 	if (m_pOwner)
 	{
 		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_UPDATE_LIST, (WPARAM)0, (LPARAM)0);
@@ -229,11 +229,11 @@ p_SerialInfo CSerial::GetSerialInfo(INT_PTR nIndex)
 	{
 		return NULL;
 	}
-	return &m_SerialList.ElementAt(nIndex);	//ElementAt»ñµÃÒýÓÃ,GetAt»ñµÃÖµ
+	return &m_SerialList.ElementAt(nIndex);	//ElementAtèŽ·å¾—å¼•ç”¨,GetAtèŽ·å¾—å€¼
 }
 
 
-//sort»Øµôº¯Êý£¬Èç¹û²»ÐèÒªÅÅÐòÔò·µ»Øtrue
+//sortå›žæŽ‰å‡½æ•°ï¼Œå¦‚æžœä¸éœ€è¦æŽ’åºåˆ™è¿”å›žtrue
 bool CSerial::Sort_Port(SerialInfo &Info1, SerialInfo &Info2)
 {
 	if (Info1.str_Port.GetLength() == Info2.str_Port.GetLength())
@@ -264,13 +264,13 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 		SetLastError(ERROR_FILE_NOT_FOUND);
 		return FALSE;
 	}
-	CString PortName = _T("\\\\.\\") + m_pSerialPort->str_Port;	//¼ÓÉÏÕâ¸ö¿ÉÒÔ·ÀÖ¹¶Ë¿ÚºÅ´óÓÚ10ÎÞ·¨´ò¿ª
-	m_pSerialPort->h_Handle = CreateFile(PortName,//COM¿Ú  
-		GENERIC_READ | GENERIC_WRITE, //ÔÊÐí¶ÁºÍÐ´  
-		0, //¶ÀÕ¼·½Ê½  
+	CString PortName = _T("\\\\.\\") + m_pSerialPort->str_Port;	//åŠ ä¸Šè¿™ä¸ªå¯ä»¥é˜²æ­¢ç«¯å£å·å¤§äºŽ10æ— æ³•æ‰“å¼€
+	m_pSerialPort->h_Handle = CreateFile(PortName,//COMå£  
+		GENERIC_READ | GENERIC_WRITE, //å…è®¸è¯»å’Œå†™  
+		0, //ç‹¬å æ–¹å¼  
 		NULL,
-		OPEN_EXISTING, //´ò¿ª¶ø²»ÊÇ´´½¨  
-		FILE_FLAG_OVERLAPPED, //Òì²½·½Ê½  
+		OPEN_EXISTING, //æ‰“å¼€è€Œä¸æ˜¯åˆ›å»º  
+		FILE_FLAG_OVERLAPPED, //å¼‚æ­¥æ–¹å¼  
 		NULL);
 	;
 	if (m_pSerialPort->h_Handle == INVALID_HANDLE_VALUE)
@@ -280,78 +280,78 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 		return FALSE;
 	}
 
-	//ÉèÖÃ»º³åÇø´óÐ¡
+	//è®¾ç½®ç¼“å†²åŒºå¤§å°
 	if (!SetupComm(m_pSerialPort->h_Handle, INPUT_BUF_SIZE, OUTPUT_BUF_SIZE))
 	{
-		DWORD dwError = GetLastError();		//±£´æ´íÎó
-		CloseSerial();						//¹Ø±Õ´®¿Ú
-		SetLastError(dwError);				//ÉèÖÃ´íÎó±ê¼Ç
+		DWORD dwError = GetLastError();		//ä¿å­˜é”™è¯¯
+		CloseSerial();						//å…³é—­ä¸²å£
+		SetLastError(dwError);				//è®¾ç½®é”™è¯¯æ ‡è®°
 		return FALSE;
 	}
 
 	DCB dcb;
 	GetCommState(m_pSerialPort->h_Handle, &dcb);
 	dcb.BaudRate = dwBaudRate;
-	dcb.ByteSize = 8; //Ã¿¸ö×Ö½ÚÓÐ8Î»  
-	dcb.Parity = NOPARITY; //ÎÞÆæÅ¼Ð£ÑéÎ»  
-	dcb.StopBits = ONESTOPBIT; //Ò»¸öÍ£Ö¹Î»  
+	dcb.ByteSize = 8; //æ¯ä¸ªå­—èŠ‚æœ‰8ä½  
+	dcb.Parity = NOPARITY; //æ— å¥‡å¶æ ¡éªŒä½  
+	dcb.StopBits = ONESTOPBIT; //ä¸€ä¸ªåœæ­¢ä½  
 	if (!SetCommState(m_pSerialPort->h_Handle, &dcb))
 	{
-		DWORD dwError = GetLastError();		//±£´æ´íÎó
-		CloseSerial();						//¹Ø±Õ´®¿Ú
-		SetLastError(dwError);				//ÉèÖÃ´íÎó±ê¼Ç
+		DWORD dwError = GetLastError();		//ä¿å­˜é”™è¯¯
+		CloseSerial();						//å…³é—­ä¸²å£
+		SetLastError(dwError);				//è®¾ç½®é”™è¯¯æ ‡è®°
 		return FALSE;
 	}
 
 	COMMTIMEOUTS TimeOuts;
-	//Éè¶¨¶Á³¬Ê±  
-	//ReadIntervalTimeout£ºÒÔmsÎªµ¥Î»Ö¸¶¨Í¨ÐÅÏßÂ·ÉÏÁ½¸ö×Ö·ûµ½´ïÖ®¼äµÄ×î´óÊ±¼ä¼ä¸ô¡£
+	//è®¾å®šè¯»è¶…æ—¶  
+	//ReadIntervalTimeoutï¼šä»¥msä¸ºå•ä½æŒ‡å®šé€šä¿¡çº¿è·¯ä¸Šä¸¤ä¸ªå­—ç¬¦åˆ°è¾¾ä¹‹é—´çš„æœ€å¤§æ—¶é—´é—´éš”ã€‚
 	//ReadTotalTimeout=( ReadTotalTimeoutMultiplier*bytes_to_read )+ReadTotalTimeoutConstant;
-	//¼´Á½¸ö×Ö½Ú´«Êä¼ä¸ô³¬¹ýReadIntervalTimeout»òÕß²Ù×÷×ÜÊ±¼ä´óÓÚReadTotalTimeoutÔò²Ù×÷½áÊø£¨Èç¹ûÃ»½ÓÊÕµ½µÚÒ»¸ö×Ö·ûÔò°´×ÜÊ±¼ä¼ÆËã£©
+	//å³ä¸¤ä¸ªå­—èŠ‚ä¼ è¾“é—´éš”è¶…è¿‡ReadIntervalTimeoutæˆ–è€…æ“ä½œæ€»æ—¶é—´å¤§äºŽReadTotalTimeoutåˆ™æ“ä½œç»“æŸï¼ˆå¦‚æžœæ²¡æŽ¥æ”¶åˆ°ç¬¬ä¸€ä¸ªå­—ç¬¦åˆ™æŒ‰æ€»æ—¶é—´è®¡ç®—ï¼‰
 	TimeOuts.ReadIntervalTimeout = 100;
 	TimeOuts.ReadTotalTimeoutMultiplier = 0;
 	TimeOuts.ReadTotalTimeoutConstant = 0;
-	//Éè¶¨Ð´³¬Ê±  
+	//è®¾å®šå†™è¶…æ—¶  
 	TimeOuts.WriteTotalTimeoutMultiplier = 100;
 	TimeOuts.WriteTotalTimeoutConstant = 0;
 	if (!SetCommTimeouts(m_pSerialPort->h_Handle, &TimeOuts))
 	{
-		DWORD dwError = GetLastError();		//±£´æ´íÎó
-		CloseSerial();						//¹Ø±Õ´®¿Ú
-		SetLastError(dwError);				//ÉèÖÃ´íÎó±ê¼Ç
+		DWORD dwError = GetLastError();		//ä¿å­˜é”™è¯¯
+		CloseSerial();						//å…³é—­ä¸²å£
+		SetLastError(dwError);				//è®¾ç½®é”™è¯¯æ ‡è®°
 		return FALSE;
-	}//ÉèÖÃ³¬Ê±  
+	}//è®¾ç½®è¶…æ—¶  
 
 
-	PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);	//Çå¿Õ»º³åÇø
+	PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);	//æ¸…ç©ºç¼“å†²åŒº
 
-	//ÉèÖÃ½ÓÊÕÍ¨Öª
-	//WaitCommEventÔÚÖØµþI/OÄ£Ê½ÏÂ²»»á×èÈû£¬ ¶øÊÇÁ¢¼´·µ»ØµÄ¡£±¨ERROR_IO_PENDING
+	//è®¾ç½®æŽ¥æ”¶é€šçŸ¥
+	//WaitCommEventåœ¨é‡å I/Oæ¨¡å¼ä¸‹ä¸ä¼šé˜»å¡žï¼Œ è€Œæ˜¯ç«‹å³è¿”å›žçš„ã€‚æŠ¥ERROR_IO_PENDING
 	if (!SetCommMask(m_pSerialPort->h_Handle, EV_RXCHAR))
 	{
-		DWORD dwError = GetLastError();		//±£´æ´íÎó
-		CloseSerial();						//¹Ø±Õ´®¿Ú
-		SetLastError(dwError);				//ÉèÖÃ´íÎó±ê¼Ç
+		DWORD dwError = GetLastError();		//ä¿å­˜é”™è¯¯
+		CloseSerial();						//å…³é—­ä¸²å£
+		SetLastError(dwError);				//è®¾ç½®é”™è¯¯æ ‡è®°
 		return FALSE;
 	}
 
 
-	//¿ªÆô´®¿Ú½ÓÊÕÏß³Ì
+	//å¼€å¯ä¸²å£æŽ¥æ”¶çº¿ç¨‹
 	m_pReceiveThread = AfxBeginThread(Receive_Thread, (LPVOID)this);
 	if (NULL == m_pReceiveThread)
 	{
-		DWORD dwError = GetLastError();		//±£´æ´íÎó
-		CloseSerial();						//¹Ø±Õ´®¿Ú
-		SetLastError(dwError);				//ÉèÖÃ´íÎó±ê¼Ç
+		DWORD dwError = GetLastError();		//ä¿å­˜é”™è¯¯
+		CloseSerial();						//å…³é—­ä¸²å£
+		SetLastError(dwError);				//è®¾ç½®é”™è¯¯æ ‡è®°
 		return FALSE;
 	}
 
 	m_SerialRecData.hMutex = CreateMutex(nullptr, FALSE, nullptr);
 	if (m_SerialRecData.hMutex == NULL)
 	{
-		DWORD dwError = GetLastError();		//±£´æ´íÎó
-		CloseSerial();						//¹Ø±Õ´®¿Ú
-		SetLastError(dwError);				//ÉèÖÃ´íÎó±ê¼Ç
+		DWORD dwError = GetLastError();		//ä¿å­˜é”™è¯¯
+		CloseSerial();						//å…³é—­ä¸²å£
+		SetLastError(dwError);				//è®¾ç½®é”™è¯¯æ ‡è®°
 		return FALSE;
 	}
 	BufClear(&m_SerialRecData);
@@ -366,7 +366,7 @@ bool CSerial::OpenSerial(p_SerialInfo pSerialInfo, DWORD dwBaudRate)
 	}
 #endif
 
-	//´®¿Ú´ò¿ª³É¹¦£¬·¢ËÍÏûÏ¢
+	//ä¸²å£æ‰“å¼€æˆåŠŸï¼Œå‘é€æ¶ˆæ¯
 	if (m_pOwner)
 	{
 		::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_OPEN, (WPARAM)0, (LPARAM)0);
@@ -405,7 +405,7 @@ bool CSerial::IsWatching()
 
 bool CSerial::CloseSerial()
 {
-	//PurgeComm(m_hSerialPort, PURGE_TXCLEAR | PURGE_RXCLEAR);	//Çå¿Õ»º³åÇø
+	//PurgeComm(m_hSerialPort, PURGE_TXCLEAR | PURGE_RXCLEAR);	//æ¸…ç©ºç¼“å†²åŒº
 	if (CloseHandle(m_pSerialPort->h_Handle))
 	{
 		m_pSerialPort->h_Handle = NULL;
@@ -429,7 +429,7 @@ bool CSerial::CloseSerial()
 		}
 #endif
 		m_pSerialPort = NULL;
-		//´®¿Ú¹Ø±Õ³É¹¦£¬·¢ËÍÏûÏ¢
+		//ä¸²å£å…³é—­æˆåŠŸï¼Œå‘é€æ¶ˆæ¯
 		if (m_pOwner)
 		{
 			::SendMessage(m_pOwner->m_hWnd, WM_SERIAL_CLOSE, (WPARAM)0, (LPARAM)0);
@@ -447,34 +447,34 @@ bool CSerial::CheckSerialState()
 {
 	if (m_pSerialPort)
 	{
-		CString PortName = _T("\\\\.\\") + m_pSerialPort->str_Port;	//¼ÓÉÏÕâ¸ö¿ÉÒÔ·ÀÖ¹¶Ë¿ÚºÅ´óÓÚ10ÎÞ·¨´ò¿ª
-		HANDLE hPort = CreateFile(PortName,//COM¿Ú  
-			GENERIC_READ | GENERIC_WRITE, //ÔÊÐí¶ÁºÍÐ´  
-			0, //¶ÀÕ¼·½Ê½  
+		CString PortName = _T("\\\\.\\") + m_pSerialPort->str_Port;	//åŠ ä¸Šè¿™ä¸ªå¯ä»¥é˜²æ­¢ç«¯å£å·å¤§äºŽ10æ— æ³•æ‰“å¼€
+		HANDLE hPort = CreateFile(PortName,//COMå£  
+			GENERIC_READ | GENERIC_WRITE, //å…è®¸è¯»å’Œå†™  
+			0, //ç‹¬å æ–¹å¼  
 			NULL,
-			OPEN_EXISTING, //´ò¿ª¶ø²»ÊÇ´´½¨  
-			FILE_FLAG_OVERLAPPED, //Òì²½·½Ê½  
+			OPEN_EXISTING, //æ‰“å¼€è€Œä¸æ˜¯åˆ›å»º  
+			FILE_FLAG_OVERLAPPED, //å¼‚æ­¥æ–¹å¼  
 			NULL);
 		if (hPort == INVALID_HANDLE_VALUE)
 		{
-			if (GetLastError() == ERROR_ACCESS_DENIED) //ÒÑÕ¼ÓÃµÄ´®¿Ú£¬±íÊ¾´®¿ÚÕý³£¹¤×÷
+			if (GetLastError() == ERROR_ACCESS_DENIED) //å·²å ç”¨çš„ä¸²å£ï¼Œè¡¨ç¤ºä¸²å£æ­£å¸¸å·¥ä½œ
 			{     
 				return TRUE;
 			}
 		}
-		else		//´ò¿ª³É¹¦£¬Ò»°ã²»»á³öÏÖ
+		else		//æ‰“å¼€æˆåŠŸï¼Œä¸€èˆ¬ä¸ä¼šå‡ºçŽ°
 		{
 			CloseHandle(hPort);
 		}
 		CloseSerial();
 	}
-	//´®¿ÚÒÑ¾­²»´æÔÚ»òÕß¹¤×÷²»Õý³£
+	//ä¸²å£å·²ç»ä¸å­˜åœ¨æˆ–è€…å·¥ä½œä¸æ­£å¸¸
 	return FALSE;
 }
 
 
 #if SEND_TEST
-UINT CSerial::Send_Thread(void *args)		//²âÊÔ·¢ËÍ¹¦ÄÜ£¬¶¨Ê±·¢ËÍ×Ö·û´®
+UINT CSerial::Send_Thread(void *args)		//æµ‹è¯•å‘é€åŠŸèƒ½ï¼Œå®šæ—¶å‘é€å­—ç¬¦ä¸²
 {
 	char SendData[5] = {0};
 	unsigned long Count = 0;
@@ -503,34 +503,34 @@ UINT CSerial::Receive_Thread(void *args)
 
 UINT CSerial::ReceiveData()
 {
-	OVERLAPPED overlapped = { 0 };	//OVERLAPPED½á¹¹ÌåÓÃÀ´ÉèÖÃI/OÒì²½£¬¾ßÌå¿ÉÒÔ²Î¼ûMSDN
-	COMSTAT ComStat;				//Õâ¸ö½á¹¹ÌåÖ÷ÒªÊÇÓÃÀ´»ñÈ¡¶Ë¿ÚÐÅÏ¢µÄ
+	OVERLAPPED overlapped = { 0 };	//OVERLAPPEDç»“æž„ä½“ç”¨æ¥è®¾ç½®I/Oå¼‚æ­¥ï¼Œå…·ä½“å¯ä»¥å‚è§MSDN
+	COMSTAT ComStat;				//è¿™ä¸ªç»“æž„ä½“ä¸»è¦æ˜¯ç”¨æ¥èŽ·å–ç«¯å£ä¿¡æ¯çš„
 	DWORD dwErrorFlags;
 
 	UINT8 ReceiveData[BUF_SIZE] = {0};
 	DWORD dwBytesRead = 0;
 	DWORD dwBytesReaded = 0;
 
-	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//´´½¨CEvent¶ÔÏó
+	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//åˆ›å»ºCEventå¯¹è±¡
 	while (IsOpen())
 	{
-		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);	//¸üÐÂComStat
+		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);	//æ›´æ–°ComStat
 		dwBytesRead = ComStat.cbInQue;
-		if (dwBytesRead)	//Èç¹û´®¿ÚinbufÖÐÓÐ½ÓÊÕµ½µÄ×Ö·û¾ÍÖ´ÐÐÏÂÃæµÄ²Ù×÷
+		if (dwBytesRead)	//å¦‚æžœä¸²å£inbufä¸­æœ‰æŽ¥æ”¶åˆ°çš„å­—ç¬¦å°±æ‰§è¡Œä¸‹é¢çš„æ“ä½œ
 		{
-			if (dwBytesRead > BUF_SIZE)		//»º³åÇøÊý¾Ý´óÓÚ»º´æÊý¾Ý
+			if (dwBytesRead > BUF_SIZE)		//ç¼“å†²åŒºæ•°æ®å¤§äºŽç¼“å­˜æ•°æ®
 			{
 				dwBytesRead = BUF_SIZE;
 			}
 			dwBytesReaded = 0;
 			if (!ReadFile(m_pSerialPort->h_Handle, ReceiveData, dwBytesRead, &dwBytesReaded, &overlapped))
 			{
-				if (GetLastError() == ERROR_IO_PENDING) //GetLastError()º¯Êý·µ»ØERROR_IO_PENDING,±íÃ÷´®¿ÚÕýÔÚ½øÐÐ¶Á²Ù×÷ 
+				if (GetLastError() == ERROR_IO_PENDING) //GetLastError()å‡½æ•°è¿”å›žERROR_IO_PENDING,è¡¨æ˜Žä¸²å£æ­£åœ¨è¿›è¡Œè¯»æ“ä½œ 
 				{
 					//WaitForSingleObject(overlapped.hEvent, 2000);
-					//Ê¹ÓÃWaitForSingleObjectº¯ÊýµÈ´ý£¬Ö±µ½¶Á²Ù×÷Íê³É»òÑÓÊ±ÒÑ´ïµ½2ÃëÖÓ 
-					//µ±´®¿Ú¶Á²Ù×÷½øÐÐÍê±Ïºó£¬overlappedµÄhEventÊÂ¼þ»á±äÎªÓÐÐÅºÅ,WaitForSingleObjectÈÔÒªGetOverlappedResult»ñÈ¡½á¹û
-					GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//ÎÞÏÞµÈ´ýÕâ¸öI/O²Ù×÷µÄÍê³É
+					//ä½¿ç”¨WaitForSingleObjectå‡½æ•°ç­‰å¾…ï¼Œç›´åˆ°è¯»æ“ä½œå®Œæˆæˆ–å»¶æ—¶å·²è¾¾åˆ°2ç§’é’Ÿ 
+					//å½“ä¸²å£è¯»æ“ä½œè¿›è¡Œå®Œæ¯•åŽï¼Œoverlappedçš„hEventäº‹ä»¶ä¼šå˜ä¸ºæœ‰ä¿¡å·,WaitForSingleObjectä»è¦GetOverlappedResultèŽ·å–ç»“æžœ
+					GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesRead, TRUE);	//æ— é™ç­‰å¾…è¿™ä¸ªI/Oæ“ä½œçš„å®Œæˆ
 					BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
 				}
 			}
@@ -538,7 +538,7 @@ UINT CSerial::ReceiveData()
 			{
 				BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
 			}
-			if (ComStat.cbInQue > BUF_SIZE)	//´®¿Ú»º³åÇøÊý¾Ý´óÓÚ»º´æÊý¾Ý£¬ÔòÓÐÊ£ÓàÊý¾ÝÃ»¶Á£¬Çå¿Õ»º³åÇø
+			if (ComStat.cbInQue > BUF_SIZE)	//ä¸²å£ç¼“å†²åŒºæ•°æ®å¤§äºŽç¼“å­˜æ•°æ®ï¼Œåˆ™æœ‰å‰©ä½™æ•°æ®æ²¡è¯»ï¼Œæ¸…ç©ºç¼“å†²åŒº
 			{
 				PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
 			}
@@ -546,7 +546,7 @@ UINT CSerial::ReceiveData()
 			printf("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesReaded, m_SerialRecData.nByteToRead);
 			#endif
 		}
-		Sleep(10);		//Ò»Ö±ÂÖÑ¯»á¼ÓÖØCPU¸ºµ£
+		Sleep(10);		//ä¸€ç›´è½®è¯¢ä¼šåŠ é‡CPUè´Ÿæ‹…
 	}
 
 	return 0;
@@ -555,11 +555,11 @@ UINT CSerial::ReceiveData()
 
 DWORD CSerial::SendData(const UINT8 *pData, DWORD nDataLength)
 {
-	OVERLAPPED overlapped = { 0 };	//OVERLAPPED½á¹¹ÌåÓÃÀ´ÉèÖÃI/OÒì²½£¬¾ßÌå¿ÉÒÔ²Î¼ûMSDN
-	COMSTAT ComStat;				//Õâ¸ö½á¹¹ÌåÖ÷ÒªÊÇÓÃÀ´»ñÈ¡¶Ë¿ÚÐÅÏ¢µÄ
+	OVERLAPPED overlapped = { 0 };	//OVERLAPPEDç»“æž„ä½“ç”¨æ¥è®¾ç½®I/Oå¼‚æ­¥ï¼Œå…·ä½“å¯ä»¥å‚è§MSDN
+	COMSTAT ComStat;				//è¿™ä¸ªç»“æž„ä½“ä¸»è¦æ˜¯ç”¨æ¥èŽ·å–ç«¯å£ä¿¡æ¯çš„
 	DWORD dwErrorFlags;
 	DWORD dwBytesSend = 0;
-	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//´´½¨CEvent¶ÔÏó
+	overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	//åˆ›å»ºCEventå¯¹è±¡
 
 	if (IsOpen())
 	{
@@ -567,13 +567,13 @@ DWORD CSerial::SendData(const UINT8 *pData, DWORD nDataLength)
 
 		if (!WriteFile(m_pSerialPort->h_Handle, pData, nDataLength, &dwBytesSend, &overlapped))
 		{
-			if (GetLastError() == ERROR_IO_PENDING) //GetLastError()º¯Êý·µ»ØERROR_IO_PENDING,±íÃ÷´®¿ÚÕýÔÚ½øÐÐ¶Á²Ù×÷ 
+			if (GetLastError() == ERROR_IO_PENDING) //GetLastError()å‡½æ•°è¿”å›žERROR_IO_PENDING,è¡¨æ˜Žä¸²å£æ­£åœ¨è¿›è¡Œè¯»æ“ä½œ 
 			{
 				//WaitForSingleObject(overlapped.hEvent, 2000);
-				//Ê¹ÓÃWaitForSingleObjectº¯ÊýµÈ´ý£¬Ö±µ½I/O²Ù×÷Íê³É»òÑÓÊ±ÒÑ´ïµ½2ÃëÖÓ 
-				//µ±´®¿Ú²Ù×÷½øÐÐÍê±Ïºó£¬overlappedµÄhEventÊÂ¼þ»á±äÎªÓÐÐÅºÅ 
+				//ä½¿ç”¨WaitForSingleObjectå‡½æ•°ç­‰å¾…ï¼Œç›´åˆ°I/Oæ“ä½œå®Œæˆæˆ–å»¶æ—¶å·²è¾¾åˆ°2ç§’é’Ÿ 
+				//å½“ä¸²å£æ“ä½œè¿›è¡Œå®Œæ¯•åŽï¼Œoverlappedçš„hEventäº‹ä»¶ä¼šå˜ä¸ºæœ‰ä¿¡å· 
 
-				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesSend, TRUE);	//ÎÞÏÞµÈ´ýÕâ¸öI/O²Ù×÷µÄÍê³É
+				GetOverlappedResult(m_pSerialPort->h_Handle, &overlapped, &dwBytesSend, TRUE);	//æ— é™ç­‰å¾…è¿™ä¸ªI/Oæ“ä½œçš„å®Œæˆ
 
 				//return dwBytesRead;
 			}
@@ -595,7 +595,7 @@ bool CSerial::StartWatchingSerialList()
 	{
 		if (Ret == ERROR_FILE_NOT_FOUND)
 		{
-			//ÎÞ´®¿Ú£¬¼àÊÓDevice
+			//æ— ä¸²å£ï¼Œç›‘è§†Device
 			Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP"), 0, KEY_NOTIFY, &m_hWatchingKey);
 			if (Ret != ERROR_SUCCESS)
 			{
@@ -621,14 +621,14 @@ bool CSerial::StartWatchingSerialList()
 		goto FAIL_PROCESS;
 	}
 
-	//´´½¨Ïß³Ì»¥³âËø
+	//åˆ›å»ºçº¿ç¨‹äº’æ–¥é”
 	m_hWatchingMutex = CreateMutex(nullptr, FALSE, nullptr);
 	if (m_hWatchingMutex == NULL)
 	{
 		goto FAIL_PROCESS;
 	}
 
-	//´´½¨×ÓÏß³Ì¼àÊÓ´®¿ÚÁÐ±í£¨´´½¨µÄÊ±ºòÁ¢¼´ÔËÐÐ£©  
+	//åˆ›å»ºå­çº¿ç¨‹ç›‘è§†ä¸²å£åˆ—è¡¨ï¼ˆåˆ›å»ºçš„æ—¶å€™ç«‹å³è¿è¡Œï¼‰  
 	m_pWatchingThread = AfxBeginThread(Watching_Thread, this);
 	if (NULL == m_pWatchingThread)
 	{
@@ -686,7 +686,7 @@ void CSerial::StopWatchingSerialList()
 	{
 		ReleaseMutex(m_hWatchingMutex);
 	}
-	//µÈ´ý¼àÌýÏß³Ì½áÊø
+	//ç­‰å¾…ç›‘å¬çº¿ç¨‹ç»“æŸ
 	if (m_pWatchingThread)
 	{
 		WaitForSingleObject(m_pWatchingThread->m_hThread, INFINITE);
@@ -709,7 +709,7 @@ UINT CSerial::Watching_Thread(void *args)
 	return ret;
 }
 
-//¼àÌý´®¿Ú
+//ç›‘å¬ä¸²å£
 bool CSerial::WatchingSerial()
 {
 	DWORD  dwFilter = REG_NOTIFY_CHANGE_NAME |
@@ -734,15 +734,15 @@ bool CSerial::WatchingSerial()
 		{
 			continue;
 		}
-		if (WaitForSingleObject(m_hWatchingEvent, 100) == WAIT_OBJECT_0)	//Ê¹ÓÃÁË»¥³âËø£¬Òò´ËÕâÀïµÈ´ýÐèÒªÉèÖÃ³¬Ê±£¬·ñÔò»áÔì³ÉËÀËø
+		if (WaitForSingleObject(m_hWatchingEvent, 100) == WAIT_OBJECT_0)	//ä½¿ç”¨äº†äº’æ–¥é”ï¼Œå› æ­¤è¿™é‡Œç­‰å¾…éœ€è¦è®¾ç½®è¶…æ—¶ï¼Œå¦åˆ™ä¼šé€ æˆæ­»é”
 		{
-			if (m_bNoSerial)	//ÎÞ´®¿Ú£¬³¢ÊÔ¼àÌý´®¿Ú
+			if (m_bNoSerial)	//æ— ä¸²å£ï¼Œå°è¯•ç›‘å¬ä¸²å£
 			{
 				HKEY   TempKey;
 				Ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_NOTIFY, &TempKey);
 				if (Ret == ERROR_SUCCESS)
 				{
-					if (RegCloseKey(m_hWatchingKey) == ERROR_SUCCESS)		//ÓÐ´®¿Ú£¬¿ªÊ¼¼àÌý´®¿Ú
+					if (RegCloseKey(m_hWatchingKey) == ERROR_SUCCESS)		//æœ‰ä¸²å£ï¼Œå¼€å§‹ç›‘å¬ä¸²å£
 					{
 						m_hWatchingKey = TempKey;
 						m_bNoSerial = FALSE;
@@ -761,7 +761,7 @@ bool CSerial::WatchingSerial()
 				UpdateSerialList();
 			}
 		}
-		ResetEvent(m_hWatchingEvent);	//¸´Î»ÊÂ¼þ
+		ResetEvent(m_hWatchingEvent);	//å¤ä½äº‹ä»¶
 		ReleaseMutex(m_hWatchingMutex);
 	}
 
@@ -781,7 +781,7 @@ UINT32 CSerial::BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize)
 		}
 	}
 
-	if (nSize > BUF_SIZE - pBuf->nByteToRead)	//Ð´ÂúÎÞ·¨ÔÙÐ´
+	if (nSize > BUF_SIZE - pBuf->nByteToRead)	//å†™æ»¡æ— æ³•å†å†™
 	{
 		nSize = BUF_SIZE - pBuf->nByteToRead;
 	}
@@ -811,8 +811,8 @@ UINT32 CSerial::BufWriteData(p_CycBuf pBuf, const PUINT8 pData, UINT32 nSize)
 		pBuf->nWriteIndex = pBuf->nWriteIndex - BUF_SIZE;
 	}
 	pBuf->nByteToRead += nSize;
-	//²»»áÒç³öÁË£¬Ð´ÂúÁË²»»áÔÙÐ´
-	//if (pBuf->nByteToRead > BUF_SIZE)	//Òç³ö
+	//ä¸ä¼šæº¢å‡ºäº†ï¼Œå†™æ»¡äº†ä¸ä¼šå†å†™
+	//if (pBuf->nByteToRead > BUF_SIZE)	//æº¢å‡º
 	//{
 	//	pBuf->nReadIndex += pBuf->nByteToRead - BUF_SIZE;
 	//	if (pBuf->nReadIndex >= BUF_SIZE)

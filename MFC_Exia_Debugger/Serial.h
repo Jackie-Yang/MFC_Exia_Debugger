@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include "basetsd.h"
 #include <afxtempl.h>
@@ -83,7 +83,7 @@ private:
 	CycBuf m_SerialRecData;
 	CWinThread	*m_pReceiveThread;
 	UINT ReceiveData();
-	//Ïß³Ì»Øµ÷º¯Êı
+	//çº¿ç¨‹å›è°ƒå‡½æ•°
 	static UINT Receive_Thread(void *args);
 
 
@@ -93,7 +93,7 @@ private:
 	HANDLE	m_hWatchingMutex;
 	CWinThread	*m_pWatchingThread;
 	bool WatchingSerial();
-	//Ïß³Ì»Øµ÷º¯Êı
+	//çº¿ç¨‹å›è°ƒå‡½æ•°
 	static UINT Watching_Thread(void *args);
 	bool m_bNoSerial;
 	bool m_bIsWatching;
@@ -110,7 +110,7 @@ private:
 	static UINT Send_Thread(void *args);
 #endif
 
-	//ÓÃÓÚ´®¿ÚÁĞ±íÅÅĞò
+	//ç”¨äºä¸²å£åˆ—è¡¨æ’åº
 	static bool Sort_Name(SerialInfo &Info1, SerialInfo &Info2);
 	static bool Sort_Port(SerialInfo &Info1, SerialInfo &Info2);
 };

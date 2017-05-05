@@ -1,4 +1,4 @@
-// Curve.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// Curve.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 
 IMPLEMENT_DYNAMIC(CCurve, CWnd)
 
-CCurve::CCurve():	//³õÊ¼»¯»­±Ê»¨Ë¢
+CCurve::CCurve():	//åˆå§‹åŒ–ç”»ç¬”èŠ±åˆ·
 m_CBrush_BG(STYLE_BG),
 m_CPen_Grid(STYLE_GRID),
 m_CPen_Axis(STYLE_AXIS),
@@ -35,7 +35,7 @@ m_RectBG(0, 0, 0, 0)
 	gdiplusToken = 0;
 
 
-	//³õÊ¼»¯ÇúÏßÑÕÉ«¼°±êÇ©
+	//åˆå§‹åŒ–æ›²çº¿é¢œè‰²åŠæ ‡ç­¾
 	GDI_CURVE_INIT(m_GDI_CurveColor);
 	NORMAL_CURVE_INIT(m_CPen_NormalCurve);
 	LABEL_STRING_INIT(m_LabelStr);
@@ -47,7 +47,7 @@ CCurve::~CCurve()
 	
 	if (m_bEnhance)
 	{
-		// ¹Ø±ÕGDI+
+		// å…³é—­GDI+
 		GdiplusShutdown(gdiplusToken);
 		m_bEnhance = FALSE;
 	}
@@ -63,7 +63,7 @@ END_MESSAGE_MAP()
 
 
 
-// CCurve ÏûÏ¢´¦Àí³ÌĞò
+// CCurve æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 bool CCurve::RegisterWindowClass()
@@ -95,17 +95,17 @@ bool CCurve::RegisterWindowClass()
 	return TRUE;
 }
 
-//³õÊ¼»¯ÇúÏßÍ¼£º
-//nDataMAX:Êı¾İË÷ÒıµÄ×î´óÖµ£¨XÖáÄÜÏÔÊ¾µÄ×î´óÖµ£¬»á×Ô¶¯µ÷ÕûÎªX_GRID_STEPµÄÕûÊı±¶£¬µ«ÊÇÖ»ÄÜ´æ·Å×î¶à1000¸ö×îĞÂµÄÊı¾İ£©
-//fScaleX,fScaleY:ÇúÏßµÄ¿í¶È£¬¸ß¶ÈÕ¼¿Ø¼şµÄ±ÈÀı
+//åˆå§‹åŒ–æ›²çº¿å›¾ï¼š
+//nDataMAX:æ•°æ®ç´¢å¼•çš„æœ€å¤§å€¼ï¼ˆXè½´èƒ½æ˜¾ç¤ºçš„æœ€å¤§å€¼ï¼Œä¼šè‡ªåŠ¨è°ƒæ•´ä¸ºX_GRID_STEPçš„æ•´æ•°å€ï¼Œä½†æ˜¯åªèƒ½å­˜æ”¾æœ€å¤š1000ä¸ªæœ€æ–°çš„æ•°æ®ï¼‰
+//fScaleX,fScaleY:æ›²çº¿çš„å®½åº¦ï¼Œé«˜åº¦å æ§ä»¶çš„æ¯”ä¾‹
 void CCurve::Init(unsigned int nDataMAX, float fScaleX, float fScaleY)
 {
 	SetParm(X_LENGTH_DEFAULT, Y_LENGTH_DEFAULT, nDataMAX, fScaleX, fScaleY);
 }
 
 
-//ÉèÖÃ»æÖÆ²ÎÊı£º
-//nMaxX,nMaxY:XÖá³¤¶È£¬YÖáÕı°ëÖá³¤¶È£¨¸º°ëÖáÏàÍ¬£©
+//è®¾ç½®ç»˜åˆ¶å‚æ•°ï¼š
+//nMaxX,nMaxY:Xè½´é•¿åº¦ï¼ŒYè½´æ­£åŠè½´é•¿åº¦ï¼ˆè´ŸåŠè½´ç›¸åŒï¼‰
 void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX, float fScaleY)
 {
 	if (nMaxX > X_LENGTH_MAX)
@@ -125,16 +125,16 @@ void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX,
 		nMaxY = Y_LENGTH_MIN;
 	}
 
-	//½øĞĞµ÷Õû£¬µ÷Õûºó¸ù¾İ¸ñÊı£¨ÕûÊı¸ñ£©¼°Ã¿¸ñµÄ´óĞ¡£¬nMaxX£¬nMaxY»á¸Ä±ä£¬¿ÉÄÜ»áĞ¡ÓÚºê¶¨ÒåµÄÉè¶¨×îĞ¡Öµ£¬µ«²»»á´óÓÚ×î´óÖµ
+	//è¿›è¡Œè°ƒæ•´ï¼Œè°ƒæ•´åæ ¹æ®æ ¼æ•°ï¼ˆæ•´æ•°æ ¼ï¼‰åŠæ¯æ ¼çš„å¤§å°ï¼ŒnMaxXï¼ŒnMaxYä¼šæ”¹å˜ï¼Œå¯èƒ½ä¼šå°äºå®å®šä¹‰çš„è®¾å®šæœ€å°å€¼ï¼Œä½†ä¸ä¼šå¤§äºæœ€å¤§å€¼
 	m_nGridX = nMaxX / X_GRID_STEP;
-	m_nGridY = nMaxY / Y_GRID_STEP * 2;		//ÓĞÕı¸º°ëÖá£¬ËùÒÔ³ËÒÔ2
+	m_nGridY = nMaxY / Y_GRID_STEP * 2;		//æœ‰æ­£è´ŸåŠè½´ï¼Œæ‰€ä»¥ä¹˜ä»¥2
 	nMaxX = m_nGridX * X_GRID_STEP;	
 	nMaxY = m_nGridY / 2 * Y_GRID_STEP;
-	nDataMAX = nDataMAX / X_GRID_STEP * X_GRID_STEP;	//´óĞ¡Ó¦¸ÃÉèÖÃÎªX_GRID_STEPµÄÕûÊı±¶
+	nDataMAX = nDataMAX / X_GRID_STEP * X_GRID_STEP;	//å¤§å°åº”è¯¥è®¾ç½®ä¸ºX_GRID_STEPçš„æ•´æ•°å€
 
 	
 
-	GetClientRect(&m_RectBG);	//»ñÈ¡¿Ø¼şÇøÓò
+	GetClientRect(&m_RectBG);	//è·å–æ§ä»¶åŒºåŸŸ
 
 	int nPaddingX, nPaddingY;
 	nPaddingX = (int)(m_RectBG.Width() * (1 - fScaleX) * 0.5f);
@@ -156,7 +156,7 @@ void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX,
 	m_PointStepX = (float)m_RectCurve.Width() / (float)nMaxX;
 	m_PointStepY = (float)m_RectCurve.Height() / (float)nMaxY / 2;
 
-	//if (nMaxX != m_nMaxX)	//Ã»ÓĞ¸Ä±änMaxXÊ±²»ÓÃĞŞ¸ÄÕâĞ©Êı¾İ
+	//if (nMaxX != m_nMaxX)	//æ²¡æœ‰æ”¹å˜nMaxXæ—¶ä¸ç”¨ä¿®æ”¹è¿™äº›æ•°æ®
 	//{
 	//	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	//	{
@@ -165,7 +165,7 @@ void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX,
 	//			delete[]m_pDataBuf[Curve];
 	//			m_pDataBuf[Curve] = NULL;
 	//		}
-	//		m_pDataBuf[Curve] = new float[nMaxX];	//Êı¾İ»º´æ
+	//		m_pDataBuf[Curve] = new float[nMaxX];	//æ•°æ®ç¼“å­˜
 	//	}
 	//	m_nDataIndex = 0;
 	//	m_nDataCount = 0;
@@ -173,7 +173,7 @@ void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX,
 	//	m_nMaxX = nMaxX;
 	//}
 	m_nMaxX = nMaxX;
-	if (m_nDataCount >= m_nMaxX)		//Êı¾İÁ¿´óÓÚXÖáµ±Ç°ÄÜÏÔÊ¾µÄÊı¾İÁ¿£¬¼ÆËãXÖáÆ«ÒÆ
+	if (m_nDataCount >= m_nMaxX)		//æ•°æ®é‡å¤§äºXè½´å½“å‰èƒ½æ˜¾ç¤ºçš„æ•°æ®é‡ï¼Œè®¡ç®—Xè½´åç§»
 	{
 		m_nOffset = m_nDataCount % m_nMaxX;
 	}
@@ -186,7 +186,7 @@ void CCurve::SetParm(int nMaxX, int nMaxY, unsigned int nDataMAX, float fScaleX,
 	m_fScaleX = fScaleX;
 	m_fScaleY = fScaleY;
 	m_nDataMAX = nDataMAX;
-	//°Ñ²ÎÊı×÷Îª³ÉÔ±±äÁ¿´æÏÂÀ´.ÒªresizeµÄ»°¿ÉÒÔÓÃ
+	//æŠŠå‚æ•°ä½œä¸ºæˆå‘˜å˜é‡å­˜ä¸‹æ¥.è¦resizeçš„è¯å¯ä»¥ç”¨
 }
 
 
@@ -195,28 +195,28 @@ void CCurve::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	
-	// TODO:  ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
-	// ²»Îª»æÍ¼ÏûÏ¢µ÷ÓÃ CWnd::OnPaint()
+	// TODO:  åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
+	// ä¸ä¸ºç»˜å›¾æ¶ˆæ¯è°ƒç”¨ CWnd::OnPaint()
 
-	//Ê¹ÓÃË«»º´æ»æÍ¼£¬ÏÈ»­µ½ÄÚ´æ£¬ÕâÑù¼ÓÉÏ²»Ê¹ÓÃOnEraseBkgnd²Á³ı±³¾°»áÓĞ±È½ÏÁ÷³©µÄ»æÍ¼Ğ§¹û
-	CDC   MemDC;   //Ê×ÏÈ¶¨ÒåÒ»¸öÏÔÊ¾Éè±¸¶ÔÏó   
-	CBitmap   MemBitmap;//¶¨ÒåÒ»¸öÎ»Í¼¶ÔÏó   
-	//Ëæºó½¨Á¢ÓëÆÁÄ»ÏÔÊ¾¼æÈİµÄÄÚ´æÏÔÊ¾Éè±¸   
+	//ä½¿ç”¨åŒç¼“å­˜ç»˜å›¾ï¼Œå…ˆç”»åˆ°å†…å­˜ï¼Œè¿™æ ·åŠ ä¸Šä¸ä½¿ç”¨OnEraseBkgndæ“¦é™¤èƒŒæ™¯ä¼šæœ‰æ¯”è¾ƒæµç•…çš„ç»˜å›¾æ•ˆæœ
+	CDC   MemDC;   //é¦–å…ˆå®šä¹‰ä¸€ä¸ªæ˜¾ç¤ºè®¾å¤‡å¯¹è±¡   
+	CBitmap   MemBitmap;//å®šä¹‰ä¸€ä¸ªä½å›¾å¯¹è±¡   
+	//éšåå»ºç«‹ä¸å±å¹•æ˜¾ç¤ºå…¼å®¹çš„å†…å­˜æ˜¾ç¤ºè®¾å¤‡   
 	MemDC.CreateCompatibleDC(NULL);
-	//ÕâÊ±»¹²»ÄÜ»æÍ¼£¬ÒòÎªÃ»ÓĞµØ·½»­  
-	//½¨Á¢Ò»¸öÓëÆÁÄ»ÏÔÊ¾¼æÈİµÄÎ»Í¼
+	//è¿™æ—¶è¿˜ä¸èƒ½ç»˜å›¾ï¼Œå› ä¸ºæ²¡æœ‰åœ°æ–¹ç”»  
+	//å»ºç«‹ä¸€ä¸ªä¸å±å¹•æ˜¾ç¤ºå…¼å®¹çš„ä½å›¾
 	MemBitmap.CreateCompatibleBitmap(&dc, m_RectBG.Width(), m_RectBG.Height());
 
-	//½«Î»Í¼Ñ¡Èëµ½ÄÚ´æÏÔÊ¾Éè±¸ÖĞ   
-	//Ö»ÓĞÑ¡ÈëÁËÎ»Í¼µÄÄÚ´æÏÔÊ¾Éè±¸²ÅÓĞµØ·½»æÍ¼£¬»­µ½Ö¸¶¨µÄÎ»Í¼ÉÏ   
+	//å°†ä½å›¾é€‰å…¥åˆ°å†…å­˜æ˜¾ç¤ºè®¾å¤‡ä¸­   
+	//åªæœ‰é€‰å…¥äº†ä½å›¾çš„å†…å­˜æ˜¾ç¤ºè®¾å¤‡æ‰æœ‰åœ°æ–¹ç»˜å›¾ï¼Œç”»åˆ°æŒ‡å®šçš„ä½å›¾ä¸Š   
 	CBitmap *pOldBit = MemDC.SelectObject(&MemBitmap);
 
-	//»æÍ¼   
+	//ç»˜å›¾   
 	DrawAll(&MemDC);
 
-	//½«ÄÚ´æÖĞµÄÍ¼¿½±´µ½ÆÁÄ»ÉÏ½øĞĞÏÔÊ¾   
+	//å°†å†…å­˜ä¸­çš„å›¾æ‹·è´åˆ°å±å¹•ä¸Šè¿›è¡Œæ˜¾ç¤º   
 	dc.BitBlt(0, 0, m_RectBG.Width(), m_RectBG.Height(), &MemDC, 0, 0, SRCCOPY);
-	//»æÍ¼Íê³ÉºóµÄÇåÀí   
+	//ç»˜å›¾å®Œæˆåçš„æ¸…ç†   
 	MemBitmap.DeleteObject();
 	MemDC.DeleteDC();
 
@@ -224,41 +224,41 @@ void CCurve::OnPaint()
 }
 
 
-//»æÖÆµ½ÎÄ¼ş
+//ç»˜åˆ¶åˆ°æ–‡ä»¶
 bool CCurve::ScreenShot(CString strFilePath)
 {
 	CPaintDC dc(this); // device context for painting
 
-	//»ñÈ¡ÎÄ¼şºó×ºÃû
-	int nDot_index = strFilePath.ReverseFind(_T('.'));	//»ñÈ¡ºó×º'.'Î»ÖÃ
-	//»ñÈ¡ºó×ºÃû
+	//è·å–æ–‡ä»¶åç¼€å
+	int nDot_index = strFilePath.ReverseFind(_T('.'));	//è·å–åç¼€'.'ä½ç½®
+	//è·å–åç¼€å
 	CString szFileType = strFilePath.Right(strFilePath.GetLength() - nDot_index);
-	szFileType.MakeLower();	//Í³Ò»ºó×ºĞ¡Ğ´
+	szFileType.MakeLower();	//ç»Ÿä¸€åç¼€å°å†™
 	HRESULT Result = E_FAIL;
 
-	//Ê¹ÓÃË«»º´æ»æÍ¼£¬ÏÈ»­µ½ÄÚ´æ£¬ÕâÑù¼ÓÉÏ²»Ê¹ÓÃOnEraseBkgnd²Á³ı±³¾°»áÓĞ±È½ÏÁ÷³©µÄ»æÍ¼Ğ§¹û
-	CDC   MemDC;   //Ê×ÏÈ¶¨ÒåÒ»¸öÏÔÊ¾Éè±¸¶ÔÏó   
-	CBitmap   MemBitmap;//¶¨ÒåÒ»¸öÎ»Í¼¶ÔÏó   
-	//Ëæºó½¨Á¢ÓëÆÁÄ»ÏÔÊ¾¼æÈİµÄÄÚ´æÏÔÊ¾Éè±¸   
+	//ä½¿ç”¨åŒç¼“å­˜ç»˜å›¾ï¼Œå…ˆç”»åˆ°å†…å­˜ï¼Œè¿™æ ·åŠ ä¸Šä¸ä½¿ç”¨OnEraseBkgndæ“¦é™¤èƒŒæ™¯ä¼šæœ‰æ¯”è¾ƒæµç•…çš„ç»˜å›¾æ•ˆæœ
+	CDC   MemDC;   //é¦–å…ˆå®šä¹‰ä¸€ä¸ªæ˜¾ç¤ºè®¾å¤‡å¯¹è±¡   
+	CBitmap   MemBitmap;//å®šä¹‰ä¸€ä¸ªä½å›¾å¯¹è±¡   
+	//éšåå»ºç«‹ä¸å±å¹•æ˜¾ç¤ºå…¼å®¹çš„å†…å­˜æ˜¾ç¤ºè®¾å¤‡   
 	MemDC.CreateCompatibleDC(NULL);
-	//ÕâÊ±»¹²»ÄÜ»æÍ¼£¬ÒòÎªÃ»ÓĞµØ·½»­  
-	//½¨Á¢Ò»¸öÓëÆÁÄ»ÏÔÊ¾¼æÈİµÄÎ»Í¼
+	//è¿™æ—¶è¿˜ä¸èƒ½ç»˜å›¾ï¼Œå› ä¸ºæ²¡æœ‰åœ°æ–¹ç”»  
+	//å»ºç«‹ä¸€ä¸ªä¸å±å¹•æ˜¾ç¤ºå…¼å®¹çš„ä½å›¾
 	MemBitmap.CreateCompatibleBitmap(&dc, m_RectBG.Width(), m_RectBG.Height());
 
-	//½«Î»Í¼Ñ¡Èëµ½ÄÚ´æÏÔÊ¾Éè±¸ÖĞ   
-	//Ö»ÓĞÑ¡ÈëÁËÎ»Í¼µÄÄÚ´æÏÔÊ¾Éè±¸²ÅÓĞµØ·½»æÍ¼£¬»­µ½Ö¸¶¨µÄÎ»Í¼ÉÏ   
+	//å°†ä½å›¾é€‰å…¥åˆ°å†…å­˜æ˜¾ç¤ºè®¾å¤‡ä¸­   
+	//åªæœ‰é€‰å…¥äº†ä½å›¾çš„å†…å­˜æ˜¾ç¤ºè®¾å¤‡æ‰æœ‰åœ°æ–¹ç»˜å›¾ï¼Œç”»åˆ°æŒ‡å®šçš„ä½å›¾ä¸Š   
 	CBitmap *pOldBit = MemDC.SelectObject(&MemBitmap);
 
-	//»æÍ¼   
+	//ç»˜å›¾   
 	DrawAll(&MemDC);
 
 	if (MemBitmap.m_hObject)
 	{
 		CImage imgTemp;
-		// CImageÊÇMFCÖĞµÄÀà¡£
+		// CImageæ˜¯MFCä¸­çš„ç±»ã€‚
 		imgTemp.Attach(MemBitmap.operator HBITMAP());
 
-		//Ñ¡ÔñÄ¬ÈÏÎÄ¼şÀàĞÍ
+		//é€‰æ‹©é»˜è®¤æ–‡ä»¶ç±»å‹
 		if (szFileType == _T(".bmp") || szFileType == _T(".dib"))
 		{
 			Result = imgTemp.Save(strFilePath, Gdiplus::ImageFormatBMP);
@@ -278,7 +278,7 @@ bool CCurve::ScreenShot(CString strFilePath)
 		
 	}
 
-	//»æÍ¼Íê³ÉºóµÄÇåÀí   
+	//ç»˜å›¾å®Œæˆåçš„æ¸…ç†   
 	MemBitmap.DeleteObject();
 	MemDC.DeleteDC();
 	if (Result == S_OK)
@@ -301,9 +301,9 @@ void CCurve::Update()
 
 void CCurve::DrawAll(CDC * pDC)
 {
-	int nOldMode = pDC->SetBkMode(TRANSPARENT);	//±³¾°É«Í¸Ã÷
+	int nOldMode = pDC->SetBkMode(TRANSPARENT);	//èƒŒæ™¯è‰²é€æ˜
 	COLORREF TextOldColor = pDC->SetTextColor(CCurve::TEXT_COLOR);
-	//ÓÅÏÈ¼¶¸ß·Åºó±ß£¬»á¸²¸ÇÇ°ÃæµÄ
+	//ä¼˜å…ˆçº§é«˜æ”¾åè¾¹ï¼Œä¼šè¦†ç›–å‰é¢çš„
 	DrawBG(pDC);
 	DrawGrid(pDC);
 	DrawCurve(pDC);
@@ -317,16 +317,16 @@ void CCurve::DrawAll(CDC * pDC)
 
 void CCurve::DrawBG(CDC *pDC)
 {
-	CBrush *pOldBrush = pDC->SelectObject(&m_CBrush_BG);	//Ñ¡ÖĞ»­±Ê»æÖÆ,²¢±£´æÒÔÇ°µÄ»­±Ê
-	pDC->Rectangle(0, m_RectBG.Height(), m_RectBG.Width(), 0);		//ÔÚ¿Ø¼şÇøÓò»­Ò»¸ö¾ØĞÎ¿ò
-	pDC->SelectObject(pOldBrush);		//»Ö¸´ÒÔÇ°µÄ»­±Ê
+	CBrush *pOldBrush = pDC->SelectObject(&m_CBrush_BG);	//é€‰ä¸­ç”»ç¬”ç»˜åˆ¶,å¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
+	pDC->Rectangle(0, m_RectBG.Height(), m_RectBG.Width(), 0);		//åœ¨æ§ä»¶åŒºåŸŸç”»ä¸€ä¸ªçŸ©å½¢æ¡†
+	pDC->SelectObject(pOldBrush);		//æ¢å¤ä»¥å‰çš„ç”»ç¬”
 }
 
 void CCurve::DrawAxis(CDC *pDC)
 {
 	float nOffset = m_nOffset * m_PointStepX;
-	nOffset = -(nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//¼ÆËãÆ«ÒÆ
-	CPen *pOldPen = pDC->SelectObject(&m_CPen_Axis);	//Ñ¡ÖĞ»­±Ê»æÖÆ,²¢±£´æÒÔÇ°µÄ»­±Ê
+	nOffset = -(nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//è®¡ç®—åç§»
+	CPen *pOldPen = pDC->SelectObject(&m_CPen_Axis);	//é€‰ä¸­ç”»ç¬”ç»˜åˆ¶,å¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 	int i = 0;
 
 	for (float X = (float)m_RectCurve.left + nOffset; (int)X <= m_RectCurve.right; X += m_AxisStepX, i++)
@@ -351,23 +351,23 @@ void CCurve::DrawAxis(CDC *pDC)
 	pDC->SelectObject(&pOldPen);
 }
 
-//»æÖÆÍø¸ñ¼°ÎÄ×Ö
+//ç»˜åˆ¶ç½‘æ ¼åŠæ–‡å­—
 void CCurve::DrawGrid(CDC *pDC)
 {
 	float nOffset = m_nOffset * m_PointStepX;
-	nOffset = - (nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//¼ÆËãÆ«ÒÆ
-	CPen *pOldPen = pDC->SelectObject(&m_CPen_Grid);	//Ñ¡ÖĞ»­±Ê»æÖÆÍø¸ñ,²¢±£´æÒÔÇ°µÄ»­±Ê
+	nOffset = - (nOffset - (int)(nOffset / m_GridStepX) * m_GridStepX);	//è®¡ç®—åç§»
+	CPen *pOldPen = pDC->SelectObject(&m_CPen_Grid);	//é€‰ä¸­ç”»ç¬”ç»˜åˆ¶ç½‘æ ¼,å¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 
-	//»æÖÆÎÄ×Ö
-	int NumY = m_nMaxY;						//YÖá×ø±ê´Ó×î´óÖµ¿ªÊ¼»­
-	int NumY_Step = m_nMaxY * 2 / m_nGridY;	//Ã¿¸ñ´ú±í¶àÉÙ¸öÊı¾İ
-	int NumX = m_nDataCount - m_nMaxX;		//XÖá×ø±êÆğÊ¼Öµ
+	//ç»˜åˆ¶æ–‡å­—
+	int NumY = m_nMaxY;						//Yè½´åæ ‡ä»æœ€å¤§å€¼å¼€å§‹ç”»
+	int NumY_Step = m_nMaxY * 2 / m_nGridY;	//æ¯æ ¼ä»£è¡¨å¤šå°‘ä¸ªæ•°æ®
+	int NumX = m_nDataCount - m_nMaxX;		//Xè½´åæ ‡èµ·å§‹å€¼
 	if (NumX < 0)
 	{
 		NumX = 0;
 	}
-	int NumX_Step = (m_nMaxX / m_nGridX);	//Ã¿¸ñ´ú±í¶àÉÙ¸öÊı¾İ
-	NumX = NumX / NumX_Step * NumX_Step;	//XÖáµÚÒ»¸öÍø¸ñÏß×ø±ê
+	int NumX_Step = (m_nMaxX / m_nGridX);	//æ¯æ ¼ä»£è¡¨å¤šå°‘ä¸ªæ•°æ®
+	NumX = NumX / NumX_Step * NumX_Step;	//Xè½´ç¬¬ä¸€ä¸ªç½‘æ ¼çº¿åæ ‡
 
 	UINT OldTextAlign = pDC->SetTextAlign(TA_CENTER);
 	LOGFONT logFont;
@@ -376,17 +376,17 @@ void CCurve::DrawGrid(CDC *pDC)
 	int Y_offset = logFont.lfHeight / 2;
 	int X_offset = logFont.lfWidth / 2;
 
-	pDC->MoveTo(m_RectCurve.left, m_RectCurve.top);	//µÚÒ»ÌõÏßÒª»­
+	pDC->MoveTo(m_RectCurve.left, m_RectCurve.top);	//ç¬¬ä¸€æ¡çº¿è¦ç”»
 	pDC->LineTo(m_RectCurve.left, m_RectCurve.bottom);
 
-	if ((int)nOffset == 0)		//ºá×ø±ê0
+	if ((int)nOffset == 0)		//æ¨ªåæ ‡0
 	{
 		str.Format(_T("%d"), NumX);
 		pDC->TextOut(m_RectCurve.left, m_RectCurve.bottom + Y_offset, str);
 	}
 	NumX += NumX_Step;
 	
-	for (float X = (float)m_RectCurve.left + nOffset + m_GridStepX; (int)X <= m_RectCurve.right; X += m_GridStepX, NumX += NumX_Step)	//ºá×ø±ê
+	for (float X = (float)m_RectCurve.left + nOffset + m_GridStepX; (int)X <= m_RectCurve.right; X += m_GridStepX, NumX += NumX_Step)	//æ¨ªåæ ‡
 	{
 		str.Format(_T("%d"), NumX);
 		pDC->TextOut((int)X, m_RectCurve.bottom + Y_offset, str);
@@ -408,14 +408,14 @@ void CCurve::DrawGrid(CDC *pDC)
 	pDC->SetTextAlign(OldTextAlign);
 }
 
-//»æÖÆÇúÏß
+//ç»˜åˆ¶æ›²çº¿
 void CCurve::DrawCurve(CDC *pDC)
 {
-	const int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//×ø±êÖáÖĞ¼äÎªYÖá0×ø±ê
-	//iÊÇÊµ¼ÊÇøÓò×ø±ê£¬nIndexÊÇÊı¾İµÄ×ø±ê
+	const int nZeroY = m_RectCurve.bottom - m_RectCurve.Height() / 2;		//åæ ‡è½´ä¸­é—´ä¸ºYè½´0åæ ‡
+	//iæ˜¯å®é™…åŒºåŸŸåæ ‡ï¼ŒnIndexæ˜¯æ•°æ®çš„åæ ‡
 	int nIndex;
 
-	if (m_bEnhance)	//Gdi+¿¹¾â³İ
+	if (m_bEnhance)	//Gdi+æŠ—é”¯é½¿
 	{
 		Gdiplus::Point *pGdiPoint = NULL;
 		pGdiPoint = new Gdiplus::Point[m_nMaxX];
@@ -430,18 +430,18 @@ void CCurve::DrawCurve(CDC *pDC)
 		graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 		Gdiplus::Pen Pen_Curve(Gdiplus::Color::Transparent, 1);
 		
-		//ËÄÌõÇúÏß
+		//å››æ¡æ›²çº¿
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
-			int nPointCount = 0;	//ĞèÒª»­µÄµãÊı
-			//¼ÆËãnIndexÈ¡Êı¾İµÄÆğÊ¼Î»ÖÃ
+			int nPointCount = 0;	//éœ€è¦ç”»çš„ç‚¹æ•°
+			//è®¡ç®—nIndexå–æ•°æ®çš„èµ·å§‹ä½ç½®
 			if (m_nDataCount > m_nMaxX)
 			{
-				//ÒªÈ¡×îĞÂµÄm_nMaxX¸öÊı¾İ
+				//è¦å–æœ€æ–°çš„m_nMaxXä¸ªæ•°æ®
 				if (m_nDataCount > X_LENGTH_MAX)
 				{
 					nIndex = m_nDataIndex + X_LENGTH_MAX - m_nMaxX;
-					if (nIndex >= X_LENGTH_MAX)	//Ô½½ç´¦Àí
+					if (nIndex >= X_LENGTH_MAX)	//è¶Šç•Œå¤„ç†
 					{
 						nIndex = nIndex - X_LENGTH_MAX;
 					}
@@ -456,20 +456,20 @@ void CCurve::DrawCurve(CDC *pDC)
 				nIndex = 0;
 			}
 			Pen_Curve.SetColor(m_GDI_CurveColor[Curve]);
-			//µÚÒ»¸öµã
+			//ç¬¬ä¸€ä¸ªç‚¹
 			LastPoint.X = m_RectCurve.left;
 			LastPoint.Y = nZeroY - (int)(m_pDataBuf[Curve][nIndex++].fData * m_PointStepY);
 			if (LastPoint.Y < m_RectCurve.top)
 			{
 				LastPoint.Y = m_RectCurve.top;
 			}
-			else if (LastPoint.Y > m_RectCurve.bottom)	//Ô½½ç
+			else if (LastPoint.Y > m_RectCurve.bottom)	//è¶Šç•Œ
 			{
 				LastPoint.Y = m_RectCurve.bottom;
 			}
 			pGdiPoint[nPointCount++] = LastPoint;
 
-			float X = m_PointStepX;	//X×ø±ê
+			float X = m_PointStepX;	//Xåæ ‡
 			for (int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
 				if (m_nDataCount <= i)
@@ -480,17 +480,17 @@ void CCurve::DrawCurve(CDC *pDC)
 				{
 					nIndex = 0;
 				}
-				NewPoint.X = (int)(m_RectCurve.left + X);	//¼ÆËãxÊµ¼Ê×ø±ê
-				if (NewPoint.X == LastPoint.X)	//Èç¹ûx×ø±êºÍÉÏÒ»µãÒ»Ñù£¬Ôò²»»­
+				NewPoint.X = (int)(m_RectCurve.left + X);	//è®¡ç®—xå®é™…åæ ‡
+				if (NewPoint.X == LastPoint.X)	//å¦‚æœxåæ ‡å’Œä¸Šä¸€ç‚¹ä¸€æ ·ï¼Œåˆ™ä¸ç”»
 				{
 					continue;
 				}
-				NewPoint.Y = nZeroY - (int)(m_pDataBuf[Curve][nIndex].fData * m_PointStepY);	//¼ÆËãy×ø±ê
+				NewPoint.Y = nZeroY - (int)(m_pDataBuf[Curve][nIndex].fData * m_PointStepY);	//è®¡ç®—yåæ ‡
 				if (NewPoint.Y < m_RectCurve.top)
 				{
 					NewPoint.Y = m_RectCurve.top;
 				}
-				else if (NewPoint.Y > m_RectCurve.bottom)	//Ô½½ç
+				else if (NewPoint.Y > m_RectCurve.bottom)	//è¶Šç•Œ
 				{
 					NewPoint.Y = m_RectCurve.bottom;
 				}
@@ -499,7 +499,7 @@ void CCurve::DrawCurve(CDC *pDC)
 				LastPoint = NewPoint;
 			}
 
-			graphics.DrawLines(&Pen_Curve, pGdiPoint, nPointCount);	//Ö±½Ó»­³öËùÓĞµã£¬²»È»Õ¼ÓÃCPU×ÊÔ´ºÜ¸ß
+			graphics.DrawLines(&Pen_Curve, pGdiPoint, nPointCount);	//ç›´æ¥ç”»å‡ºæ‰€æœ‰ç‚¹ï¼Œä¸ç„¶å ç”¨CPUèµ„æºå¾ˆé«˜
 		}
 		graphics.ReleaseHDC(pDC->m_hDC);
 		if (pGdiPoint)
@@ -507,23 +507,23 @@ void CCurve::DrawCurve(CDC *pDC)
 			delete[] pGdiPoint;
 		}
 	}
-	else	//ÆÕÍ¨»­·¨²»¿¹¾â³İ
+	else	//æ™®é€šç”»æ³•ä¸æŠ—é”¯é½¿
 	{
-		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//Ñ¡ÖĞ»­±Ê»æÖÆ,²¢±£´æÒÔÇ°µÄ»­±Ê
+		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//é€‰ä¸­ç”»ç¬”ç»˜åˆ¶,å¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 		POINT LastPoint;
 		POINT NewPoint;
 
-		//»­CURVE_LINEÌõÇúÏß£¬Ã¿´Î»­ÍêÇĞ»»ÏÂÒ»ÖÖ»­±Ê
+		//ç”»CURVE_LINEæ¡æ›²çº¿ï¼Œæ¯æ¬¡ç”»å®Œåˆ‡æ¢ä¸‹ä¸€ç§ç”»ç¬”
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++, pDC->SelectObject(m_CPen_NormalCurve + Curve))
 		{
-			//¼ÆËãnIndexÈ¡Êı¾İµÄÆğÊ¼Î»ÖÃ
+			//è®¡ç®—nIndexå–æ•°æ®çš„èµ·å§‹ä½ç½®
 			if (m_nDataCount > m_nMaxX)
 			{
-				//ÒªÈ¡×îĞÂµÄm_nMaxX¸öÊı¾İ
+				//è¦å–æœ€æ–°çš„m_nMaxXä¸ªæ•°æ®
 				if (m_nDataCount > X_LENGTH_MAX)
 				{
 					nIndex = m_nDataIndex + X_LENGTH_MAX - m_nMaxX;	
-					if (nIndex >= X_LENGTH_MAX)	//Ô½½ç´¦Àí
+					if (nIndex >= X_LENGTH_MAX)	//è¶Šç•Œå¤„ç†
 					{
 						nIndex = nIndex - X_LENGTH_MAX;
 					}
@@ -537,20 +537,20 @@ void CCurve::DrawCurve(CDC *pDC)
 			{
 				nIndex = 0;
 			}
-			//µÚÒ»¸öµã
+			//ç¬¬ä¸€ä¸ªç‚¹
 			LastPoint.x = m_RectCurve.left;
 			LastPoint.y = nZeroY - (int)(m_pDataBuf[Curve][nIndex++].fData * m_PointStepY);
 			if (LastPoint.y < m_RectCurve.top)
 			{
 				LastPoint.y = m_RectCurve.top;
 			}
-			else if (LastPoint.y > m_RectCurve.bottom)	//Ô½½ç
+			else if (LastPoint.y > m_RectCurve.bottom)	//è¶Šç•Œ
 			{
 				LastPoint.y = m_RectCurve.bottom;
 			}
-			//ÒÆ¶¯µ½µÚÒ»¸öµã£¬Ö®ºóµÄµãÁ¬Ğø»­
+			//ç§»åŠ¨åˆ°ç¬¬ä¸€ä¸ªç‚¹ï¼Œä¹‹åçš„ç‚¹è¿ç»­ç”»
 			pDC->MoveTo(LastPoint.x, LastPoint.y);
-			float X = m_PointStepX;	//µÚÒ»¸öµãX×ø±ê
+			float X = m_PointStepX;	//ç¬¬ä¸€ä¸ªç‚¹Xåæ ‡
 			for (int i = 1; i < m_nMaxX; i++, nIndex++, X += m_PointStepX)
 			{
 				if (nIndex >= X_LENGTH_MAX)
@@ -561,17 +561,17 @@ void CCurve::DrawCurve(CDC *pDC)
 				{
 					break;
 				}
-				NewPoint.x = (int)(m_RectCurve.left + X);	//¼ÆËãx×ø±ê
-				if (NewPoint.x == LastPoint.x)	//Èç¹ûx×ø±êºÍÉÏÒ»µãÒ»Ñù£¬Ôò²»»­
+				NewPoint.x = (int)(m_RectCurve.left + X);	//è®¡ç®—xåæ ‡
+				if (NewPoint.x == LastPoint.x)	//å¦‚æœxåæ ‡å’Œä¸Šä¸€ç‚¹ä¸€æ ·ï¼Œåˆ™ä¸ç”»
 				{
 					continue;
 				}
-				NewPoint.y = nZeroY - (int)(m_pDataBuf[Curve][nIndex].fData * m_PointStepY);	//¼ÆËãy×ø±ê
+				NewPoint.y = nZeroY - (int)(m_pDataBuf[Curve][nIndex].fData * m_PointStepY);	//è®¡ç®—yåæ ‡
 				if (NewPoint.y < m_RectCurve.top)
 				{
 					NewPoint.y = m_RectCurve.top;
 				}
-				else if (NewPoint.y > m_RectCurve.bottom)	//Ô½½ç
+				else if (NewPoint.y > m_RectCurve.bottom)	//è¶Šç•Œ
 				{
 					NewPoint.y = m_RectCurve.bottom;
 				}
@@ -585,29 +585,29 @@ void CCurve::DrawCurve(CDC *pDC)
 	
 }
 
-//»æÖÆ±êÇ©
+//ç»˜åˆ¶æ ‡ç­¾
 void CCurve::DrawLabel(CDC *pDC)
 {
-	if (m_bEnhance)	//Gdi+¿¹¾â³İ
+	if (m_bEnhance)	//Gdi+æŠ—é”¯é½¿
 	{
-		USES_CONVERSION;	//CString×ªWCHAR*ÒªÓÃµ½µÄÉùÃ÷
+		USES_CONVERSION;	//CStringè½¬WCHAR*è¦ç”¨åˆ°çš„å£°æ˜
 		WCHAR * wcharLabel[CURVE_LINE] = { NULL };
 		WCHAR * wcharValue[CURVE_LINE] = { NULL };
 		Gdiplus::Graphics graphics(pDC->m_hDC);
-		Gdiplus::Font font(L"ËÎÌå", 10);
+		Gdiplus::Font font(L"å®‹ä½“", 10);
 		Gdiplus::SolidBrush drawBrush(Gdiplus::Color::TEXT_COLOR);
 		Gdiplus::StringFormat format;
 		format.SetAlignment(Gdiplus::StringAlignmentCenter);//StringAlignmentFar  StringAlignmentNear
 
-		Gdiplus::PointF origin(0.0f, (m_RectCurve.top - m_RectBG.top) / 2.0f);	//ÇúÏßÉÏ·½¿Õ°×ÇøÓòµÄÖĞ¼ä
-		Gdiplus::RectF Rect[CURVE_LINE];		//Ã¿¸öLabelµÄRectÎ»ÖÃºÍ´óĞ¡ĞÅÏ¢
-		Gdiplus::RectF RectLable, RectValue;	//LabelºÍValueÁ½¸ö×Ö·û´®µÄÖµ£¬È¡¿íµÄÄÇ¸ö	
-		Gdiplus::REAL StrLengthSum = 0;			//×Ü×Ö´®³¤¶È£¬ÓÃÓÚ¼ÆËã¼ä¸ô
-		Gdiplus::REAL LabelSpace = 0;				//Ã¿¸ñLabel¼ä¸ô
+		Gdiplus::PointF origin(0.0f, (m_RectCurve.top - m_RectBG.top) / 2.0f);	//æ›²çº¿ä¸Šæ–¹ç©ºç™½åŒºåŸŸçš„ä¸­é—´
+		Gdiplus::RectF Rect[CURVE_LINE];		//æ¯ä¸ªLabelçš„Rectä½ç½®å’Œå¤§å°ä¿¡æ¯
+		Gdiplus::RectF RectLable, RectValue;	//Labelå’ŒValueä¸¤ä¸ªå­—ç¬¦ä¸²çš„å€¼ï¼Œå–å®½çš„é‚£ä¸ª	
+		Gdiplus::REAL StrLengthSum = 0;			//æ€»å­—ä¸²é•¿åº¦ï¼Œç”¨äºè®¡ç®—é—´éš”
+		Gdiplus::REAL LabelSpace = 0;				//æ¯æ ¼Labelé—´éš”
 
-		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//Ñ¡ÖĞ»­±Ê»æÖÆ,²¢±£´æÒÔÇ°µÄ»­±Ê
+		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//é€‰ä¸­ç”»ç¬”ç»˜åˆ¶,å¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 
-		//»ñÈ¡£¬²âÁ¿×Ö·û´®
+		//è·å–ï¼Œæµ‹é‡å­—ç¬¦ä¸²
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
 			wcharLabel[Curve] = T2W(m_LabelStr[Curve].GetBuffer(m_LabelStr[Curve].GetLength()));
@@ -616,14 +616,14 @@ void CCurve::DrawLabel(CDC *pDC)
 			wcharValue[Curve] = T2W(m_ValueStr[Curve].GetBuffer(m_ValueStr[Curve].GetLength()));
 			graphics.MeasureString(wcharValue[Curve], wcslen(wcharValue[Curve]), &font, origin, &RectValue);
 
-			Rect[Curve].Width = RectLable.Width > RectValue.Width ? RectLable.Width : RectValue.Width;	//LableºÍValue½Ï¿íµÄ×÷ÎªÕâ¸öLable¿í¶È
-			Rect[Curve].Height = RectLable.Height > RectValue.Height ? RectLable.Height : RectValue.Height;	//LableºÍValue½Ï¸ßµÄ×÷ÎªÕâ¸öLable¸ß¶È
+			Rect[Curve].Width = RectLable.Width > RectValue.Width ? RectLable.Width : RectValue.Width;	//Lableå’ŒValueè¾ƒå®½çš„ä½œä¸ºè¿™ä¸ªLableå®½åº¦
+			Rect[Curve].Height = RectLable.Height > RectValue.Height ? RectLable.Height : RectValue.Height;	//Lableå’ŒValueè¾ƒé«˜çš„ä½œä¸ºè¿™ä¸ªLableé«˜åº¦
 			StrLengthSum += Rect[Curve].Width;
 		}
 
-		LabelSpace = (m_RectBG.Width() - StrLengthSum) / (CURVE_LINE + 1);	//Ã¿¸öLabelÖ®¼äµÄ¼ä¸ô
+		LabelSpace = (m_RectBG.Width() - StrLengthSum) / (CURVE_LINE + 1);	//æ¯ä¸ªLabelä¹‹é—´çš„é—´éš”
 
-		//»æÖÆÇúÏß
+		//ç»˜åˆ¶æ›²çº¿
 		origin.X = LabelSpace;
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++, origin.X += LabelSpace, pDC->SelectObject(m_CPen_NormalCurve + Curve))
 		{
@@ -638,7 +638,7 @@ void CCurve::DrawLabel(CDC *pDC)
 			pDC->LineTo((int)origin.X, (int)origin.Y);
 		}
 
-		//ÊÍ·ÅÉêÇëµÄ×Ö·û´®
+		//é‡Šæ”¾ç”³è¯·çš„å­—ç¬¦ä¸²
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
 			m_LabelStr[Curve].ReleaseBuffer(m_LabelStr[Curve].GetLength());
@@ -650,38 +650,38 @@ void CCurve::DrawLabel(CDC *pDC)
 	}
 	else
 	{
-		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//Ñ¡ÖĞ»­±Ê»æÖÆ,²¢±£´æÒÔÇ°µÄ»­±Ê
-		UINT OldTextAlign = pDC->SetTextAlign(TA_BOTTOM);	//ÉèÖÃÎÄ×Ö¶ÔÆë·½Ê½
-		CFont font;	//ÉèÖÃÎÄ×Ö×ÖÌå
+		CPen *pOldPen = pDC->SelectObject(m_CPen_NormalCurve);	//é€‰ä¸­ç”»ç¬”ç»˜åˆ¶,å¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
+		UINT OldTextAlign = pDC->SetTextAlign(TA_BOTTOM);	//è®¾ç½®æ–‡å­—å¯¹é½æ–¹å¼
+		CFont font;	//è®¾ç½®æ–‡å­—å­—ä½“
 		font.CreateFont(
-			16,          //nHeight  Ö¸¶¨Âß¼­µ¥Î»µÄ×Ö·û»òÕß×Ö·ûÔª¸ß¶È
-			7,           //nWidth   Ö¸¶¨Âß¼­µ¥Î»µÄ×ÖÌå×Ö·ûµÄÆ½¾ù¿í¶È
-			0,           //nEscapement Ö¸¶¨Ã¿ĞĞÎÄ±¾Êä³öÊ±Ïà¶ÔÓÚÉè±¸xÖáµÄ½Ç¶È£¬Æäµ¥Î»Îª1/10¶È¡£
-			0,           //nOrientation  Ö¸¶¨×Ö·û»ùÏßÏà¶ÔÓÚÉè±¸xÖáµÄ½Ç¶È£¬Æäµ¥Î»Îª1/10¶È¡£´ËÖµÔÚWin9XÖĞºÍlfEscapement¾ßÓĞÏàÍ¬µÄÖµ£¬¶øÔÚWinNTÏÂÓĞÊ±ºò¿ÉÄÜ²»Í¬¡£
-			FW_NORMAL,   //nWeight  Ö¸¶¨×ÖÌåµÄÖØÁ¿£¬WindowsÖĞ×ÖÌåÖØÁ¿±íÊ¾×ÖÌåµÄ´ÖÏ¸³Ì¶È£¬Æä·¶Î§ÔÚ0¡«1000Ö®¼ä£¬Õı³£Îª400£¬´ÖÌåÎª700£¬Èô´ËÖµÎª¿Õ£¬ÔòÊ¹ÓÃÄ¬ÈÏµÄ×ÖÌåÖØÁ¿¡£
-			FALSE,       //bItalic  ´ËÖµÎªTRUEÊ±£¬×ÖÌåÎªĞ±Ìå¡£
-			FALSE,       //bUnderline  ´ËÖµÎªTRUEÊ±£¬×ÖÌå´øÏÂ»®Ïß¡£
-			0,           //cStrikeOut  ´ËÖµÎªTRUEÊ±£¬×ÖÌå´øÉ¾³ıÏß¡£
-			GB2312_CHARSET,                       //nCharSet  Ö¸¶¨ËùÊ¹ÓÃµÄ×Ö·û¼¯£¬ÈçGB2312_CHARSET,CHINESEBIG5_CHARSETµÈ¡£
-			OUT_DEFAULT_PRECIS,                 //nOutPrecision  Ö¸¶¨Êä³ö¾«¶È£¬Ëü¶¨ÒåÁËÊä³öÓëËùÒªÇóµÄ×ÖÌå¸ß¶È¡¢¿í¶È¡¢×Ö·û·½Ïò¼°×ÖÌåÀàĞÍµÈÏà½Ó½üµÄ³Ì¶È¡£
-			CLIP_DEFAULT_PRECIS,                //nClipPrecision  Ö¸¶¨¼ô¼­¾«¶È£¬Ëü¶¨ÒåÁËµ±×Ö·ûµÄÒ»²¿·Ö³¬¹ı¼ô¼­ÇøÓòÊ±¶Ô×Ö·ûµÄ¼ô¼­·½Ê½¡£
-			ANTIALIASED_QUALITY,          //nQuality  Ö¸¶¨Êä³öÖÊÁ¿£¬Ëü¶¨ÒåÁËGDIÔÚÆ¥ÅäÂß¼­×ÖÌåÊôĞÔµ½Êµ¼ÊµÄÎïÀí×ÖÌåÊ±ËùÊ¹ÓÃµÄ·½Ê½¡£
-			DEFAULT_PITCH | FF_SWISS,			//nPitchAndFamily  Ö¸¶¨×ÖÌåµÄ×Ö·û¼ä¾àºÍ×å¡£
-			_T("ËÎÌå"));						//lpszFaceName  Ö¸ÏòNULL½áÎ²µÄ×Ö·û´®µÄÖ¸Õë£¬´Ë×Ö·û´®¼´ÎªËùÊ¹ÓÃµÄ×ÖÌåÃû³Æ£¬Æä³¤¶È²»ÄÜ³¬¹ı32¸ö×Ö·û£¬Èç¹ûÎª¿Õ£¬ÔòÊ¹ÓÃÏµÍ³Ä¬ÈÏµÄ×ÖÌå¡£
+			16,          //nHeight  æŒ‡å®šé€»è¾‘å•ä½çš„å­—ç¬¦æˆ–è€…å­—ç¬¦å…ƒé«˜åº¦
+			7,           //nWidth   æŒ‡å®šé€»è¾‘å•ä½çš„å­—ä½“å­—ç¬¦çš„å¹³å‡å®½åº¦
+			0,           //nEscapement æŒ‡å®šæ¯è¡Œæ–‡æœ¬è¾“å‡ºæ—¶ç›¸å¯¹äºè®¾å¤‡xè½´çš„è§’åº¦ï¼Œå…¶å•ä½ä¸º1/10åº¦ã€‚
+			0,           //nOrientation  æŒ‡å®šå­—ç¬¦åŸºçº¿ç›¸å¯¹äºè®¾å¤‡xè½´çš„è§’åº¦ï¼Œå…¶å•ä½ä¸º1/10åº¦ã€‚æ­¤å€¼åœ¨Win9Xä¸­å’ŒlfEscapementå…·æœ‰ç›¸åŒçš„å€¼ï¼Œè€Œåœ¨WinNTä¸‹æœ‰æ—¶å€™å¯èƒ½ä¸åŒã€‚
+			FW_NORMAL,   //nWeight  æŒ‡å®šå­—ä½“çš„é‡é‡ï¼ŒWindowsä¸­å­—ä½“é‡é‡è¡¨ç¤ºå­—ä½“çš„ç²—ç»†ç¨‹åº¦ï¼Œå…¶èŒƒå›´åœ¨0ï½1000ä¹‹é—´ï¼Œæ­£å¸¸ä¸º400ï¼Œç²—ä½“ä¸º700ï¼Œè‹¥æ­¤å€¼ä¸ºç©ºï¼Œåˆ™ä½¿ç”¨é»˜è®¤çš„å­—ä½“é‡é‡ã€‚
+			FALSE,       //bItalic  æ­¤å€¼ä¸ºTRUEæ—¶ï¼Œå­—ä½“ä¸ºæ–œä½“ã€‚
+			FALSE,       //bUnderline  æ­¤å€¼ä¸ºTRUEæ—¶ï¼Œå­—ä½“å¸¦ä¸‹åˆ’çº¿ã€‚
+			0,           //cStrikeOut  æ­¤å€¼ä¸ºTRUEæ—¶ï¼Œå­—ä½“å¸¦åˆ é™¤çº¿ã€‚
+			GB2312_CHARSET,                       //nCharSet  æŒ‡å®šæ‰€ä½¿ç”¨çš„å­—ç¬¦é›†ï¼Œå¦‚GB2312_CHARSET,CHINESEBIG5_CHARSETç­‰ã€‚
+			OUT_DEFAULT_PRECIS,                 //nOutPrecision  æŒ‡å®šè¾“å‡ºç²¾åº¦ï¼Œå®ƒå®šä¹‰äº†è¾“å‡ºä¸æ‰€è¦æ±‚çš„å­—ä½“é«˜åº¦ã€å®½åº¦ã€å­—ç¬¦æ–¹å‘åŠå­—ä½“ç±»å‹ç­‰ç›¸æ¥è¿‘çš„ç¨‹åº¦ã€‚
+			CLIP_DEFAULT_PRECIS,                //nClipPrecision  æŒ‡å®šå‰ªè¾‘ç²¾åº¦ï¼Œå®ƒå®šä¹‰äº†å½“å­—ç¬¦çš„ä¸€éƒ¨åˆ†è¶…è¿‡å‰ªè¾‘åŒºåŸŸæ—¶å¯¹å­—ç¬¦çš„å‰ªè¾‘æ–¹å¼ã€‚
+			ANTIALIASED_QUALITY,          //nQuality  æŒ‡å®šè¾“å‡ºè´¨é‡ï¼Œå®ƒå®šä¹‰äº†GDIåœ¨åŒ¹é…é€»è¾‘å­—ä½“å±æ€§åˆ°å®é™…çš„ç‰©ç†å­—ä½“æ—¶æ‰€ä½¿ç”¨çš„æ–¹å¼ã€‚
+			DEFAULT_PITCH | FF_SWISS,			//nPitchAndFamily  æŒ‡å®šå­—ä½“çš„å­—ç¬¦é—´è·å’Œæ—ã€‚
+			_T("å®‹ä½“"));						//lpszFaceName  æŒ‡å‘NULLç»“å°¾çš„å­—ç¬¦ä¸²çš„æŒ‡é’ˆï¼Œæ­¤å­—ç¬¦ä¸²å³ä¸ºæ‰€ä½¿ç”¨çš„å­—ä½“åç§°ï¼Œå…¶é•¿åº¦ä¸èƒ½è¶…è¿‡32ä¸ªå­—ç¬¦ï¼Œå¦‚æœä¸ºç©ºï¼Œåˆ™ä½¿ç”¨ç³»ç»Ÿé»˜è®¤çš„å­—ä½“ã€‚
 		CFont *pOldFont = pDC->SelectObject(&font);
 
-		CSize StrSize[CURVE_LINE];		//Ã¿¸öLabelµÄSizeĞÅÏ¢
-		CSize LableStrSize, ValueStrSize;	//LabelºÍValueÁ½¸ö×Ö·û´®µÄÖµ£¬È¡³¤µÄ
-		LONG StrLengthSum = 0;			//×Ü×Ö´®³¤¶È£¬ÓÃÓÚ¼ÆËã¼ä¸ô
-		int LabelSpace = 0;				//Ã¿¸ñLabel¼ä¸ô
+		CSize StrSize[CURVE_LINE];		//æ¯ä¸ªLabelçš„Sizeä¿¡æ¯
+		CSize LableStrSize, ValueStrSize;	//Labelå’ŒValueä¸¤ä¸ªå­—ç¬¦ä¸²çš„å€¼ï¼Œå–é•¿çš„
+		LONG StrLengthSum = 0;			//æ€»å­—ä¸²é•¿åº¦ï¼Œç”¨äºè®¡ç®—é—´éš”
+		int LabelSpace = 0;				//æ¯æ ¼Labelé—´éš”
 		int X = 0;
-		int Y = (m_RectCurve.top - m_RectBG.top) / 2;	//ÇúÏßÉÏ·½¿Õ°×ÇøÓòµÄÖĞ¼ä
+		int Y = (m_RectCurve.top - m_RectBG.top) / 2;	//æ›²çº¿ä¸Šæ–¹ç©ºç™½åŒºåŸŸçš„ä¸­é—´
 
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
 			LableStrSize = pDC->GetOutputTextExtent(m_LabelStr[Curve]);
 			ValueStrSize = pDC->GetOutputTextExtent(m_ValueStr[Curve]);
-			StrSize[Curve] = LableStrSize.cx > ValueStrSize.cx ? LableStrSize.cx : ValueStrSize.cx;	//LableºÍValue½Ï¿íµÄ×÷ÎªÕâ¸öLable¿í¶È
+			StrSize[Curve] = LableStrSize.cx > ValueStrSize.cx ? LableStrSize.cx : ValueStrSize.cx;	//Lableå’ŒValueè¾ƒå®½çš„ä½œä¸ºè¿™ä¸ªLableå®½åº¦
 			StrLengthSum += StrSize[Curve].cx;
 		}
 		LabelSpace = (m_RectBG.Width() - StrLengthSum) / (CURVE_LINE + 1);
@@ -699,27 +699,27 @@ void CCurve::DrawLabel(CDC *pDC)
 		}
 
 
-		pDC->SelectObject(&pOldFont);	//»Ö¸´ÒÔÇ°µÄ×ÖÌå
+		pDC->SelectObject(&pOldFont);	//æ¢å¤ä»¥å‰çš„å­—ä½“
 		pDC->SetTextAlign(OldTextAlign);
 		pDC->SelectObject(&pOldPen);
 	}
 }
 
 
-//ÖØÔØË¢±³¾°º¯Êı£¬Ö±½Ó·µ»ØTRUE
+//é‡è½½åˆ·èƒŒæ™¯å‡½æ•°ï¼Œç›´æ¥è¿”å›TRUE
 BOOL CCurve::OnEraseBkgnd(CDC* pDC)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	return TRUE;
 	//return CWnd::OnEraseBkgnd(pDC);
 }
 
 
-//Ìí¼ÓÇúÏßÊı¾İ£º
-//²ÎÊı£ºfloat(*fData)[CURVE_LINE]Îª£¬Ö¸ÏòÒ»¸öÓëÇúÏßÊıÄ¿ÏàÍ¬µÄÊı×é
+//æ·»åŠ æ›²çº¿æ•°æ®ï¼š
+//å‚æ•°ï¼šfloat(*fData)[CURVE_LINE]ä¸ºï¼ŒæŒ‡å‘ä¸€ä¸ªä¸æ›²çº¿æ•°ç›®ç›¸åŒçš„æ•°ç»„
 void CCurve::AddData(CurveData(*pData)[CURVE_LINE])
 {
-	if (m_nDataCount >= m_nDataMAX)		//Êı¾İÁ¿´óÓÚ×î´óÊı¾İ£¬Çå¿Õ
+	if (m_nDataCount >= m_nDataMAX)		//æ•°æ®é‡å¤§äºæœ€å¤§æ•°æ®ï¼Œæ¸…ç©º
 	{
 		ClearData();
 	}
@@ -732,41 +732,41 @@ void CCurve::AddData(CurveData(*pData)[CURVE_LINE])
 		(*pData)[Curve].fData = (*pData)[Curve].fData * (*pData)[Curve].fGain;
 		m_pDataBuf[Curve][m_nDataIndex] = (*pData)[Curve];
 	}
-	m_nDataShowIndex = m_nDataIndex;		//´ıÏÔÊ¾Êı¾İµÄÊı¾İIndexÎª×îĞÂ²åÈëµÄ
-	if (++m_nDataIndex >= X_LENGTH_MAX)		//Index´óÓÚÊı×éË÷Òı×î´óÖµ
+	m_nDataShowIndex = m_nDataIndex;		//å¾…æ˜¾ç¤ºæ•°æ®çš„æ•°æ®Indexä¸ºæœ€æ–°æ’å…¥çš„
+	if (++m_nDataIndex >= X_LENGTH_MAX)		//Indexå¤§äºæ•°ç»„ç´¢å¼•æœ€å¤§å€¼
 	{
 		m_nDataIndex = 0;
 	}
-	if (++m_nDataCount >= m_nMaxX)		//Êı¾İÁ¿´óÓÚXÖáµ±Ç°ÄÜÏÔÊ¾µÄÊı¾İÁ¿£¬¿ªÊ¼¼ÆËãXÖáÆ«ÒÆ
+	if (++m_nDataCount >= m_nMaxX)		//æ•°æ®é‡å¤§äºXè½´å½“å‰èƒ½æ˜¾ç¤ºçš„æ•°æ®é‡ï¼Œå¼€å§‹è®¡ç®—Xè½´åç§»
 	{
 		m_nOffset = m_nDataCount % m_nMaxX;
 	}
 }
 
-//Çå¿ÕËùÓĞÇúÏßÊı¾İ
+//æ¸…ç©ºæ‰€æœ‰æ›²çº¿æ•°æ®
 void CCurve::ClearData()
 {
 	m_nDataIndex = 0;
 	m_nDataCount = 0;
 	m_nOffset = 0;
 	m_nDataShowIndex = 0;
-	for (int Curve = 0; Curve < CURVE_LINE; Curve++)	//Çå¿ÕÏÔÊ¾×Ö´®
+	for (int Curve = 0; Curve < CURVE_LINE; Curve++)	//æ¸…ç©ºæ˜¾ç¤ºå­—ä¸²
 	{
 		m_ValueStr[Curve] = _T("");
 	}
 }
 
-//½«Êı¾İĞ´µ½ÏÔÊ¾×Ö·û´®ÖĞ
+//å°†æ•°æ®å†™åˆ°æ˜¾ç¤ºå­—ç¬¦ä¸²ä¸­
 void CCurve::UpdateValueStr()
 {
-	if (m_nDataCount)	//Ã»ÓĞÊı¾İÊ±Ã»ÓĞÊı¾İ¿ÉÒÔÏÔÊ¾
+	if (m_nDataCount)	//æ²¡æœ‰æ•°æ®æ—¶æ²¡æœ‰æ•°æ®å¯ä»¥æ˜¾ç¤º
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_ValueStr[Curve].Format(_T("%.2f"), m_pDataBuf[Curve][m_nDataShowIndex].fData / m_pDataBuf[Curve][m_nDataShowIndex].fGain);	//ÏÔÊ¾ÔöÒæÖ®Ç°µÄ³õÊ¼Öµ
+		m_ValueStr[Curve].Format(_T("%.2f"), m_pDataBuf[Curve][m_nDataShowIndex].fData / m_pDataBuf[Curve][m_nDataShowIndex].fGain);	//æ˜¾ç¤ºå¢ç›Šä¹‹å‰çš„åˆå§‹å€¼
 	}
 }
 
-//ÉèÖÃÊı¾İ±êÇ©
+//è®¾ç½®æ•°æ®æ ‡ç­¾
 void CCurve::SetLabelStr(CString(*pStr)[CURVE_LINE])
 {
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
@@ -777,14 +777,14 @@ void CCurve::SetLabelStr(CString(*pStr)[CURVE_LINE])
 
 
 
-//ÉèÖÃÍ¼ÏñÔöÇ¿£¬¶ÔÇúÏß½øĞĞ¿¹¾â³İ´¦Àí
+//è®¾ç½®å›¾åƒå¢å¼ºï¼Œå¯¹æ›²çº¿è¿›è¡ŒæŠ—é”¯é½¿å¤„ç†
 bool CCurve::CurveEnhance(bool bOpen)
 {
 	if (bOpen)
 	{
 		if (!m_bEnhance)
 		{
-			//Ìí¼ÓµÄ³õÊ¼»¯GDI+  
+			//æ·»åŠ çš„åˆå§‹åŒ–GDI+  
 			if (Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL) == Gdiplus::Ok)
 			{
 				m_bEnhance = TRUE;
@@ -796,7 +796,7 @@ bool CCurve::CurveEnhance(bool bOpen)
 	{
 		if (m_bEnhance)
 		{
-			// ¹Ø±ÕGDI+
+			// å…³é—­GDI+
 			Gdiplus::GdiplusShutdown(gdiplusToken);
 			m_bEnhance = FALSE;
 			return TRUE;
@@ -806,30 +806,30 @@ bool CCurve::CurveEnhance(bool bOpen)
 }
 
 
-//´°¿Ú´óĞ¡¸Ä±äÊ±ÖØĞÂ¼ÆËã
+//çª—å£å¤§å°æ”¹å˜æ—¶é‡æ–°è®¡ç®—
 void CCurve::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
 
-	// TODO:  ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
 	SetParm(m_nMaxX, m_nMaxY, m_nDataMAX, m_fScaleX, m_fScaleY);
 	Update();
 }
 
 
-//¹ö¶¯Êó±ê¹öÂÖÊ±¸ü¸Ä×ø±êÖá³¤¶È
+//æ»šåŠ¨é¼ æ ‡æ»šè½®æ—¶æ›´æ”¹åæ ‡è½´é•¿åº¦
 BOOL CCurve::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	int nChengeValueX = 0, nChengeValueY = 0;
-	ScreenToClient(&pt);	//×ª»»³É¿Í»§Çø×ø±ê£¨¿Ø¼şÖĞ£©
+	ScreenToClient(&pt);	//è½¬æ¢æˆå®¢æˆ·åŒºåæ ‡ï¼ˆæ§ä»¶ä¸­ï¼‰
 
-	if (pt.x >= m_RectCurve.left && pt.x <= m_RectCurve.right)	//ÔÚÇúÏßÍ¼×ó²àµ½ÓÒ²à·¶Î§¹ö¶¯£¬µ÷ÕûXÖá
+	if (pt.x >= m_RectCurve.left && pt.x <= m_RectCurve.right)	//åœ¨æ›²çº¿å›¾å·¦ä¾§åˆ°å³ä¾§èŒƒå›´æ»šåŠ¨ï¼Œè°ƒæ•´Xè½´
 	{
 		nChengeValueX = X_GRID_STEP * (zDelta / 120);
 	}
 
-	if (pt.y >= m_RectCurve.top && pt.y <= m_RectCurve.bottom)	//ÔÚÇúÏßÍ¼¶¥¶Ëµ½µ×¶Ë·¶Î§¹ö¶¯£¬µ÷ÕûYÖá
+	if (pt.y >= m_RectCurve.top && pt.y <= m_RectCurve.bottom)	//åœ¨æ›²çº¿å›¾é¡¶ç«¯åˆ°åº•ç«¯èŒƒå›´æ»šåŠ¨ï¼Œè°ƒæ•´Yè½´
 	{
 		nChengeValueY = Y_GRID_STEP * (zDelta / 120);
 	}

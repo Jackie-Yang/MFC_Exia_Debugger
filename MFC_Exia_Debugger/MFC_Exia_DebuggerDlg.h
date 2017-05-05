@@ -1,5 +1,5 @@
-
-// MFC_Exia_DebuggerDlg.h : Í·ÎÄ¼ş
+ï»¿
+// MFC_Exia_DebuggerDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
@@ -9,19 +9,19 @@
 #include "Quadrotor_State.h"
 
 
-// CMFC_Exia_DebuggerDlg ¶Ô»°¿ò
+// CMFC_Exia_DebuggerDlg å¯¹è¯æ¡†
 class CMFC_Exia_DebuggerDlg : public CDialogEx
 {
 public:
-	// ¹¹Ôì
-	CMFC_Exia_DebuggerDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
-	//Îö¹¹
+	// æ„é€ 
+	CMFC_Exia_DebuggerDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
+	//ææ„
 	~CMFC_Exia_DebuggerDlg();
 
-//Ã¶¾Ù
-	// ¶Ô»°¿òÊı¾İ
+//æšä¸¾
+	// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_MAIN_DIALOG };
-	// ¶¨Ê±Æ÷ID
+	// å®šæ—¶å™¨ID
 	enum 
 	{ 
 		ID_TIMER_UPDATE_DATA = 1, 
@@ -29,10 +29,10 @@ public:
 		ID_TIMER_UPDATE_CURVE
 	};
 
-//¿Ø¼ş
-	// Combox:Ñ¡Ôñ´®¿Ú
+//æ§ä»¶
+	// Combox:é€‰æ‹©ä¸²å£
 	CComboBox m_Combox_COM;
-	//ÏÔÊ¾´®¿Ú×´Ì¬
+	//æ˜¾ç¤ºä¸²å£çŠ¶æ€
 	CStatic m_Static_Status;
 
 
@@ -47,7 +47,7 @@ public:
 	void InitQuadrotorState();
 	void ShowQuadrotorState();
 
-//´¦Àíº¯Êı
+//å¤„ç†å‡½æ•°
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnBnClickedOpenCloseBtn();
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
@@ -56,7 +56,7 @@ public:
 
 private:
 
-	CurveDLG *m_pCurveDLG;	//ÇúÏßÍ¼¶Ô»°¿ò
+	CurveDLG *m_pCurveDLG;	//æ›²çº¿å›¾å¯¹è¯æ¡†
 
 	CSerial m_Serial;
 	UINT_PTR m_Timer_Update_Data;
@@ -64,14 +64,14 @@ private:
 	UINT_PTR m_Timer_Update_Curve;
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -82,30 +82,30 @@ protected:
 	afx_msg LRESULT OnSerialOpen(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSerialClose(WPARAM wParam, LPARAM lParam);
 public:
-	// ÏÔÊ¾»º³åÇøÊı¾İ
+	// æ˜¾ç¤ºç¼“å†²åŒºæ•°æ®
 	CString m_str_BuffByte;
-	// ÓÍÃÅ
+	// æ²¹é—¨
 	CString m_str_THRO;
-	// ·½Ïò¶æ
+	// æ–¹å‘èˆµ
 	CString m_str_RUDD;
-	// Éı½µ¶æ
+	// å‡é™èˆµ
 	CString m_str_ELEV;
-	// ¸±Òí
+	// å‰¯ç¿¼
 	CString m_str_AILE;
-	// ¼ÓËÙ¶È´«¸ĞÆ÷Ô­Ê¼ÊıÖµ
+	// åŠ é€Ÿåº¦ä¼ æ„Ÿå™¨åŸå§‹æ•°å€¼
 	CString m_str_Accel_Sensor_X;
 	CString m_str_Accel_Sensor_Y;
 	CString m_str_Accel_Sensor_Z;
-	// ÍÓÂİÒÇÔ­Ê¼ÊıÖµ
+	// é™€èºä»ªåŸå§‹æ•°å€¼
 	CString m_str_Gyro_Sensor_X;
 	CString m_str_Gyro_Sensor_Y;
 	CString m_str_Gyro_Sensor_Z;
-	// µç×ÓÂŞÅÌHMC5883LÊı¾İ
+	// ç”µå­ç½—ç›˜HMC5883Læ•°æ®
 	CString m_str_HMC5883L_X;
 	CString m_str_HMC5883L_Y;
 	CString m_str_HMC5883L_Z;
 	CString m_str_HMC5883L_Angle;
-	// ÊµÊ±×ËÌ¬
+	// å®æ—¶å§¿æ€
 	CString m_str_Roll;
 	CString m_str_Pitch;
 	CString m_str_Yaw;
@@ -115,11 +115,11 @@ public:
 	afx_msg void OnBnClickedButtonScreenshot();
 	afx_msg void OnBnClickedButtonClearCurve();
 
-	CComboBox m_ComBoxCurve[CURVE_LINE];			//CURVE_LINEÓĞ¶àÉÙÇúÏß¾ÍÓ¦¸Ã·ÅÖÃ¶àÉÙ¿Ø¼ş
-	CComboBox m_ComBoxGain[CURVE_LINE];			//CURVE_LINEÓĞ¶àÉÙÇúÏß¾ÍÓ¦¸Ã·ÅÖÃ¶àÉÙ¿Ø¼ş
+	CComboBox m_ComBoxCurve[CURVE_LINE];			//CURVE_LINEæœ‰å¤šå°‘æ›²çº¿å°±åº”è¯¥æ”¾ç½®å¤šå°‘æ§ä»¶
+	CComboBox m_ComBoxGain[CURVE_LINE];			//CURVE_LINEæœ‰å¤šå°‘æ›²çº¿å°±åº”è¯¥æ”¾ç½®å¤šå°‘æ§ä»¶
 	int m_CurveSelected[CURVE_LINE];
 	int m_GainSelected[CURVE_LINE];
-	CurveData m_CurveData[CURVE_LINE];	//´ıÌí¼Óµ½ÇúÏßµÄÊı¾İ
+	CurveData m_CurveData[CURVE_LINE];	//å¾…æ·»åŠ åˆ°æ›²çº¿çš„æ•°æ®
 	void SetCurveData();
 	afx_msg void UpdateSelected();
 

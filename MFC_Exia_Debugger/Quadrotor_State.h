@@ -1,4 +1,4 @@
-#ifndef __QUADROTOR_STATE_H__
+ï»¿#ifndef __QUADROTOR_STATE_H__
 #define __QUADROTOR_STATE_H__
 
 #include <stdint.h>
@@ -7,7 +7,7 @@
 #define DATA_HEAD2 	0x7F
 #define DATA_END	0xFEFF
 
-//²»½øĞĞÄÚ´æ¶ÔÆë
+//ä¸è¿›è¡Œå†…å­˜å¯¹é½
 #pragma  pack (push,1)
 typedef struct __QUADROTOR_STATE__
 {
