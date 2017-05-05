@@ -85,6 +85,21 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	, m_str_Temp_MS5611(_T("无信号"))
 	, m_str_Press_MS5611(_T("无信号"))
 	, m_str_HIGH_Accel(_T("无信号"))
+	, m_str_Roll_G_Kp(_T("无信号"))
+	, m_str_Roll_G_Ki(_T("无信号"))
+	, m_str_Roll_G_Kd(_T("无信号"))
+	, m_str_Roll_A_Kp(_T("无信号"))
+	, m_str_Roll_A_Ki(_T("无信号"))
+	, m_str_Roll_A_Kd(_T("无信号"))
+	, m_str_Pitch_G_Kp(_T("无信号"))
+	, m_str_Pitch_G_Ki(_T("无信号"))
+	, m_str_Pitch_G_Kd(_T("无信号"))
+	, m_str_Pitch_A_Kp(_T("无信号"))
+	, m_str_Pitch_A_Ki(_T("无信号"))
+	, m_str_Pitch_A_Kd(_T("无信号"))
+	, m_str_Yaw_G_Kp(_T("无信号"))
+	, m_str_Yaw_G_Ki(_T("无信号"))
+	, m_str_Yaw_G_Kd(_T("无信号"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_RED);
 	m_Color_Status = RGB(255, 0, 0);
@@ -264,6 +279,21 @@ void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_TEMP_MS5611, m_str_Temp_MS5611);
 	DDX_Text(pDX, IDC_PRESS_MS5611, m_str_Press_MS5611);
 	DDX_Text(pDX, IDC_HIGH_ACCEL, m_str_HIGH_Accel);
+	DDX_Text(pDX, IDC_STATIC_ROLL_G_Kp, m_str_Roll_G_Kp);
+	DDX_Text(pDX, IDC_STATIC_ROLL_G_Ki, m_str_Roll_G_Ki);
+	DDX_Text(pDX, IDC_STATIC_ROLL_G_Kd, m_str_Roll_G_Kd);
+	DDX_Text(pDX, IDC_STATIC_ROLL_A_Kp, m_str_Roll_A_Kp);
+	DDX_Text(pDX, IDC_STATIC_ROLL_A_Ki, m_str_Roll_A_Ki);
+	DDX_Text(pDX, IDC_STATIC_ROLL_A_Kd, m_str_Roll_A_Kd);
+	DDX_Text(pDX, IDC_STATIC_PITCH_G_Kp, m_str_Pitch_G_Kp);
+	DDX_Text(pDX, IDC_STATIC_PITCH_G_Ki, m_str_Pitch_G_Ki);
+	DDX_Text(pDX, IDC_STATIC_PITCH_G_Kd, m_str_Pitch_G_Kd);
+	DDX_Text(pDX, IDC_STATIC_PITCH_A_Kp, m_str_Pitch_A_Kp);
+	DDX_Text(pDX, IDC_STATIC_PITCH_A_Ki, m_str_Pitch_A_Ki);
+	DDX_Text(pDX, IDC_STATIC_PITCH_A_Kd, m_str_Pitch_A_Kd);
+	DDX_Text(pDX, IDC_STATIC_YAW_G_Kp, m_str_Yaw_G_Kp);
+	DDX_Text(pDX, IDC_STATIC_YAW_G_Ki, m_str_Yaw_G_Ki);
+	DDX_Text(pDX, IDC_STATIC_YAW_G_Kd, m_str_Yaw_G_Kd);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -849,7 +879,24 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	m_str_Temp_MPU6050.Format(_T("%.3f"), (float)m_State.s16_MPU6050_Temp / 340.0f + 36.53);
 	m_str_Temp_MS5611.Format(_T("%.2f"), (float)m_State.s32_MS5611_Temp / 100.0f);
 	m_str_Press_MS5611.Format(_T("%.3f"), (float)m_State.s32_MS5611_Press / 1000.0f);
-	//m_str_HIGH_Accel
+
+	m_str_HIGH_Accel.Format(_T("%.2f"), m_State.f_High_Accel);
+
+	m_str_Roll_G_Kp.Format(_T("%.2f"), (float)m_State.u8_ROLL_G_Kp / 100.0f);
+	m_str_Roll_G_Ki.Format(_T("%.2f"), (float)m_State.u8_ROLL_G_Ki / 100.0f);
+	m_str_Roll_G_Kd.Format(_T("%.2f"), (float)m_State.u8_ROLL_G_Kd / 100.0f);
+	m_str_Roll_A_Kp.Format(_T("%.2f"), (float)m_State.u8_ROLL_Angle_Kp / 100.0f);
+	m_str_Roll_A_Ki.Format(_T("%.2f"), (float)m_State.u8_ROLL_Angle_Ki / 100.0f);
+	m_str_Roll_A_Kd.Format(_T("%.2f"), (float)m_State.u8_ROLL_Angle_Kd / 100.0f);
+	m_str_Pitch_G_Kp.Format(_T("%.2f"), (float)m_State.u8_PITCH_G_Kp / 100.0f);
+	m_str_Pitch_G_Ki.Format(_T("%.2f"), (float)m_State.u8_PITCH_G_Ki / 100.0f);
+	m_str_Pitch_G_Kd.Format(_T("%.2f"), (float)m_State.u8_PITCH_G_Kd / 100.0f);
+	m_str_Pitch_A_Kp.Format(_T("%.2f"), (float)m_State.u8_PITCH_Angle_Kp / 100.0f);
+	m_str_Pitch_A_Ki.Format(_T("%.2f"), (float)m_State.u8_PITCH_Angle_Ki / 100.0f);
+	m_str_Pitch_A_Kd.Format(_T("%.2f"), (float)m_State.u8_PITCH_Angle_Kd / 100.0f);
+	m_str_Yaw_G_Kp.Format(_T("%.2f"), (float)m_State.u8_YAW_G_Kp / 100.0f);
+	m_str_Yaw_G_Ki.Format(_T("%.2f"), (float)m_State.u8_YAW_G_Ki / 100.0f);
+	m_str_Yaw_G_Kd.Format(_T("%.2f"), (float)m_State.u8_YAW_G_Kd / 100.0f);
 	UpdateData(FALSE);
 }
 
@@ -1010,6 +1057,24 @@ void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
 	m_str_Temp_MS5611 = _T("无信号");
 	m_str_Press_MS5611 = _T("无信号");
 	m_str_HIGH_Accel = _T("无信号");
+
+	m_str_Roll_G_Kp = _T("无信号");
+	m_str_Roll_G_Ki = _T("无信号");
+	m_str_Roll_G_Kd = _T("无信号");
+	m_str_Roll_A_Kp = _T("无信号");
+	m_str_Roll_A_Ki = _T("无信号");
+	m_str_Roll_A_Kd = _T("无信号");
+	m_str_Pitch_G_Kp = _T("无信号");
+	m_str_Pitch_G_Ki = _T("无信号");
+	m_str_Pitch_G_Kd = _T("无信号");
+	m_str_Pitch_A_Kp = _T("无信号");
+	m_str_Pitch_A_Ki = _T("无信号");
+	m_str_Pitch_A_Kd = _T("无信号");
+	m_str_Yaw_G_Kp = _T("无信号");
+	m_str_Yaw_G_Ki = _T("无信号");
+	m_str_Yaw_G_Kd = _T("无信号");
+
+	UpdateData(FALSE);
 }
 
 
@@ -1038,6 +1103,7 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
 	if (IDOK == InputBox.DoModal())
 	{
 		int nInput;
+		uint8_t SendData[2] = { 3, 0 };
 		nInput = _ttoi(InputBox.GetInput());
 		if (nInput > 100)
 		{
@@ -1047,6 +1113,8 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
 		{
 			nInput = 0;
 		}
+		SendData[1] = (uint8_t)nInput;
+		m_Serial.SendData(SendData, sizeof(SendData));
 	}
 }
 
