@@ -1043,6 +1043,10 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
 		{
 			nInput = 100;
 		}
+		else if (nInput < 0)
+		{
+			nInput = 0;
+		}
 	}
 }
 

@@ -20,6 +20,7 @@ private:
 	CString m_str_Input;
 	CString m_str_Tip;
 	CEdit m_Edit_Input;
+	AFX_INLINE BOOL CInputBox::ShowBalloonTip(CEdit * pEdit, _In_z_ LPCWSTR lpszTitle, _In_z_ LPCWSTR lpszText, _In_ INT ttiIcon);
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
