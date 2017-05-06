@@ -197,7 +197,7 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 		m_CurveSelected[Curve] = 0;
 	}
 
-	UpdateSelected();
+	UpdateSelected(0);
 
 	m_CombocRefresh.InsertString(0, _T("刷新率：50Hz"));
 	m_CombocRefresh.InsertString(1, _T("刷新率：25Hz"));
@@ -312,18 +312,11 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_SCREENSHOT, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CURVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonClearCurve)
-	ON_CBN_SELCHANGE(IDC_CURVE1, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE2, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE3, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE4, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE1_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE2_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE3_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
-	ON_CBN_SELCHANGE(IDC_CURVE4_GAIN, &CMFC_Exia_DebuggerDlg::UpdateSelected)
+	ON_CONTROL_RANGE(CBN_SELCHANGE, IDC_CURVE1_GAIN, IDC_CURVE4, &CMFC_Exia_DebuggerDlg::UpdateSelected)
 	ON_CBN_SELCHANGE(IDC_CURVE_REFRESH, &CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh)
-	ON_STN_CLICKED(IDC_STATIC_THRO, &CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro)
 	ON_WM_SETCURSOR()
-	ON_STN_CLICKED(IDC_STATIC_RUDD, &CMFC_Exia_DebuggerDlg::OnStnClickedStaticRudd)
+	ON_CONTROL_RANGE(STN_CLICKED, IDC_STATIC_THRO, IDC_STATIC_AILE, &CMFC_Exia_DebuggerDlg::OnStnClickedColtrol)
+	ON_CONTROL_RANGE(STN_CLICKED, IDC_STATIC_ROLL_G_Kp, IDC_STATIC_YAW_G_Kd, &CMFC_Exia_DebuggerDlg::OnStnClickedSetPID)
 END_MESSAGE_MAP()
 
 
@@ -674,7 +667,7 @@ void CMFC_Exia_DebuggerDlg::SetCurveData()
 
 }
 
-void CMFC_Exia_DebuggerDlg::UpdateSelected()
+void CMFC_Exia_DebuggerDlg::UpdateSelected(UINT uID)
 {
 	CString GainStr;
 	CString CurveStr;
@@ -882,22 +875,35 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 
 	m_str_HIGH_Accel.Format(_T("%.2f"), m_State.f_High_Accel);
 
-	m_str_Roll_G_Kp.Format(_T("%.2f"), (float)m_State.u8_ROLL_G_Kp / 100.0f);
-	m_str_Roll_G_Ki.Format(_T("%.2f"), (float)m_State.u8_ROLL_G_Ki / 100.0f);
-	m_str_Roll_G_Kd.Format(_T("%.2f"), (float)m_State.u8_ROLL_G_Kd / 100.0f);
-	m_str_Roll_A_Kp.Format(_T("%.2f"), (float)m_State.u8_ROLL_Angle_Kp / 100.0f);
-	m_str_Roll_A_Ki.Format(_T("%.2f"), (float)m_State.u8_ROLL_Angle_Ki / 100.0f);
-	m_str_Roll_A_Kd.Format(_T("%.2f"), (float)m_State.u8_ROLL_Angle_Kd / 100.0f);
-	m_str_Pitch_G_Kp.Format(_T("%.2f"), (float)m_State.u8_PITCH_G_Kp / 100.0f);
-	m_str_Pitch_G_Ki.Format(_T("%.2f"), (float)m_State.u8_PITCH_G_Ki / 100.0f);
-	m_str_Pitch_G_Kd.Format(_T("%.2f"), (float)m_State.u8_PITCH_G_Kd / 100.0f);
-	m_str_Pitch_A_Kp.Format(_T("%.2f"), (float)m_State.u8_PITCH_Angle_Kp / 100.0f);
-	m_str_Pitch_A_Ki.Format(_T("%.2f"), (float)m_State.u8_PITCH_Angle_Ki / 100.0f);
-	m_str_Pitch_A_Kd.Format(_T("%.2f"), (float)m_State.u8_PITCH_Angle_Kd / 100.0f);
-	m_str_Yaw_G_Kp.Format(_T("%.2f"), (float)m_State.u8_YAW_G_Kp / 100.0f);
-	m_str_Yaw_G_Ki.Format(_T("%.2f"), (float)m_State.u8_YAW_G_Ki / 100.0f);
-	m_str_Yaw_G_Kd.Format(_T("%.2f"), (float)m_State.u8_YAW_G_Kd / 100.0f);
+	m_str_Roll_G_Kp.Format(_T("%.2f"), (float)m_State.u16_ROLL_G_Kp / 100.0f);
+	m_str_Roll_G_Ki.Format(_T("%.2f"), (float)m_State.u16_ROLL_G_Ki / 100.0f);
+	m_str_Roll_G_Kd.Format(_T("%.2f"), (float)m_State.u16_ROLL_G_Kd / 100.0f);
+	m_str_Roll_A_Kp.Format(_T("%.2f"), (float)m_State.u16_ROLL_Angle_Kp / 100.0f);
+	m_str_Roll_A_Ki.Format(_T("%.2f"), (float)m_State.u16_ROLL_Angle_Ki / 100.0f);
+	m_str_Roll_A_Kd.Format(_T("%.2f"), (float)m_State.u16_ROLL_Angle_Kd / 100.0f);
+	m_str_Pitch_G_Kp.Format(_T("%.2f"), (float)m_State.u16_PITCH_G_Kp / 100.0f);
+	m_str_Pitch_G_Ki.Format(_T("%.2f"), (float)m_State.u16_PITCH_G_Ki / 100.0f);
+	m_str_Pitch_G_Kd.Format(_T("%.2f"), (float)m_State.u16_PITCH_G_Kd / 100.0f);
+	m_str_Pitch_A_Kp.Format(_T("%.2f"), (float)m_State.u16_PITCH_Angle_Kp / 100.0f);
+	m_str_Pitch_A_Ki.Format(_T("%.2f"), (float)m_State.u16_PITCH_Angle_Ki / 100.0f);
+	m_str_Pitch_A_Kd.Format(_T("%.2f"), (float)m_State.u16_PITCH_Angle_Kd / 100.0f);
+	m_str_Yaw_G_Kp.Format(_T("%.2f"), (float)m_State.u16_YAW_G_Kp / 100.0f);
+	m_str_Yaw_G_Ki.Format(_T("%.2f"), (float)m_State.u16_YAW_G_Ki / 100.0f);
+	m_str_Yaw_G_Kd.Format(_T("%.2f"), (float)m_State.u16_YAW_G_Kd / 100.0f);
 	UpdateData(FALSE);
+}
+
+void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
+{
+	memset(&m_State, 0, sizeof(m_State));
+	GetDlgItem(IDC_BUFF_BYTE)->SetWindowText(_T("0 Bytes"));
+	int nID;
+	for (nID = IDC_STATIC_THRO; nID <= IDC_STATIC_YAW_G_Kd; nID++)
+	{
+		GetDlgItem(nID)->SetWindowText(_T("无信号"));
+	}
+	//直接设置了控件文字后，要把文件更新回变量中
+	UpdateData(TRUE);
 }
 
 void CMFC_Exia_DebuggerDlg::OnBnClickedButtonOpenCurve()
@@ -997,6 +1003,11 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 			RefreshTime = 100;	//1000ms/10Hz = 100ms
 			break;
 		}
+		default:
+		{
+			RefreshTime = 20;	//1000ms/50Hz = 20ms
+			break;
+		}
 	}
 	if (RefreshTime != m_nRefreshTime)
 	{
@@ -1019,65 +1030,6 @@ void CMFC_Exia_DebuggerDlg::OnCbnSelchangeCurveRefresh()
 
 
 
-void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
-{
-	memset(&m_State, 0, sizeof(m_State));
-	m_str_THRO = _T("无信号");
-	m_str_RUDD = _T("无信号");
-	m_str_ELEV = _T("无信号");
-	m_str_AILE = _T("无信号");
-	m_str_BuffByte = _T("0 Bytes");
-	m_str_Accel_Sensor_X = _T("无信号");
-	m_str_Accel_Sensor_Y = _T("无信号");
-	m_str_Accel_Sensor_Z = _T("无信号");
-	m_str_Gyro_Sensor_X = _T("无信号");
-	m_str_Gyro_Sensor_Y = _T("无信号");
-	m_str_Gyro_Sensor_Z = _T("无信号");
-	m_str_HMC5883L_X = _T("无信号");
-	m_str_HMC5883L_Y = _T("无信号");
-	m_str_HMC5883L_Z = _T("无信号");
-	m_str_HMC5883L_Angle = _T("无信号");
-	m_str_Roll = _T("无信号");
-	m_str_Pitch = _T("无信号");
-	m_str_Yaw = _T("无信号");
-	m_str_Motor1 = _T("无信号");
-	m_str_Motor2 = _T("无信号");
-	m_str_Motor3 = _T("无信号");
-	m_str_Motor4 = _T("无信号");
-	m_str_Gyro_X = _T("无信号");
-	m_str_Gyro_Y = _T("无信号");
-	m_str_Gyro_Z = _T("无信号");
-	m_str_Accel_X = _T("无信号");
-	m_str_Accel_Y = _T("无信号");
-	m_str_Accel_Z = _T("无信号");
-
-	m_str_HIGH_KS10X = _T("无信号");
-	m_str_HIGH_MS5611 = _T("无信号");
-	m_str_Temp_MPU6050 = _T("无信号");
-	m_str_Temp_MS5611 = _T("无信号");
-	m_str_Press_MS5611 = _T("无信号");
-	m_str_HIGH_Accel = _T("无信号");
-
-	m_str_Roll_G_Kp = _T("无信号");
-	m_str_Roll_G_Ki = _T("无信号");
-	m_str_Roll_G_Kd = _T("无信号");
-	m_str_Roll_A_Kp = _T("无信号");
-	m_str_Roll_A_Ki = _T("无信号");
-	m_str_Roll_A_Kd = _T("无信号");
-	m_str_Pitch_G_Kp = _T("无信号");
-	m_str_Pitch_G_Ki = _T("无信号");
-	m_str_Pitch_G_Kd = _T("无信号");
-	m_str_Pitch_A_Kp = _T("无信号");
-	m_str_Pitch_A_Ki = _T("无信号");
-	m_str_Pitch_A_Kd = _T("无信号");
-	m_str_Yaw_G_Kp = _T("无信号");
-	m_str_Yaw_G_Ki = _T("无信号");
-	m_str_Yaw_G_Kd = _T("无信号");
-
-	UpdateData(FALSE);
-}
-
-
 
 
 void CMFC_Exia_DebuggerDlg::OnOK()
@@ -1096,55 +1048,88 @@ void CMFC_Exia_DebuggerDlg::OnOK()
 }
 
 
-void CMFC_Exia_DebuggerDlg::OnStnClickedStaticThro()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	CInputBox InputBox(_T("油门设定"), _T("请输入油门设定值:"), _T("0"));
-	if (IDOK == InputBox.DoModal())
-	{
-		int nInput;
-		uint8_t SendData[2] = { 3, 0 };
-		nInput = _ttoi(InputBox.GetInput());
-		if (nInput > 100)
-		{
-			nInput = 100;
-		}
-		else if (nInput < 0)
-		{
-			nInput = 0;
-		}
-		SendData[1] = (uint8_t)nInput;
-		m_Serial.SendData(SendData, sizeof(SendData));
-	}
-}
-
-
 //设置鼠标移动到上方的光标
 BOOL CMFC_Exia_DebuggerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	int DlgCtrlID = pWnd->GetDlgCtrlID();
-	switch (DlgCtrlID)
+	if (DlgCtrlID >= IDC_STATIC_THRO && DlgCtrlID <= IDC_STATIC_AILE || DlgCtrlID >= IDC_STATIC_ROLL_G_Kp && DlgCtrlID <= IDC_STATIC_YAW_G_Kd)
 	{
-		case IDC_STATIC_THRO:
-		case IDC_STATIC_RUDD:
-		case IDC_STATIC_ELEV:
-		case IDC_STATIC_AILE:
-		{
-			SetCursor(LoadCursor(NULL, IDC_HAND));
-			return TRUE;
-		}
-		default:
-		{
-			break;
-		}
+		SetCursor(LoadCursor(NULL, IDC_HAND));
+		return TRUE;
 	}
-
 	return CDialogEx::OnSetCursor(pWnd, nHitTest, message);
 }
 
+//发送指令
+void CMFC_Exia_DebuggerDlg::SendQuadrotorCommand(uint8_t command, uint8_t* pData, DWORD dataSize)
+{
+	uint8_t* pSendBuf = NULL;
+	DWORD BufSize = sizeof(command) + dataSize;
+	pSendBuf = new uint8_t[BufSize];
+	if (!pSendBuf)
+	{
+		MessageBox(_T("内存分配失败"), _T("指令发送失败"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	pSendBuf[0] = command;
+	memcpy(pSendBuf + sizeof(command), pData, dataSize);
+	if (m_Serial.SendData(pSendBuf, BufSize) != BufSize)
+	{
+		MessageBox(_T("数据发送错误"), _T("指令发送失败"), MB_ICONERROR | MB_OK);
+	}
+	delete[] pSendBuf;
+}
 
-void CMFC_Exia_DebuggerDlg::OnStnClickedStaticRudd()
+
+//输入、发送指令统一响应
+void CMFC_Exia_DebuggerDlg::OnStnClickedColtrol(UINT uID)
 {
 	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	CString ControlName;
+	CString Min, Max;
+	uint8_t command = COMMAND_SET_THRO + uID - IDC_STATIC_THRO;
+	ControlName.LoadString(IDS_STRING_THRO + uID - IDC_STATIC_THRO);
+	int offset = -50;
+	if (uID == IDC_STATIC_THRO)
+	{
+		offset = 0;
+	}
+	Min.Format(_T("%d"), offset);
+	Max.Format(_T("%d"), 100 + offset);
+	CInputBox InputBox(ControlName + _T("设定"), _T("请输入") + ControlName + _T("设定值:"), _T("0"), Min, Max);
+	if (IDOK == InputBox.DoModal())
+	{
+		int nInput = 0;
+		uint8_t SendData = 0;
+		nInput = _ttoi(InputBox.GetInput()) - offset;
+		SendData = (uint8_t)nInput;
+		SendQuadrotorCommand(command, &(SendData), sizeof(SendData));
+	}
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnStnClickedSetPID(UINT uID)
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	CString ControlName;
+	uint8_t command = COMMAND_ROLL_GYRO_KP + uID - IDC_STATIC_ROLL_G_Kp;
+	ControlName.LoadString(IDS_STRING_ROLL_G_Kp + uID - IDC_STATIC_ROLL_G_Kp);
+	CInputBox InputBox(_T("PID参数整定"), _T("请输入") + ControlName + _T("设定值:"), _T("0"), _T("0"), _T("10"));
+	if (IDOK == InputBox.DoModal())
+	{
+		uint16_t SendData = 0;
+		SendData = (uint16_t)(_ttof(InputBox.GetInput()) * 100);
+		SendQuadrotorCommand(command, (uint8_t *)&(SendData), sizeof(SendData));
+	}
 }

@@ -5,6 +5,7 @@
 #include "MFC_Exia_Debugger.h"
 #include "Curve.h"
 #include "Color.h"
+#include "CStrTool.h"
 
 // CCurve
 
@@ -590,9 +591,8 @@ void CCurve::DrawLabel(CDC *pDC)
 {
 	if (m_bEnhance)	//Gdi+抗锯齿
 	{
-		USES_CONVERSION;	//CString转WCHAR*要用到的声明
-		WCHAR * wcharLabel[CURVE_LINE] = { NULL };
-		WCHAR * wcharValue[CURVE_LINE] = { NULL };
+		CStringW LabelStrW[CURVE_LINE];
+		CStringW ValueStrW[CURVE_LINE];
 		Gdiplus::Graphics graphics(pDC->m_hDC);
 		Gdiplus::Font font(L"宋体", 10);
 		Gdiplus::SolidBrush drawBrush(Gdiplus::Color::TEXT_COLOR);
@@ -610,11 +610,11 @@ void CCurve::DrawLabel(CDC *pDC)
 		//获取，测量字符串
 		for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 		{
-			wcharLabel[Curve] = T2W(m_LabelStr[Curve].GetBuffer(m_LabelStr[Curve].GetLength()));
-			graphics.MeasureString(wcharLabel[Curve], wcslen(wcharLabel[Curve]), &font, origin, &RectLable);
-		
-			wcharValue[Curve] = T2W(m_ValueStr[Curve].GetBuffer(m_ValueStr[Curve].GetLength()));
-			graphics.MeasureString(wcharValue[Curve], wcslen(wcharValue[Curve]), &font, origin, &RectValue);
+			LabelStrW[Curve] = CStrT2CStrW(m_LabelStr[Curve]);
+			graphics.MeasureString(LabelStrW[Curve], LabelStrW[Curve].GetLength(), &font, origin, &RectLable);
+			
+			ValueStrW[Curve] = CStrT2CStrW(m_ValueStr[Curve]);
+			graphics.MeasureString(ValueStrW[Curve], ValueStrW[Curve].GetLength(), &font, origin, &RectValue);
 
 			Rect[Curve].Width = RectLable.Width > RectValue.Width ? RectLable.Width : RectValue.Width;	//Lable和Value较宽的作为这个Lable宽度
 			Rect[Curve].Height = RectLable.Height > RectValue.Height ? RectLable.Height : RectValue.Height;	//Lable和Value较高的作为这个Lable高度
@@ -629,9 +629,9 @@ void CCurve::DrawLabel(CDC *pDC)
 		{
 			Rect[Curve].X = origin.X;
 			Rect[Curve].Y = origin.Y;
-			graphics.DrawString(wcharValue[Curve], wcslen(wcharValue[Curve]), &font, Rect[Curve], &format, &drawBrush);
+			graphics.DrawString(ValueStrW[Curve], ValueStrW[Curve].GetLength(), &font, Rect[Curve], &format, &drawBrush);
 			Rect[Curve].Y -= Rect[Curve].Height;
-			graphics.DrawString(wcharLabel[Curve], wcslen(wcharLabel[Curve]), &font, Rect[Curve], &format, &drawBrush);
+			graphics.DrawString(LabelStrW[Curve], LabelStrW[Curve].GetLength(), &font, Rect[Curve], &format, &drawBrush);
 
 			pDC->MoveTo((int)origin.X, (int)origin.Y);
 			origin.X += Rect[Curve].Width;

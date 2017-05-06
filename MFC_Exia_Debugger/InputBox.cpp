@@ -5,19 +5,30 @@
 #include "MFC_Exia_Debugger.h"
 #include "InputBox.h"
 #include "afxdialogex.h"
-
+#include "float.h"
+#include "CStrTool.h"
 
 // CInputBox 对话框
 
 IMPLEMENT_DYNAMIC(CInputBox, CDialogEx)
 
-CInputBox::CInputBox(CString Title /*= _T("设定")*/, CString Tip /*= _T("请输入：")*/, CString DefaultValue /*= _T("0")*/, CWnd* pParent /*=NULL*/)
+CInputBox::CInputBox(CString Title /*= _T("设定")*/, CString Tip /*= _T("请输入：")*/, CString DefaultValue /*= _T("0")*/, CString MinValue /*= _T("")*/, CString MaxValue /*= _T("")*/, CWnd* pParent /*=NULL*/)
 	: CDialogEx(CInputBox::IDD, pParent)
 	, m_str_Input(DefaultValue)
 	, m_str_Title(Title)
 	, m_str_Tip(Tip)
+	, m_str_Min(MinValue)
+	, m_str_Max(MaxValue)
 {
-
+	if (m_str_Min == _T(""))
+	{
+		m_str_Min.Format(_T("%lf"), -DBL_MAX);
+	}
+	if (m_str_Max == _T(""))
+	{
+		m_str_Max.Format(_T("%lf"), DBL_MAX);
+	}
+	ASSERT(_ttof(m_str_Min) <= _ttof(m_str_Max));
 }
 
 CInputBox::~CInputBox()
@@ -188,4 +199,17 @@ AFX_INLINE BOOL CInputBox::ShowBalloonTip(CEdit * pEdit, _In_z_ LPCWSTR lpszTitl
 	bt.ttiIcon = ttiIcon;
 
 	return Edit_ShowBalloonTip(pEdit->m_hWnd, &bt); // EM_SHOWBALLOONTIP
+}
+
+
+void CInputBox::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+	double InputVal = _ttof(m_str_Input);
+	if (InputVal > _ttof(m_str_Max) || InputVal < _ttof(m_str_Min))
+	{
+		ShowBalloonTip(&m_Edit_Input, L"错误", (CStringW)L"输入范围：" + CStrT2CStrW(m_str_Min) + L"~" + CStrT2CStrW(m_str_Max), TTI_ERROR);
+		return;
+	}
+	CDialogEx::OnOK();
 }

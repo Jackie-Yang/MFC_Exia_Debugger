@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
+    <ClInclude Include="CStrTool.h" />
     <ClInclude Include="Curve.h" />
     <ClInclude Include="CurveDLG.h" />
     <ClInclude Include="InputBox.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CStrTool.cpp" />
     <ClCompile Include="Curve.cpp" />
     <ClCompile Include="CurveDLG.cpp" />
     <ClCompile Include="InputBox.cpp" />

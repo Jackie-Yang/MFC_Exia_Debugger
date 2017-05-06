@@ -29,29 +29,7 @@ public:
 		ID_TIMER_UPDATE_CURVE
 	};
 
-//控件
-	// Combox:选择串口
-	CComboBox m_Combox_COM;
-	//显示串口状态
-	CStatic m_Static_Status;
 
-
-	Quadrotor_State m_State;
-	COLORREF m_Color_Status;
-	COLORREF m_Color_BuffByte;
-	
-	CString GetErrorMessage(DWORD dwError, const TCHAR* ErrorTip = NULL);
-	CString GetLastErrorMessage(const TCHAR* ErrorTip = NULL);
-	void UpdateSerialState();
-	bool GetQuadrotorState();
-	void InitQuadrotorState();
-	void ShowQuadrotorState();
-
-//处理函数
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-	afx_msg void OnBnClickedOpenCloseBtn();
-	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 
 private:
@@ -82,6 +60,52 @@ protected:
 	afx_msg LRESULT OnSerialOpen(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSerialClose(WPARAM wParam, LPARAM lParam);
 public:
+	//控件
+	// Combox:选择串口
+	CComboBox m_Combox_COM;
+	//显示串口状态
+	CStatic m_Static_Status;
+	CComboBox m_ComBoxCurve[CURVE_LINE];		//CURVE_LINE有多少曲线就应该放置多少控件
+	CComboBox m_ComBoxGain[CURVE_LINE];			//CURVE_LINE有多少曲线就应该放置多少控件
+	CComboBox m_CombocRefresh;					//曲线刷新率
+
+
+	Quadrotor_State m_State;	//飞行器状态结构体
+	COLORREF m_Color_Status;	//串口状态的颜色
+	COLORREF m_Color_BuffByte;	//缓冲区字节数的颜色
+
+	int m_CurveSelected[CURVE_LINE];	//曲线的选择
+	int m_GainSelected[CURVE_LINE];		//曲线放大倍率的选择
+	UINT_PTR m_nRefreshTime;			//曲线刷新时间间隔
+	CurveData m_CurveData[CURVE_LINE];	//待添加到曲线的数据
+	void SetCurveData();				//根据选择设置曲线数据源
+
+	CString GetErrorMessage(DWORD dwError, const TCHAR* ErrorTip = NULL);
+	CString GetLastErrorMessage(const TCHAR* ErrorTip = NULL);
+	void UpdateSerialState();	//更新串口列表
+	bool GetQuadrotorState();	//获得飞行器状态
+	void InitQuadrotorState();	//飞行器状态复位
+	void ShowQuadrotorState();	//显示飞行器状态
+	void SendQuadrotorCommand(uint8_t command, uint8_t* pData, DWORD dataSize);
+
+	//处理函数
+	virtual void OnOK();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedOpenCloseBtn();
+	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedButtonOpenCurve();
+	afx_msg void OnBnClickedCurveEnhance();
+	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButtonScreenshot();
+	afx_msg void OnBnClickedButtonClearCurve();
+	afx_msg void UpdateSelected(UINT uID);
+	afx_msg void OnCbnSelchangeCurveRefresh();
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnStnClickedColtrol(UINT uID);
+	afx_msg void OnStnClickedSetPID(UINT uID);
+
+	//控件变量
 	// 显示缓冲区数据
 	CString m_str_BuffByte;
 	// 油门
@@ -109,23 +133,6 @@ public:
 	CString m_str_Roll;
 	CString m_str_Pitch;
 	CString m_str_Yaw;
-	afx_msg void OnBnClickedButtonOpenCurve();
-	afx_msg void OnBnClickedCurveEnhance();
-	afx_msg void OnDestroy();
-	afx_msg void OnBnClickedButtonScreenshot();
-	afx_msg void OnBnClickedButtonClearCurve();
-
-	CComboBox m_ComBoxCurve[CURVE_LINE];			//CURVE_LINE有多少曲线就应该放置多少控件
-	CComboBox m_ComBoxGain[CURVE_LINE];			//CURVE_LINE有多少曲线就应该放置多少控件
-	int m_CurveSelected[CURVE_LINE];
-	int m_GainSelected[CURVE_LINE];
-	CurveData m_CurveData[CURVE_LINE];	//待添加到曲线的数据
-	void SetCurveData();
-	afx_msg void UpdateSelected();
-
-	CComboBox m_CombocRefresh;
-	UINT_PTR m_nRefreshTime;
-	afx_msg void OnCbnSelchangeCurveRefresh();
 	CString m_str_Motor1;
 	CString m_str_Motor2;
 	CString m_str_Motor3;
@@ -142,11 +149,6 @@ public:
 	CString m_str_Temp_MS5611;
 	CString m_str_Press_MS5611;
 	CString m_str_HIGH_Accel;
-	float m_fRoll_G_Kp;
-	virtual void OnOK();
-	afx_msg void OnStnClickedStaticThro();
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnStnClickedStaticRudd();
 	CString m_str_Roll_G_Kp;
 	CString m_str_Roll_G_Ki;
 	CString m_str_Roll_G_Kd;
