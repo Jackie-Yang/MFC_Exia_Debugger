@@ -1160,6 +1160,11 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedSetPID(UINT uID)
 		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
 		return;
 	}
+	if (m_State.u16_Thro != 0 && m_State.u16_Thro != 1100)
+	{
+		MessageBox(_T("请将油门置零！"), _T("危险！"), MB_ICONWARNING | MB_OK);
+		return;
+	}
 	CString ControlName;
 	uint8_t command = COMMAND_ROLL_GYRO_KP + uID - IDC_STATIC_ROLL_G_Kp;
 	ControlName.LoadString(IDS_STRING_ROLL_G_Kp + uID - IDC_STATIC_ROLL_G_Kp);
@@ -1282,6 +1287,11 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonPidLoad()
 	if (!m_Serial.IsOpen())
 	{
 		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	if (m_State.u16_Thro != 0 && m_State.u16_Thro != 1100)
+	{
+		MessageBox(_T("请将油门置零！"), _T("危险！"), MB_ICONWARNING | MB_OK);
 		return;
 	}
 	CFile LoadFile;
