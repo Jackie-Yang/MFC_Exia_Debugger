@@ -16,6 +16,7 @@ CSerial::CSerial()
 #endif
 	m_pOwner = NULL;
 	m_pSerialPort = NULL;
+	m_nSerialInQue = 0;
 
 	//用于串口注册表监视线程
 	m_hWatchingEvent = NULL;
@@ -48,13 +49,13 @@ bool CSerial::Init(CWnd* pOwner)
 	m_pOwner = pOwner;
 
 	//测试数据接收，打开终端
-#if RECEIVE_TEST
-	AllocConsole();
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int hCrt = _open_osfhandle((long)handle, _O_TEXT);
-	FILE * hf = _fdopen(hCrt, "w");
-	*stdout = *hf;
-#endif
+//#if RECEIVE_TEST
+//	AllocConsole();
+//	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+//	int hCrt = _open_osfhandle((long)handle, _O_TEXT);
+//	FILE * hf = _fdopen(hCrt, "w");
+//	*stdout = *hf;
+//#endif
 
 	return UpdateSerialList();
 }
@@ -515,7 +516,8 @@ UINT CSerial::ReceiveData()
 	while (IsOpen())
 	{
 		ClearCommError(m_pSerialPort->h_Handle, &dwErrorFlags, &ComStat);	//更新ComStat
-		dwBytesRead = ComStat.cbInQue;
+		m_nSerialInQue = ComStat.cbInQue;
+		dwBytesRead = m_nSerialInQue;
 		if (dwBytesRead)	//如果串口inbuf中有接收到的字符就执行下面的操作
 		{
 			if (dwBytesRead > BUF_SIZE)		//缓冲区数据大于缓存数据
@@ -538,12 +540,14 @@ UINT CSerial::ReceiveData()
 			{
 				BufWriteData(&m_SerialRecData, ReceiveData, dwBytesRead);
 			}
-			if (ComStat.cbInQue > BUF_SIZE)	//串口缓冲区数据大于缓存数据，则有剩余数据没读，清空缓冲区
-			{
-				PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
-			}
+			//保证数据完整性，不丢弃
+			//if (ComStat.cbInQue > BUF_SIZE)	//串口缓冲区数据大于缓存数据，则有剩余数据没读，清空缓冲区
+			//{
+			//	PurgeComm(m_pSerialPort->h_Handle, PURGE_RXABORT | PURGE_RXCLEAR);
+			//}
 			#if RECEIVE_TEST
-			printf("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesReaded, m_SerialRecData.nByteToRead);
+			TRACE("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesReaded, m_SerialRecData.nByteToRead);
+			//printf("Buf:%d,Rec:%d,CycBuf:%d\n", ComStat.cbInQue, dwBytesReaded, m_SerialRecData.nByteToRead);
 			#endif
 		}
 		Sleep(10);		//一直轮询会加重CPU负担
@@ -579,7 +583,7 @@ DWORD CSerial::SendData(const UINT8 *pData, DWORD nDataLength)
 			}
 		}
 
-		PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_TXCLEAR);
+		//PurgeComm(m_pSerialPort->h_Handle, PURGE_TXABORT | PURGE_TXCLEAR);
 	}
 	return dwBytesSend;
 }
@@ -904,4 +908,9 @@ UINT32 CSerial::GetRecData(PUINT8 pData, UINT32 nSize)
 void CSerial::ClearRecData()
 {
 	BufClear(&m_SerialRecData);
+}
+
+DWORD CSerial::GetHardBufByte()
+{
+	return m_nSerialInQue;
 }

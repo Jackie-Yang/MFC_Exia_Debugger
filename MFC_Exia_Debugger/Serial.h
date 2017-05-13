@@ -6,10 +6,10 @@
 #define SEND_TEST		FALSE
 #define RECEIVE_TEST	FALSE
 
-#if RECEIVE_TEST
-#include <io.h>    
-#include <fcntl.h>  
-#endif
+//#if RECEIVE_TEST
+//#include <io.h>    
+//#include <fcntl.h>  
+//#endif
 
 #define	BUF_SIZE		1024
 #define INPUT_BUF_SIZE	BUF_SIZE
@@ -54,9 +54,12 @@ public:
 	bool CloseSerial();
 	DWORD SendData(const UINT8 *pData, DWORD nDataLength);
 
+	//Software Buffer
 	UINT32 GetRecBufByte();
 	UINT32 GetRecData(PUINT8 pData, UINT32 nSize);
 	void ClearRecData();
+	//Hardware Buffer
+	DWORD GetHardBufByte();
 
 
 	bool StartWatchingSerialList();
@@ -75,6 +78,7 @@ private:
 
 	//Serial
 	p_SerialInfo m_pSerialPort;
+	DWORD	m_nSerialInQue;		//硬件数据接收缓冲区
 
 	//Serial List
 	CArray<SerialInfo> m_SerialList;

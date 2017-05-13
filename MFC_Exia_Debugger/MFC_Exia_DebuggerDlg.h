@@ -8,6 +8,8 @@
 #include "CurveDLG.h"
 #include "Quadrotor_State.h"
 
+#define CONFIG_FILE_MAX_SIZE	4096
+
 
 // CMFC_Exia_DebuggerDlg 对话框
 class CMFC_Exia_DebuggerDlg : public CDialogEx
@@ -22,11 +24,26 @@ public:
 	// 对话框数据
 	enum { IDD = IDD_MAIN_DIALOG };
 	// 定时器ID
-	enum 
+	enum TIMER_ID
 	{ 
 		ID_TIMER_UPDATE_DATA = 1, 
 		ID_TIMER_SHOW_DATA ,
 		ID_TIMER_UPDATE_CURVE
+	};
+	//曲线选择
+	enum CURVE_SEL
+	{
+		SEL_NONE = 0,
+		SEL_ROLL,
+		SEL_PITCH,
+		SEL_YAW,
+		SEL_COMPASS,
+		SEL_X_GYRO,
+		SEL_Y_GYRO,
+		SEL_Z_GYRO,
+		SEL_X_ACCEL,
+		SEL_Y_ACCEL,
+		SEL_Z_ACCEL
 	};
 
 
@@ -70,9 +87,10 @@ public:
 	CComboBox m_CombocRefresh;					//曲线刷新率
 
 
-	Quadrotor_State m_State;	//飞行器状态结构体
-	COLORREF m_Color_Status;	//串口状态的颜色
-	COLORREF m_Color_BuffByte;	//缓冲区字节数的颜色
+	Quadrotor_State m_State;			//飞行器状态结构体
+	COLORREF m_Color_Status;			//串口状态的颜色
+	COLORREF m_Color_SerialInQueByte;	//串口接收字节数的颜色
+	COLORREF m_Color_BuffByte;			//缓冲区字节数的颜色
 
 	int m_CurveSelected[CURVE_LINE];	//曲线的选择
 	int m_GainSelected[CURVE_LINE];		//曲线放大倍率的选择
@@ -164,4 +182,10 @@ public:
 	CString m_str_Yaw_G_Kp;
 	CString m_str_Yaw_G_Ki;
 	CString m_str_Yaw_G_Kd;
+	afx_msg void OnBnClickedButtonHorizon();
+	afx_msg void OnBnClickedButtonStop();
+	afx_msg void OnBnClickedButtonSelftest();
+	CString m_str_Serial_InQue;
+	afx_msg void OnBnClickedButtonPidSave();
+	afx_msg void OnBnClickedButtonPidLoad();
 };

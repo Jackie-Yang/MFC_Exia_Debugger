@@ -56,6 +56,7 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	, m_str_ELEV(_T("无信号"))
 	, m_str_AILE(_T("无信号"))
 	, m_str_BuffByte(_T("0 Bytes"))
+	, m_str_Serial_InQue(_T("0 Bytes"))
 	, m_str_Accel_Sensor_X(_T("无信号"))
 	, m_str_Accel_Sensor_Y(_T("无信号"))
 	, m_str_Accel_Sensor_Z(_T("无信号"))
@@ -104,6 +105,7 @@ CMFC_Exia_DebuggerDlg::CMFC_Exia_DebuggerDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_RED);
 	m_Color_Status = RGB(255, 0, 0);
 	m_Color_BuffByte = RGB(0, 0, 0);
+	m_Color_SerialInQueByte = RGB(0, 0, 0);
 	m_Timer_Update_Data = 0;
 	m_Timer_Show_Data = 0;
 	m_Timer_Update_Curve = 0;
@@ -183,16 +185,17 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 
 	for (int Curve = 0; Curve < CURVE_LINE; Curve++)
 	{
-		m_ComBoxCurve[Curve].InsertString(0, _T("无信号"));
-		m_ComBoxCurve[Curve].InsertString(1, _T("侧滚(Roll)"));
-		m_ComBoxCurve[Curve].InsertString(2, _T("俯仰(Pitch)"));
-		m_ComBoxCurve[Curve].InsertString(3, _T("偏摆(Yaw)"));
-		m_ComBoxCurve[Curve].InsertString(4, _T("X轴角速度"));
-		m_ComBoxCurve[Curve].InsertString(5, _T("Y轴角速度"));
-		m_ComBoxCurve[Curve].InsertString(6, _T("Z轴角速度"));
-		m_ComBoxCurve[Curve].InsertString(7, _T("X轴加速度"));
-		m_ComBoxCurve[Curve].InsertString(8, _T("Y轴加速度"));
-		m_ComBoxCurve[Curve].InsertString(9, _T("Z轴加速度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_NONE, _T("无信号"));
+		m_ComBoxCurve[Curve].InsertString(SEL_ROLL, _T("侧滚(Roll)"));
+		m_ComBoxCurve[Curve].InsertString(SEL_PITCH, _T("俯仰(Pitch)"));
+		m_ComBoxCurve[Curve].InsertString(SEL_YAW, _T("偏摆(Yaw)"));
+		m_ComBoxCurve[Curve].InsertString(SEL_COMPASS, _T("罗盘角度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_X_GYRO, _T("X轴角速度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_Y_GYRO, _T("Y轴角速度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_Z_GYRO, _T("Z轴角速度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_X_ACCEL, _T("X轴加速度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_Y_ACCEL, _T("Y轴加速度"));
+		m_ComBoxCurve[Curve].InsertString(SEL_Z_ACCEL, _T("Z轴加速度"));
 		m_ComBoxCurve[Curve].SetCurSel(0);
 		m_CurveSelected[Curve] = 0;
 	}
@@ -206,7 +209,10 @@ BOOL CMFC_Exia_DebuggerDlg::OnInitDialog()
 	m_nRefreshTime = 20;	//1000/50Hz = 20
 
 
-	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+	GetDlgItem(IDC_BUTTON_OPEN_CLOSE)->SetFocus();
+	return FALSE;
+
+	//return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
 void CMFC_Exia_DebuggerDlg::OnDestroy()
@@ -294,6 +300,7 @@ void CMFC_Exia_DebuggerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATIC_YAW_G_Kp, m_str_Yaw_G_Kp);
 	DDX_Text(pDX, IDC_STATIC_YAW_G_Ki, m_str_Yaw_G_Ki);
 	DDX_Text(pDX, IDC_STATIC_YAW_G_Kd, m_str_Yaw_G_Kd);
+	DDX_Text(pDX, IDC_SERIAL_INQUE_BYTE, m_str_Serial_InQue);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
@@ -317,6 +324,11 @@ BEGIN_MESSAGE_MAP(CMFC_Exia_DebuggerDlg, CDialogEx)
 	ON_WM_SETCURSOR()
 	ON_CONTROL_RANGE(STN_CLICKED, IDC_STATIC_THRO, IDC_STATIC_AILE, &CMFC_Exia_DebuggerDlg::OnStnClickedColtrol)
 	ON_CONTROL_RANGE(STN_CLICKED, IDC_STATIC_ROLL_G_Kp, IDC_STATIC_YAW_G_Kd, &CMFC_Exia_DebuggerDlg::OnStnClickedSetPID)
+	ON_BN_CLICKED(IDC_BUTTON_HORIZON, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonHorizon)
+	ON_BN_CLICKED(IDC_BUTTON_STOP, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonStop)
+	ON_BN_CLICKED(IDC_BUTTON_SELFTEST, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonSelftest)
+	ON_BN_CLICKED(IDC_BUTTON_PID_SAVE, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonPidSave)
+	ON_BN_CLICKED(IDC_BUTTON_PID_LOAD, &CMFC_Exia_DebuggerDlg::OnBnClickedButtonPidLoad)
 END_MESSAGE_MAP()
 
 
@@ -563,6 +575,11 @@ HBRUSH CMFC_Exia_DebuggerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		pDC->SetTextColor(m_Color_BuffByte);
 	}
 
+	if (pWnd->GetDlgCtrlID() == IDC_SERIAL_INQUE_BYTE)
+	{
+		pDC->SetTextColor(m_Color_SerialInQueByte);
+	}
+
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
 }
@@ -578,9 +595,11 @@ void CMFC_Exia_DebuggerDlg::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == m_Timer_Update_Data)
 	{
 		bool result = FALSE;
-		result = GetQuadrotorState();	//获取数据
-		m_Serial.ClearRecData();	//清空缓冲区
-
+		while (GetQuadrotorState())	//拿到缓冲区最新的数据
+		{
+			result = TRUE;	//获取数据
+		} 
+		//m_Serial.ClearRecData();	//清空缓冲区
 		if (result && m_pCurveDLG)	//获取成功则添加到曲线中
 		{
 			SetCurveData();	//根据曲线选项设置曲线数据
@@ -612,49 +631,54 @@ void CMFC_Exia_DebuggerDlg::SetCurveData()
 		m_CurveData[Curve].fGain = (float)_ttof(str);
 		switch (m_CurveSelected[Curve])
 		{
-			case 1:
+			case SEL_ROLL:
 			{
 				m_CurveData[Curve].fData = m_State.f_Roll;
 				break;
 			}
-			case 2:
+			case SEL_PITCH:
 			{
 				m_CurveData[Curve].fData = m_State.f_Pitch;
 				break;
 			}
-			case 3:
+			case SEL_YAW:
 			{
 				m_CurveData[Curve].fData = m_State.f_Yaw;
 				break;
 			}
-			case 4:
+			case SEL_COMPASS:
 			{
-				m_CurveData[Curve].fData = (float)m_State.s16_Gyro_X / 16.4f;
+				m_CurveData[Curve].fData = m_State.f_HMC5883L_Angle;
 				break;
 			}
-			case 5:
+			case SEL_X_GYRO:
 			{
-				m_CurveData[Curve].fData = (float)m_State.s16_Gyro_Y / 16.4f;
+				m_CurveData[Curve].fData = (float)m_State.s16_Gyro[0] / 16.4f;
 				break;
 			}
-			case 6:
+			case SEL_Y_GYRO:
 			{
-				m_CurveData[Curve].fData = (float)m_State.s16_Gyro_Z / 16.4f;
+				m_CurveData[Curve].fData = (float)m_State.s16_Gyro[1] / 16.4f;
 				break;
 			}
-			case 7:
+			case SEL_Z_GYRO:
 			{
-				m_CurveData[Curve].fData = (float)m_State.s16_Accel_X / 16384.0f;
+				m_CurveData[Curve].fData = (float)m_State.s16_Gyro[2] / 16.4f;
 				break;
 			}
-			case 8:
+			case SEL_X_ACCEL:
 			{
-				m_CurveData[Curve].fData = (float)m_State.s16_Accel_Y / 16384.0f;
+				m_CurveData[Curve].fData = (float)m_State.s16_Accel[0] / 16384.0f;
 				break;
 			}
-			case 9:
+			case SEL_Y_ACCEL:
 			{
-				m_CurveData[Curve].fData = (float)m_State.s16_Accel_Z / 16384.0f;
+				m_CurveData[Curve].fData = (float)m_State.s16_Accel[1] / 16384.0f;
+				break;
+			}
+			case SEL_Z_ACCEL:
+			{
+				m_CurveData[Curve].fData = (float)m_State.s16_Accel[2] / 16384.0f;
 				break;
 			}
 			default:
@@ -761,6 +785,7 @@ bool CMFC_Exia_DebuggerDlg::GetQuadrotorState()
 void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 {
 	UINT nBufByte = m_Serial.GetRecBufByte();
+	DWORD nSerialInQueByte = m_Serial.GetHardBufByte();
 	if (nBufByte > BUF_SIZE * 0.8)
 	{
 		m_Color_BuffByte = RGB(255, 0, 0);
@@ -769,8 +794,17 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 	{
 		m_Color_BuffByte = RGB(0, 0, 0);
 	}
+	if (nSerialInQueByte > BUF_SIZE * 0.8)
+	{
+		m_Color_SerialInQueByte = RGB(255, 0, 0);
+	}
+	else
+	{
+		m_Color_SerialInQueByte = RGB(0, 0, 0);
+	}
 	//GetDlgItem(IDC_BUFF_BYTE)->InvalidateRect(NULL);
 	m_str_BuffByte.Format(_T("%u Bytes"), nBufByte);
+	m_str_Serial_InQue.Format(_T("%u Bytes"), nSerialInQueByte);
 
 
 	if (m_State.u16_Thro)
@@ -809,22 +843,22 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 		m_str_AILE = _T("无信号");
 	}
 	
-	m_str_Accel_Sensor_X.Format(_T("%d"), m_State.s16_Accel_X);
-	m_str_Accel_Sensor_Y.Format(_T("%d"), m_State.s16_Accel_Y);
-	m_str_Accel_Sensor_Z.Format(_T("%d"), m_State.s16_Accel_Z);
+	m_str_Accel_Sensor_X.Format(_T("%d"), m_State.s16_Accel[0]);
+	m_str_Accel_Sensor_Y.Format(_T("%d"), m_State.s16_Accel[1]);
+	m_str_Accel_Sensor_Z.Format(_T("%d"), m_State.s16_Accel[2]);
 
-	m_str_Gyro_Sensor_X.Format(_T("%d"), m_State.s16_Gyro_X);
-	m_str_Gyro_Sensor_Y.Format(_T("%d"), m_State.s16_Gyro_Y);
-	m_str_Gyro_Sensor_Z.Format(_T("%d"), m_State.s16_Gyro_Z);
+	m_str_Gyro_Sensor_X.Format(_T("%d"), m_State.s16_Gyro[0]);
+	m_str_Gyro_Sensor_Y.Format(_T("%d"), m_State.s16_Gyro[1]);
+	m_str_Gyro_Sensor_Z.Format(_T("%d"), m_State.s16_Gyro[2]);
 
-	m_str_HMC5883L_X.Format(_T("%d"), m_State.s16_HMC5883L_X);
-	m_str_HMC5883L_Y.Format(_T("%d"), m_State.s16_HMC5883L_Y);
-	m_str_HMC5883L_Z.Format(_T("%d"), m_State.s16_HMC5883L_Z);
+	m_str_HMC5883L_X.Format(_T("%d"), m_State.s16_HMC5883L[0]);
+	m_str_HMC5883L_Y.Format(_T("%d"), m_State.s16_HMC5883L[1]);
+	m_str_HMC5883L_Z.Format(_T("%d"), m_State.s16_HMC5883L[2]);
 	m_str_HMC5883L_Angle.Format(_T("%.1f"), m_State.f_HMC5883L_Angle);
 
-	m_str_Roll.Format(_T("%.1f"), m_State.f_Roll);
-	m_str_Pitch.Format(_T("%.1f"), m_State.f_Pitch);
-	m_str_Yaw.Format(_T("%.1f"), m_State.f_Yaw);
+	m_str_Roll.Format(_T("%.3f"), m_State.f_Roll);
+	m_str_Pitch.Format(_T("%.3f"), m_State.f_Pitch);
+	m_str_Yaw.Format(_T("%.3f"), m_State.f_Yaw);
 	
 	if (m_State.u16_Motor1)
 	{
@@ -859,21 +893,22 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 		m_str_Motor4 = _T("无信号");
 	}
 	
-	m_str_Gyro_X.Format(_T("%.1f"), (float)m_State.s16_Gyro_X / 16.4f);
-	m_str_Gyro_Y.Format(_T("%.1f"), (float)m_State.s16_Gyro_Y / 16.4f);
-	m_str_Gyro_Z.Format(_T("%.1f"), (float)m_State.s16_Gyro_Z / 16.4f);
+	m_str_Gyro_X.Format(_T("%.3f"), (float)m_State.s16_Gyro[0] / 16.4f);
+	m_str_Gyro_Y.Format(_T("%.3f"), (float)m_State.s16_Gyro[1] / 16.4f);
+	m_str_Gyro_Z.Format(_T("%.3f"), (float)m_State.s16_Gyro[2] / 16.4f);
 
-	m_str_Accel_X.Format(_T("%.1f"), (float)m_State.s16_Accel_X / 16384.0f);
-	m_str_Accel_Y.Format(_T("%.1f"), (float)m_State.s16_Accel_Y / 16384.0f);
-	m_str_Accel_Z.Format(_T("%.1f"), (float)m_State.s16_Accel_Z / 16384.0f);
+	m_str_Accel_X.Format(_T("%.3f"), (float)m_State.s16_Accel[0] / 16384.0f);
+	m_str_Accel_Y.Format(_T("%.3f"), (float)m_State.s16_Accel[1] / 16384.0f);
+	m_str_Accel_Z.Format(_T("%.3f"), (float)m_State.s16_Accel[2] / 16384.0f);
 
 	m_str_HIGH_KS10X.Format(_T("%.3f"), (float)m_State.u16_KS10X_High / 1000.0f);
-	m_str_HIGH_MS5611.Format(_T("%.3f"), (float)m_State.s32_MS5611_HIGH / 1000.0f);
-	m_str_Temp_MPU6050.Format(_T("%.3f"), (float)m_State.s16_MPU6050_Temp / 340.0f + 36.53);
-	m_str_Temp_MS5611.Format(_T("%.2f"), (float)m_State.s32_MS5611_Temp / 100.0f);
-	m_str_Press_MS5611.Format(_T("%.3f"), (float)m_State.s32_MS5611_Press / 1000.0f);
+	
+	m_str_Temp_MPU6050.Format(_T("%.2f"), m_State.f_MPU6050_Temp);
+	m_str_HIGH_MS5611.Format(_T("%.3f"), m_State.f_MS5611_HIGH / 100.0f);
+	m_str_Temp_MS5611.Format(_T("%.2f"), m_State.f_MS5611_Temp / 100.0f);
+	m_str_Press_MS5611.Format(_T("%.2f"), m_State.f_MS5611_Press / 1000.0f);
 
-	m_str_HIGH_Accel.Format(_T("%.2f"), m_State.f_High_Accel);
+	m_str_HIGH_Accel.Format(_T("%.3f"), m_State.f_High_Accel);
 
 	m_str_Roll_G_Kp.Format(_T("%.2f"), (float)m_State.u16_ROLL_G_Kp / 100.0f);
 	m_str_Roll_G_Ki.Format(_T("%.2f"), (float)m_State.u16_ROLL_G_Ki / 100.0f);
@@ -896,7 +931,10 @@ void CMFC_Exia_DebuggerDlg::ShowQuadrotorState()
 void CMFC_Exia_DebuggerDlg::InitQuadrotorState()
 {
 	memset(&m_State, 0, sizeof(m_State));
+	m_Color_BuffByte = RGB(0, 0, 0);
+	m_Color_SerialInQueByte = RGB(0, 0, 0);
 	GetDlgItem(IDC_BUFF_BYTE)->SetWindowText(_T("0 Bytes"));
+	GetDlgItem(IDC_SERIAL_INQUE_BYTE)->SetWindowText(_T("0 Bytes"));
 	int nID;
 	for (nID = IDC_STATIC_THRO; nID <= IDC_STATIC_YAW_G_Kd; nID++)
 	{
@@ -949,16 +987,10 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonScreenshot()
 	CurTime = CTime::GetCurrentTime();	//获取系统时间
 	CString stFilePath_save = CurTime.Format(_T("ScreenShot %Y_%m_%d %H.%M.%S.bmp"));
 
-	int nDot_index = stFilePath_save.ReverseFind(_T('.'));	//获取后缀'.'位置
-	////获取后缀名
-	CString szFileType = stFilePath_save.Right(stFilePath_save.GetLength() - nDot_index);
-	szFileType.MakeLower();	//统一后缀小写
-
-
 	// 设置过滤器，过滤出Bmp文件
 	CString szOpenFilter = _T("位图文件 (*.bmp;*.dib)|*.bmp;*.dib|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|GIF (*.gif)|*.gif||");
 	// 构造保存文件对话框 
-	CFileDialog SaveDlgDst(FALSE, szFileType, stFilePath_save, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
+	CFileDialog SaveDlgDst(FALSE, _T(".bmp"), stFilePath_save, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
 
 	if (SaveDlgDst.DoModal() == IDOK)
 	{
@@ -1074,10 +1106,16 @@ void CMFC_Exia_DebuggerDlg::SendQuadrotorCommand(uint8_t command, uint8_t* pData
 	}
 	pSendBuf[0] = command;
 	memcpy(pSendBuf + sizeof(command), pData, dataSize);
-	if (m_Serial.SendData(pSendBuf, BufSize) != BufSize)
+	for (DWORD i = 0; i < BufSize; i++)
 	{
-		MessageBox(_T("数据发送错误"), _T("指令发送失败"), MB_ICONERROR | MB_OK);
+		if (m_Serial.SendData(pSendBuf + i, 1) != 1)
+		{
+			MessageBox(_T("数据发送错误"), _T("指令发送失败"), MB_ICONERROR | MB_OK);
+			break;
+		}
+		Sleep(1);
 	}
+	
 	delete[] pSendBuf;
 }
 
@@ -1131,5 +1169,229 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedSetPID(UINT uID)
 		uint16_t SendData = 0;
 		SendData = (uint16_t)(_ttof(InputBox.GetInput()) * 100);
 		SendQuadrotorCommand(command, (uint8_t *)&(SendData), sizeof(SendData));
+	}
+}
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonHorizon()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	SendQuadrotorCommand(COMMAND_HORIZON, NULL, 0);
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonStop()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	SendQuadrotorCommand(COMMAND_STOP, NULL, 0);
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonSelftest()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	if (MessageBox(_T("请将机体水平放置\r机体将把当前状态设置为水平状态"), _T("提示"), MB_ICONWARNING | MB_OKCANCEL) == IDOK)
+	{
+		SendQuadrotorCommand(COMMAND_MPU6050_SETOFFSET, NULL, 0);
+	}
+	if (MessageBox(_T("请将机体放置在地面\r机体将把当前高度设置为参考高度"), _T("提示"), MB_ICONWARNING | MB_OKCANCEL) == IDOK)
+	{
+		SendQuadrotorCommand(COMMAND_SET_HIGH_REF, NULL, 0);
+	}
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonPidSave()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+
+	CFile SaveFile;
+	CFileException Exception;
+	CTime CurTime;
+	CurTime = CTime::GetCurrentTime();	//获取系统时间
+	CString stFilePath_save = CurTime.Format(_T("PID_Config %Y_%m_%d %H.%M.%S.txt"));
+
+	// 设置过滤器，过滤出Txt文件
+	CString szOpenFilter = _T("文本文件 (*.txt)|*.txt||");
+	// 构造保存文件对话框 
+	CFileDialog SaveDlgDst(FALSE, _T(".txt"), stFilePath_save, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
+
+	if (SaveDlgDst.DoModal() == IDOK)
+	{
+		stFilePath_save = SaveDlgDst.GetPathName();
+		if (!SaveFile.Open(stFilePath_save, CFile::modeCreate | CFile::modeWrite, &Exception))
+		{
+			MessageBox(GetErrorMessage(Exception.m_cause), _T("配置保存失败"), MB_ICONERROR | MB_OK);
+			return;
+		}
+
+		char FileBuf[] = "          Kernel_Kp Kernel_Ki Kernel_Kd Shell_Kp  Shell_Ki  Shell_Kd  \r\n";
+		SaveFile.Write(FileBuf, strlen(FileBuf));
+		sprintf(FileBuf, "%-10s%-10.2f%-10.2f%-10.2f%-10.2f%-10.2f%-10.2f\r\n", "Roll", (float)m_State.u16_ROLL_G_Kp / 100.0f, (float)m_State.u16_ROLL_G_Ki / 100.0f, (float)m_State.u16_ROLL_G_Kd / 100.0f, (float)m_State.u16_ROLL_Angle_Kp / 100.0f, (float)m_State.u16_ROLL_Angle_Ki / 100.0f, (float)m_State.u16_ROLL_Angle_Kd / 100.0f);
+		SaveFile.Write(FileBuf, strlen(FileBuf));
+		sprintf(FileBuf, "%-10s%-10.2f%-10.2f%-10.2f%-10.2f%-10.2f%-10.2f\r\n", "Pitch", (float)m_State.u16_PITCH_G_Kp / 100.0f, (float)m_State.u16_PITCH_G_Ki / 100.0f, (float)m_State.u16_PITCH_G_Kd / 100.0f, (float)m_State.u16_PITCH_Angle_Kp / 100.0f, (float)m_State.u16_PITCH_Angle_Ki / 100.0f, (float)m_State.u16_PITCH_Angle_Kd / 100.0f);
+		SaveFile.Write(FileBuf, strlen(FileBuf));
+		sprintf(FileBuf, "%-10s%-10.2f%-10.2f%-10.2f\r\n", "Yaw", (float)m_State.u16_YAW_G_Kp / 100.0f, (float)m_State.u16_YAW_G_Ki / 100.0f, (float)m_State.u16_YAW_G_Kd / 100.0f);
+		SaveFile.Write(FileBuf, strlen(FileBuf));
+		SaveFile.Close();
+	}
+}
+
+
+int FindStr(char *DataBuf,unsigned int DataLength, const char *Str)
+{
+	int Index = 0;
+	while (1)
+	{
+		if (Index + strlen(Str) > DataLength)
+		{
+			break;
+		}
+		if (!strncmp(DataBuf + Index, Str, strlen(Str)))
+		{
+			return Index;
+		}
+		Index++;
+	}
+	return -1;
+}
+
+
+void CMFC_Exia_DebuggerDlg::OnBnClickedButtonPidLoad()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!m_Serial.IsOpen())
+	{
+		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	CFile LoadFile;
+	CFileException Exception;
+	CString stFilePath_Load;
+
+	char *pFileBuf = NULL;
+	unsigned int FileLength = 0;
+	int ReadIndex = 0;
+
+	float PID_Parm[15] = {0};
+
+	int ResultRoll = 0;
+	int ResultPitch = 0;
+	int ResultYaw = 0;
+	int Sel = 0;
+
+	CString TipStr;
+	CString TipRollStr;
+	CString TipPitchStr;
+	CString TipYawStr;
+
+	CString szOpenFilter = _T("文本文件 (*.txt)|*.txt||");
+	// 构造打开文件对话框 
+	CFileDialog OpenFileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szOpenFilter);
+	if (OpenFileDlg.DoModal() != IDOK)
+	{
+		return;
+	}
+
+	stFilePath_Load = OpenFileDlg.GetPathName();
+
+	if (!LoadFile.Open(stFilePath_Load, CFile::modeRead, &Exception))
+	{
+		MessageBox(GetErrorMessage(Exception.m_cause), _T("配置载入失败"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	
+	if (LoadFile.GetLength() > CONFIG_FILE_MAX_SIZE)
+	{
+		MessageBox(_T("配置文件过大"), _T("配置载入失败"), MB_ICONERROR | MB_OK);
+		LoadFile.Close();
+		return;
+	}
+	FileLength = (unsigned int)LoadFile.GetLength();
+
+	pFileBuf = new char[FileLength];
+	if (!pFileBuf)
+	{
+		MessageBox(_T("内存分配失败"), _T("配置载入失败"), MB_ICONERROR | MB_OK);
+		LoadFile.Close();
+		return;
+	}
+
+	if (LoadFile.Read(pFileBuf, FileLength) != FileLength)
+	{
+		MessageBox(_T("文件读取错误"), _T("配置载入失败"), MB_ICONERROR | MB_OK);
+		LoadFile.Close();
+		delete[] pFileBuf;
+		return;
+	}
+
+
+	ReadIndex = FindStr(pFileBuf, FileLength, "Roll");
+	if (ReadIndex >= 0)
+	{
+		ResultRoll = sscanf(pFileBuf + ReadIndex + strlen("Roll"), "%f%f%f%f%f%f", &PID_Parm[0], &PID_Parm[1], &PID_Parm[2], &PID_Parm[3], &PID_Parm[4], &PID_Parm[5]);
+	}
+
+	ReadIndex = FindStr(pFileBuf, FileLength, "Pitch");
+	if (ReadIndex >= 0)
+	{
+		ResultPitch = sscanf(pFileBuf + ReadIndex + strlen("Pitch"), "%f%f%f%f%f%f", &PID_Parm[6], &PID_Parm[7], &PID_Parm[8], &PID_Parm[9], &PID_Parm[10], &PID_Parm[11]);
+	}
+
+	ReadIndex = FindStr(pFileBuf, FileLength, "Yaw");
+	if (ReadIndex >= 0)
+	{
+		ResultYaw = sscanf(pFileBuf + ReadIndex + strlen("Yaw"), "%f%f%f", &PID_Parm[12], &PID_Parm[13], &PID_Parm[14]);
+	}
+
+	LoadFile.Close();
+	delete[] pFileBuf;
+
+	TipRollStr.Format(_T("%-10s %-10.2f   %-10.2f   %-10.2f   %-10.2f  %-10.2f  %-10.2f\r\n"), _T("Roll"), PID_Parm[0], PID_Parm[1], PID_Parm[2], PID_Parm[3], PID_Parm[4], PID_Parm[5]);
+	TipPitchStr.Format(_T("%-10s %-10.2f   %-10.2f   %-10.2f   %-10.2f  %-10.2f  %-10.2f\r\n"), _T("Pitch"), PID_Parm[6], PID_Parm[7], PID_Parm[8], PID_Parm[9], PID_Parm[10], PID_Parm[11]);
+	TipYawStr.Format(_T("%-10s%-10.2f   %-10.2f   %-10.2f\r\n"), _T("Yaw"), PID_Parm[12], PID_Parm[13], PID_Parm[14]);
+
+	if (ResultRoll < 6 || ResultPitch < 6 || ResultYaw < 3)
+	{
+		TipStr.Format(_T("      配置载入错误，是否仍要将以下参数写入机体？\n\n          Kernel_Kp Kernel_Ki Kernel_Kd Shell_Kp  Shell_Ki  Shell_Kd  \r\n"));
+		TipStr += TipRollStr + TipPitchStr + TipYawStr;
+		Sel = MessageBox(TipStr, _T("配置载入错误"), MB_ICONERROR | MB_OK | MB_OKCANCEL);
+	}
+	else
+	{
+		TipStr.Format(_T("      是否将以下参数写入机体？\n\n          Kernel_Kp Kernel_Ki Kernel_Kd Shell_Kp  Shell_Ki  Shell_Kd  \r\n"));
+		TipStr += TipRollStr + TipPitchStr + TipYawStr;
+		Sel = MessageBox(TipStr, _T("参数确认"), MB_ICONWARNING | MB_OKCANCEL);
+	}
+	
+	if (IDOK == Sel)
+	{
+		uint8_t command = COMMAND_ROLL_GYRO_KP;
+		uint16_t SendData = 0;
+		for (int i = 0; i < 15; i++, command++)
+		{
+			SendData = (uint16_t)(PID_Parm[i] * 100);
+			SendQuadrotorCommand(command, (uint8_t *)&(SendData), sizeof(SendData));
+			Sleep(1);
+		}
 	}
 }
