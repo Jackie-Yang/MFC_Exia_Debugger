@@ -1160,7 +1160,7 @@ void CMFC_Exia_DebuggerDlg::OnStnClickedSetPID(UINT uID)
 		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
 		return;
 	}
-	if (m_State.u16_Thro != 0 && m_State.u16_Thro != 1100)
+	if (m_State.u16_Thro != 0 && (int)(((float)m_State.u16_Thro - 1100.0f) / 8.0f + 0.5f) != 0)
 	{
 		MessageBox(_T("请将油门置零！"), _T("危险！"), MB_ICONWARNING | MB_OK);
 		return;
@@ -1289,7 +1289,7 @@ void CMFC_Exia_DebuggerDlg::OnBnClickedButtonPidLoad()
 		MessageBox(_T("未连接飞行器"), _T("无法发送指令"), MB_ICONERROR | MB_OK);
 		return;
 	}
-	if (m_State.u16_Thro != 0 && m_State.u16_Thro != 1100)
+	if (m_State.u16_Thro != 0 && (int)(((float)m_State.u16_Thro - 1100.0f) / 8.0f + 0.5f) != 0)
 	{
 		MessageBox(_T("请将油门置零！"), _T("危险！"), MB_ICONWARNING | MB_OK);
 		return;
